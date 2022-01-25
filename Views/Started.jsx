@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {StyleSheet, Text, View, Image, Button, TouchableOpacity } from 'react-native'
-
 import startedImage from "../assets/images/get-started-group.png"
 
 class Started extends Component {
