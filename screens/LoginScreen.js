@@ -1,7 +1,13 @@
 import { useNavigation } from '@react-navigation/core'
 import React, {useState, useEffect} from 'react'
 import { Alert, StyleSheet, Text, TextInput, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
-import { auth } from '../firebase'
+import { firebase, auth } from '../firebase'
+import { LogBox } from 'react-native';
+
+// ignores an error that results from using firebase with Expo
+LogBox.ignoreLogs(['Setting a timer for a long period of time'])
+
+const db = firebase.firestore()
 
 const LoginScreen = () => {
     const [email, setEmail] = useState('')
@@ -17,15 +23,34 @@ const LoginScreen = () => {
         })
         return unsub
     }, [])
+    
 
+    const checkUserExists = async () => {
+        let email = "TestUser@email.com"
+        await db.collection('Users').doc(email).get().then(doc => {
+            try {
+                if (doc.exists) {
+                    let data = doc.data()
+                    console.log(data.email)
+                }
+            } catch {
+                console.log("User could not be created.")
+            }
+        })
+    }
+
+    // Creates a user in the firestore to collection 'Users'
+    const createUser = async () => {
+        await db.collection('Users').doc(email).set({
+            email: email
+        }).then(() => console.log("User (" + email + ") created successfully."))
+    }
+    
     const handleSignUp = () => {
         auth.createUserWithEmailAndPassword(email, password)
-        .then(credentials => {
-            const user = credentials.user;
-            console.log('Registered as: ', user.email)
-        }).catch(error => 
+        .then(() => createUser())
+        .catch(error => 
             Alert.alert("Registration Failed","Please check that your email is correct."))
-        
     }
 
     const handleLogin = () => {
@@ -36,6 +61,7 @@ const LoginScreen = () => {
         }).catch(error => 
             Alert.alert("Login Failed","Please check that your email and password are correct."))    }
 
+    // Input fields for sign in / register and confirmation button
     return (
         <KeyboardAvoidingView
             style = {styles.container}

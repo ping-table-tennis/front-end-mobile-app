@@ -1,4 +1,5 @@
 import * as firebase from "firebase";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDtW3e_WVrh80YjG87_-w6T2GJJyhpTC-Y",
   authDomain: "pingtt-584c4.firebaseapp.com",
@@ -16,6 +17,7 @@ if (firebase.apps.length === 0) {
     app = firebase.app()
 }
 
+firebase.firestore();
 const auth = firebase.auth()
 
-export { auth }
+export { auth, firebase }
