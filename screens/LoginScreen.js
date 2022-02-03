@@ -10,8 +10,14 @@ LogBox.ignoreLogs(['Setting a timer for a long period of time'])
 const db = firebase.firestore()
 
 const LoginScreen = () => {
+    // by default the form shows the fields for login, bool is a toggle to show register fields
+    const [isRegistering, setRegistering] = useState(false) 
+    
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [name, setName] = useState('')
+    const [rating, setRating] = useState('')
 
     const navigation = useNavigation()
 
@@ -24,44 +30,49 @@ const LoginScreen = () => {
         return unsub
     }, [])
     
-
-    const checkUserExists = async () => {
-        let email = "TestUser@email.com"
-        await db.collection('Users').doc(email).get().then(doc => {
-            try {
-                if (doc.exists) {
-                    let data = doc.data()
-                    console.log(data.email)
-                }
-            } catch {
-                console.log("User could not be created.")
-            }
-        })
-    }
-
     // Creates a user in the firestore to collection 'Users'
     const createUser = async () => {
         await db.collection('Users').doc(email).set({
-            email: email
+            email: email,
+            name: name,
+            rating: parseInt(rating),
+            friends: []
         }).then(() => console.log("User (" + email + ") created successfully."))
     }
+
+    // Makes sure all the info from the form is valid
+    const isRegistrationValid = () => {
+        return password === confirmPassword && email && name && Number.isInteger(parseInt(rating))
+    }
     
-    const handleSignUp = () => {
-        auth.createUserWithEmailAndPassword(email, password)
-        .then(() => createUser())
-        .catch(error => 
-            Alert.alert("Registration Failed","Please check that your email is correct."))
+    const handleRegister = () => {
+        if (isRegistering) {
+            console.log(Number.isInteger(parseInt(rating)))
+            if (isRegistrationValid()) {
+                auth.createUserWithEmailAndPassword(email, password)
+                .then(() => createUser())
+                .catch(error => 
+                    Alert.alert("Registration Failed","Please check that your email is correct."))
+            } else
+                Alert.alert("Registration Failed","Please check that your information is valid.")
+        } else {
+            setRegistering(!isRegistering)
+        }
     }
 
     const handleLogin = () => {
-        auth.signInWithEmailAndPassword(email, password)
-        .then(credentials => {
-            const user = credentials.user;
-            console.log('Logged in as: ', user.email)
-        }).catch(error => 
-            Alert.alert("Login Failed","Please check that your email and password are correct."))    }
+        if (!isRegistering) {
+            auth.signInWithEmailAndPassword(email, password)
+            .then(credentials => {
+                const user = credentials.user
+                console.log('Logged in as: ', user.email)
+            }).catch(error => 
+                Alert.alert("Login Failed","Please check that your email and password are correct."))  
+        } else {
+            setRegistering(!isRegistering)
+        }
+    }  
 
-    // Input fields for sign in / register and confirmation button
     return (
         <KeyboardAvoidingView
             style = {styles.container}
@@ -74,6 +85,12 @@ const LoginScreen = () => {
                     onChangeText = {text => setEmail(text)}
                     style = {styles.input}
                 />
+                { isRegistering && <TextInput
+                    placeholder = "Full Name"
+                    value = {name}
+                    onChangeText = {text => setName(text)}
+                    style = {styles.input}
+                /> }
                 <TextInput
                     placeholder = "Password"
                     value = {password}
@@ -81,20 +98,36 @@ const LoginScreen = () => {
                     style = {styles.input}
                     secureTextEntry
                 />
+                { isRegistering && <View>
+                    <TextInput
+                    placeholder = "Confirm Password"
+                    value = {confirmPassword}
+                    onChangeText = {text => setConfirmPassword(text)}
+                    style = {styles.input}
+                    secureTextEntry
+                    />
+                    <TextInput
+                    placeholder = "Current Rating"
+                    value = {rating}
+                    onChangeText = {num => setRating(num)}
+                    style = {styles.input}
+                    />
+                </View> }
             </View>
             
             <View style = {styles.buttonContainer}>
+                 
                 <TouchableOpacity
-                    onPress = { () => {handleLogin()} }
-                    style={styles.button} 
-                >
+                        onPress = { () => {handleLogin()} }
+                        style={styles.button} 
+                    >
                     <Text style = {styles.buttonText}>Login</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress = { () => {handleSignUp()} }
+                    onPress = { () => {handleRegister()} }
                     style={[styles.button, styles.buttonOutline]} 
                 >
-                    <Text style = {styles.buttonOutlineText}>Register</Text>
+                <Text style = {styles.buttonOutlineText}>Register</Text>
                 </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>

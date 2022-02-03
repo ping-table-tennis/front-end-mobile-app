@@ -1,10 +1,30 @@
 import { useNavigation } from '@react-navigation/core'
-import React from 'react'
+import React, { useState } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import { auth } from '../firebase'
+import { firebase, auth } from '../firebase'
+
+const db = firebase.firestore()
 
 const HomeScreen = () => {
     const navigation = useNavigation()
+
+    const [name, setName] = useState('')
+    const currentEmail = auth.currentUser?.email
+
+    // gets the document by the user's current email and sets name
+    const getUserData = async () => {
+        await db.collection('Users').doc(currentEmail).get().then(doc => {
+            try {
+                if (doc.exists) {
+                    let data = doc.data()
+                    setName(data.name)
+                }
+            } catch {
+                console.log("User could not be created.")
+            }
+        })
+    }
+    getUserData()
 
     const handleSignOut = () => {
         auth.signOut().then(() => {
@@ -14,7 +34,7 @@ const HomeScreen = () => {
 
     return (
         <View style = {styles.container}>
-            <Text>Email: {auth.currentUser?.email}</Text>
+            <Text>Welcome, {name}!</Text>
             <TouchableOpacity 
             style = {styles.button}
             onPress = {() => {handleSignOut()}} >
