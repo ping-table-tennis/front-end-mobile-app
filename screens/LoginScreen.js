@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/core'
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { Alert, StyleSheet, Text, TextInput, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { firebase, auth } from '../firebase'
 import { LogBox } from 'react-native';
@@ -11,8 +11,8 @@ const db = firebase.firestore()
 
 const LoginScreen = () => {
     // by default the form shows the fields for login, bool is a toggle to show register fields
-    const [isRegistering, setRegistering] = useState(false) 
-    
+    const [isRegistering, setRegistering] = useState(false)
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -29,7 +29,7 @@ const LoginScreen = () => {
         })
         return unsub
     }, [])
-    
+
     // Creates a user in the firestore to collection 'Users'
     const createUser = async () => {
         await db.collection('Users').doc(email).set({
@@ -44,17 +44,17 @@ const LoginScreen = () => {
     const isRegistrationValid = () => {
         return password === confirmPassword && email && name && Number.isInteger(parseInt(rating))
     }
-    
+
     const handleRegister = () => {
         if (isRegistering) {
             console.log(Number.isInteger(parseInt(rating)))
             if (isRegistrationValid()) {
                 auth.createUserWithEmailAndPassword(email, password)
-                .then(() => createUser())
-                .catch(error => 
-                    Alert.alert("Registration Failed","Please check that your email is correct."))
+                    .then(() => createUser())
+                    .catch(error =>
+                        Alert.alert("Registration Failed", "Please check that your email is correct."))
             } else
-                Alert.alert("Registration Failed","Please check that your information is valid.")
+                Alert.alert("Registration Failed", "Please check that your information is valid.")
         } else {
             setRegistering(!isRegistering)
         }
@@ -63,71 +63,83 @@ const LoginScreen = () => {
     const handleLogin = () => {
         if (!isRegistering) {
             auth.signInWithEmailAndPassword(email, password)
-            .then(credentials => {
-                const user = credentials.user
-                console.log('Logged in as: ', user.email)
-            }).catch(error => 
-                Alert.alert("Login Failed","Please check that your email and password are correct."))  
+                .then(credentials => {
+                    const user = credentials.user
+                    console.log('Logged in as: ', user.email)
+                }).catch(error =>
+                    Alert.alert("Login Failed", "Please check that your email and password are correct."))
         } else {
             setRegistering(!isRegistering)
         }
-    }  
+    const userType = () => {
+
+    } 
+
+
+    }
 
     return (
         <KeyboardAvoidingView
-            style = {styles.container}
-            behavior= {Platform.OS === "ios" ? "padding" : "height"} 
+            style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-            <View style={styles.inputContainer}>
-                <TextInput
-                    placeholder = "Email"
-                    value = {email}
-                    onChangeText = {text => setEmail(text)}
-                    style = {styles.input}
-                />
-                { isRegistering && <TextInput
-                    placeholder = "Full Name"
-                    value = {name}
-                    onChangeText = {text => setName(text)}
-                    style = {styles.input}
-                /> }
-                <TextInput
-                    placeholder = "Password"
-                    value = {password}
-                    onChangeText = {text => setPassword(text)}
-                    style = {styles.input}
-                    secureTextEntry
-                />
-                { isRegistering && <View>
-                    <TextInput
-                    placeholder = "Confirm Password"
-                    value = {confirmPassword}
-                    onChangeText = {text => setConfirmPassword(text)}
-                    style = {styles.input}
-                    secureTextEntry
-                    />
-                    <TextInput
-                    placeholder = "Current Rating"
-                    value = {rating}
-                    onChangeText = {num => setRating(num)}
-                    style = {styles.input}
-                    />
-                </View> }
+            <View style={styles.userHeader}> 
+            <Text>Hi Coach! {} </Text>
             </View>
+             
+            <Text style={styles.headerMessage}>LOG IN</Text>
             
-            <View style = {styles.buttonContainer}>
-                 
+            <View style={styles.inputContainer}>
+               
+                <TextInput
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={text => setEmail(text)}
+                    style={styles.input}
+                />
+                {isRegistering && <TextInput
+                    placeholder="Full Name"
+                    value={name}
+                    onChangeText={text => setName(text)}
+                    style={styles.input}
+                />}
+                <TextInput
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={text => setPassword(text)}
+                    style={styles.input}
+                    secureTextEntry
+                />
+                {isRegistering && <View>
+                    <TextInput
+                        placeholder="Confirm Password"
+                        value={confirmPassword}
+                        onChangeText={text => setConfirmPassword(text)}
+                        style={styles.input}
+                        secureTextEntry
+                    />
+                    <TextInput
+                        placeholder="Current Rating"
+                        value={rating}
+                        onChangeText={num => setRating(num)}
+                        style={styles.input}
+                    />
+                </View>}
+            </View>
+
+            <View style={styles.buttonContainer}>
+
                 <TouchableOpacity
-                        onPress = { () => {handleLogin()} }
-                        style={styles.button} 
-                    >
-                    <Text style = {styles.buttonText}>Login</Text>
+                    onPress={() => { handleLogin() }}
+                    style={styles.button}
+                >
+                    <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress = { () => {handleRegister()} }
-                    style={[styles.button, styles.buttonOutline]} 
+                    onPress={() => { handleRegister() }}
+                    style={[styles.button, styles.buttonOutline]}
                 >
-                <Text style = {styles.buttonOutlineText}>Register</Text>
+                    <Text style={styles.buttonOutlineText}>Register</Text>
                 </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
@@ -141,6 +153,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1,
+        backgroundColor: '#E3F6F5',
     },
     inputContainer: {
         width: '80%'
@@ -160,25 +173,49 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: 'blue',
+        opacity: 0.5,
         width: '100%',
         padding: 15,
-        borderRadius: 10,
-        alignItems: 'center'
+        borderRadius: 30,
+        borderColor: '#272643',
+        borderWidth: 2,
+
+        alignItems: 'center',
     },
     buttonOutline: {
-        backgroundColor: 'white',
+        backgroundColor: 'blue',
         marginTop: 5,
-        borderColor: 'blue',
+        borderColor: '#272643',
         borderWidth: 2,
     },
     buttonText: {
         color: 'white',
         fontWeight: '700',
-        fontSize: 16
+        fontSize: 16,
+        
     },
     buttonOutlineText: {
-        color: 'blue',
+        color: 'white',
         fontWeight: '700',
         fontSize: 16
     },
+    userHeader:{
+        backgroundColor: 'tomato',
+        
+
+        width:'100%',
+        height:50,
+        paddingTop:0,
+        
+
+        
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        
+    },
+    headerMessage:{
+        backgroundColor: 'green',
+
+    }
 })

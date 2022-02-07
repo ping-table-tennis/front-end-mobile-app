@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AsyncStorage } from "react-native";
 
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -13,7 +14,7 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer >
       <Stack.Navigator>
 	  	{/* <Stack.Screen name="Start" options={{headerShown: false}} component={Started} /> */}
         <Stack.Screen name="Login" options={{headerShown: false}} component={LoginScreen} />
@@ -26,7 +27,7 @@ export default function App() {
 const styles = StyleSheet.create({
 	container: {
 	  flex: 1,
-	  backgroundColor: '#fff',
+	  backgroundColor: 'tomato',
 	  alignItems: 'center',
 	  justifyContent: 'center',
 	},
