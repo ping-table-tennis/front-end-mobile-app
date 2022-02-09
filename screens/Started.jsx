@@ -7,12 +7,18 @@ class Started extends Component {
         super(props);
         this.state = {  };
     }
+
+    onPressUserType = () => {
+        this.props.navigation.navigate("UserType")
+
+    }
+
     render() {
         return (
             <View style={styles.Started}>
                 <Image style={styles.ImageStarted} resizeMode="cover" source={startedImage}/>
                 <View style={styles.ActionButtons}>
-                    <TouchableOpacity style={[styles.StartedButton, {backgroundColor: "rgba(39,38,67,0.5)"}]} >
+                    <TouchableOpacity style={[styles.StartedButton, {backgroundColor: "rgba(39,38,67,0.5)"}]} onPress={this.onPressUserType} >
                         <Text style={{fontWeight:"bold"}}>GET STARTED</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.StartedButton} >
