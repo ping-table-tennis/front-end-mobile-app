@@ -9,7 +9,6 @@ const HomeScreen = () => {
     const navigation = useNavigation()
 
     const [name, setName] = useState('')
-    const [friend, setFriend] = useState('')
     const currentEmail = auth.currentUser?.email
 
     // gets the document by the user's current email and sets name
@@ -27,22 +26,6 @@ const HomeScreen = () => {
     }
     getUserName()
     
-
-    const sendFriendRequest = async () => {
-        let reference = db.collection('Users').doc(friend)
-        let data
-
-        if (reference) {
-            await reference.get().then(doc => {
-                data = doc.data()
-            })
-            let updatedRequests = data.requests
-            updatedRequests.push(currentEmail)
-            await reference.update({requests: updatedRequests})
-            console.log(data)
-        }
-    }
-
     const handleSignOut = () => {
         auth.signOut().then(() => {
             navigation.replace("Login")

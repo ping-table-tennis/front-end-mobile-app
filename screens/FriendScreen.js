@@ -36,6 +36,7 @@ const FriendScreen = () => {
             }
         })
         let updatedRequests = data.requests
+
         updatedRequests.push(currentEmail)
         await reference.update({requests: updatedRequests})
         Alert.alert("","Friend Request Sent")
