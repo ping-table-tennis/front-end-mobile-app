@@ -36,7 +36,8 @@ const LoginScreen = () => {
             email: email,
             name: name,
             rating: parseInt(rating),
-            friends: []
+            friends: [],
+            requests: []
         }).then(() => console.log("User (" + email + ") created successfully."))
     }
 
@@ -118,9 +119,9 @@ const LoginScreen = () => {
             <View style = {styles.buttonContainer}>
                  
                 <TouchableOpacity
-                        onPress = { () => {handleLogin()} }
-                        style={styles.button} 
-                    >
+                    onPress = { () => {handleLogin()} }
+                    style={styles.button} 
+                >
                     <Text style = {styles.buttonText}>Login</Text>
                 </TouchableOpacity>
                 <TouchableOpacity

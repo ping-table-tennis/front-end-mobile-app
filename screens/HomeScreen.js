@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, TextInput, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { firebase, auth } from '../firebase'
 
 const db = firebase.firestore()
@@ -9,10 +9,11 @@ const HomeScreen = () => {
     const navigation = useNavigation()
 
     const [name, setName] = useState('')
+    const [friend, setFriend] = useState('')
     const currentEmail = auth.currentUser?.email
 
     // gets the document by the user's current email and sets name
-    const getUserData = async () => {
+    const getUserName = async () => {
         await db.collection('Users').doc(currentEmail).get().then(doc => {
             try {
                 if (doc.exists) {
@@ -24,7 +25,23 @@ const HomeScreen = () => {
             }
         })
     }
-    getUserData()
+    getUserName()
+    
+
+    const sendFriendRequest = async () => {
+        let reference = db.collection('Users').doc(friend)
+        let data
+
+        if (reference) {
+            await reference.get().then(doc => {
+                data = doc.data()
+            })
+            let updatedRequests = data.requests
+            updatedRequests.push(currentEmail)
+            await reference.update({requests: updatedRequests})
+            console.log(data)
+        }
+    }
 
     const handleSignOut = () => {
         auth.signOut().then(() => {
@@ -33,16 +50,30 @@ const HomeScreen = () => {
     } 
 
     return (
-        <View style = {styles.container}>
-            <Text>Welcome, {name}!</Text>
-            <TouchableOpacity 
-            style = {styles.button}
-            onPress = {() => {handleSignOut()}} >
-                <Text style = {styles.buttonText}>
-                    Sign Out 
-                </Text>
-            </TouchableOpacity>
-        </View>
+        <KeyboardAvoidingView
+            style = {styles.container}
+            behavior= {Platform.OS === "ios" ? "padding" : "height"} 
+        >
+            <View style = {styles.container}>
+                <Text>Welcome, {name}!</Text>
+                <TouchableOpacity 
+                style = {styles.button}
+                onPress = {() => {handleSignOut()}} >
+                    <Text style = {styles.buttonText}>
+                        Sign Out 
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* Move to Friend Screen */ }
+            <View style={styles.container}>                    
+                <TouchableOpacity style={styles.button}
+                onPress = { () => {navigation.replace("Friend")} }>
+                    <Text style = {styles.buttonText}> Friends </Text>
+                </TouchableOpacity>
+            </View>
+        </KeyboardAvoidingView>
+        
     )
 }
 
@@ -66,5 +97,15 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: '700',
         fontSize: 16
+    },
+    inputContainer: {
+        width: '80%'
+    },
+    input: {
+        backgroundColor: 'white',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        borderRadius: 10,
+        marginTop: 5,
     },
 })
