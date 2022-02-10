@@ -3,6 +3,7 @@ import React, {useState, useEffect} from 'react'
 import { Alert, StyleSheet, Text, TextInput, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { firebase, auth } from '../firebase'
 import { LogBox } from 'react-native';
+import * as Const from '../util/Constants';
 
 // ignores an error that results from using firebase with Expo
 LogBox.ignoreLogs(['Setting a timer for a long period of time'])
@@ -39,6 +40,9 @@ const LoginScreen = () => {
             friends: [],
             requests: []
         }).then(() => console.log("User (" + email + ") created successfully."))
+        .catch(err => {
+            console.log(err)
+        })
     }
 
     // Makes sure all the info from the form is valid
@@ -53,9 +57,9 @@ const LoginScreen = () => {
                 auth.createUserWithEmailAndPassword(email, password)
                 .then(() => createUser())
                 .catch(error => 
-                    Alert.alert("Registration Failed","Please check that your email is correct."))
+                    Alert.alert(Const.REG_FAILED_TITLE, Const.REG_FAILED_EMAIL))
             } else
-                Alert.alert("Registration Failed","Please check that your information is valid.")
+                Alert.alert(Const.REG_FAILED_TITLE, Const.REG_FAILED_INFO)
         } else {
             setRegistering(!isRegistering)
         }
@@ -68,7 +72,7 @@ const LoginScreen = () => {
                 const user = credentials.user
                 console.log('Logged in as: ', user.email)
             }).catch(error => 
-                Alert.alert("Login Failed","Please check that your email and password are correct."))  
+                Alert.alert(Const.LOG_FAILED_TITLE, Const.LOG_FAILED_EMAIL))  
         } else {
             setRegistering(!isRegistering)
         }
