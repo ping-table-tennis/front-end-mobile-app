@@ -32,6 +32,10 @@ const HomeScreen = () => {
         }).catch(error => alert(error.message))
     } 
 
+    const gotoTrainingScreen = () => {
+        navigation.replace("Training");
+    }
+
     return (
         <KeyboardAvoidingView
             style = {styles.container}
@@ -44,6 +48,14 @@ const HomeScreen = () => {
                 onPress = {() => {handleSignOut()}} >
                     <Text style = {styles.buttonText}>
                         Sign Out 
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                style = {styles.button}
+                onPress = {() => {gotoTrainingScreen()}} >
+                    <Text style = {styles.buttonText}>
+                        Training Screen 
                     </Text>
                 </TouchableOpacity>
             </View>

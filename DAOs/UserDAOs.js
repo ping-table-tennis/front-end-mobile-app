@@ -1,3 +1,7 @@
+//TODO:
+//access fields of user based on email input
+//use functions instead of class
+
 // import * as firebase from 'firebase';
 // import { auth } from '../firebase.js'
 // import { getFirestore } from 'firebase-admin/firestore';
