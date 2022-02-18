@@ -19,12 +19,8 @@ class Started extends Component {
                 <Image style={styles.ImageStarted} resizeMode="cover" source={startedImage}/>
                 <View style={styles.ActionButtons}>
                     <TouchableOpacity style={[styles.StartedButton, {backgroundColor: "rgba(39,38,67,0.5)"}]} onPress={this.onPressUserType} >
-                        <Text style={{fontWeight:"bold"}}>GET STARTED</Text>
+                        <Text style={{fontWeight:"bold", fontSize: 18}}>GET STARTED</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.StartedButton} >
-                        <Text>LOG IN</Text>
-                    </TouchableOpacity>
-                    {/* <Button title="Log In"/> */}
                 </View>
             </View>
         );
@@ -45,7 +41,7 @@ const styles = StyleSheet.create({
 
         
         height: 150,
-        marginTop: 50,
+        marginTop: 100,
         fontSize: 50,
 
         display: "flex",
@@ -55,7 +51,7 @@ const styles = StyleSheet.create({
     StartedButton: {
         backgroundColor: "white",
         width: 250,
-        height: 50,
+        height: 55,
 
         display: "flex",
         justifyContent: "center",

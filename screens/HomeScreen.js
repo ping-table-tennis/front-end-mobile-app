@@ -1,11 +1,14 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
 import { firebase, auth } from '../firebase'
+import { NativeBaseProvider, HStack } from 'native-base'
+import { Feather, AntDesign } from "@expo/vector-icons"
+
 
 const db = firebase.firestore()
 
-const HomeScreen = () => {
+const HomeScreen = (props) => {
     const navigation = useNavigation()
 
     const [name, setName] = useState('')
@@ -30,45 +33,49 @@ const HomeScreen = () => {
         auth.signOut().then(() => {
             navigation.replace("Login")
         }).catch(error => alert(error.message))
-    } 
+    }
 
     return (
-        <View style = {styles.container}>
-            <Text>Welcome, {name}!</Text>
-
-
-
-            
-            <TouchableOpacity 
-            style = {styles.button}
-            onPress = {() => {handleSignOut()}} >
-                <Text style = {styles.buttonText}>
-                    Sign Out 
-                </Text>
-            </TouchableOpacity>
-        </View>
+        <NativeBaseProvider>
+            <View style={styles.HomeScreen}>
+                <HStack justifyContent="space-between" marginBottom="10px">
+                    <Feather name="menu" size={30} color="black" />
+                    <Feather name="more-vertical" size={30} color="black" />
+                </HStack>
+                <Text style={styles.studentTitle}>Students</Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    {[0,2].map(() => (
+                        <TouchableOpacity onPress={() => props.navigation.navigate("TrainingPlan")}>
+                            <HStack marginTop="15px" style={styles.studentBox} alignItems="center">
+                                <AntDesign name="user" size={30} color="black" />
+                                <Text style={{paddingLeft: 20, fontSize: 18, fontWeight: "400"}}>Leonardo Diaz</Text>
+                            </HStack>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </View>
+        </NativeBaseProvider>
     )
 }
 
 export default HomeScreen
 
 const styles = StyleSheet.create({
-    container: {
+    HomeScreen: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
+        padding: 20,
+        backgroundColor: "#E3F6F5",
     },
-    button: {
-        backgroundColor: 'blue',
-        width: '50%',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginTop: 40,
+    studentTitle: {
+        fontSize: 32, 
+        textAlign: "center", 
+        paddingTop: 15, 
+        fontWeight: "bold"
     },
-    buttonText: {
-        color: 'white',
-        fontWeight: '700',
-        fontSize: 16
-    },
+    studentBox: {
+        width: "100%", 
+        height: 100, 
+        backgroundColor:"white",
+        borderRadius: 20,
+        padding: 25    },
 })

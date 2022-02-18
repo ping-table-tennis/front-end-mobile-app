@@ -18,7 +18,6 @@ class UserType extends Component {
 
             <View style={styles.UserType}>
                 <View style={styles.headerContainer}>
-
                     <Text>Welcome Back!</Text>
                     <Text>LOG IN AS</Text>
                 </View>
@@ -48,7 +47,7 @@ class UserType extends Component {
                 <View style={styles.noAccount}>
                     <Text>Don't have an account yet? </Text>
                     {/* Make sure it goes to register */}
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate("Login", { name: "Student" })}>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate("Login", { name: "Student", toRegister: true })}>
                         <Text style={{ fontWeight: "bold", textDecorationLine: "underline" }}>Sign up.</Text>
                     </TouchableOpacity>
                 </View>
