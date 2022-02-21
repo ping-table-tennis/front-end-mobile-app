@@ -5,7 +5,16 @@ import { auth } from '../firebase'
 
 const TrainingScreen = () => {
     const navigation = useNavigation()
+    const currentEmail = auth.currentUser?.email
 
+    const [dailyPlans, setDailyPlans] = useState([]) // Array of user's current Daily Plans
+    const [generalPlans, setGeneralPlans] = useState([]) // Array of user's current General Plans
+
+    function handleBackButtonClick() {
+        navigation.navigate("Home");
+        return true;
+    }
+    
     const handleSignOut = () => {
         auth.signOut().then(() => {
             navigation.replace("Login")
@@ -19,6 +28,10 @@ const TrainingScreen = () => {
     //read data from database
     //coach needs drop down menu of students
     //when coach selects a students it shows the history of plans
+
+    const updateTrainingPlans = () => {
+
+    }
 
     return (
         <View style = {styles.container}>

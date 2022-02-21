@@ -2,51 +2,36 @@
 //access fields of user based on email input
 //use functions instead of class
 
-// import * as firebase from 'firebase';
-// import { auth } from '../firebase.js'
-// import { getFirestore } from 'firebase-admin/firestore';
+import { firebase, auth } from '../firebase'
 
-// //const database = getDatabase();
-// const db = firebase.firestore();
+const db = firebase.firestore()
 
-// //READ DATA EXAMPLE CODE
-// const snapshot = db.collection('Users').get();
-// export { snapshot }
+export const getEmail = () => {
+    const currentEmail = auth.currentUser?.email
+    return currentEmail;
+}
 
-// // class User {
-// //     constructor(email, friends, name, rating, requests, isStudent) {
-// //         //should this be const or let?
-// //         this.email = email;
-// //         this.friends = friends;
-// //         this.name = name;
-// //         this.rating = rating;
-// //         this.requests = requests;
-// //         this.isStudent = isStudent;
-// //     }
+export const getName = () => {
+    const currentName = auth.currentUser?.name
+    return currentEmail;
+}
 
-// //     get email() {
-// //         return this.email;
-// //     }
-// //     getName = () => this.name;
-// //     getFriends = () => this.friends;
-// //     getRating = () => this.rating;
-// //     getRequests = () => this.requests;
-// //     getIsStudent = () => this.isStudent;
+export const getFriends = () => {
+    const currentFriends = auth.currentUser?.friends;
+    return currentFriends;
+}
 
-// //     //could use print() for debugging
-// // }
+export const getIsStudent = () => {
+    const currentIsStudent = auth.currentUser?.isStudent;
+    return isStudent;
+}
 
-// // class Student extends User {
-// //     constructor(){
-// //         super();
-// //     }
-// // }
+export const getRating = () => {
+    const currentRating = auth.currentUser?.rating;
+    return rating;
+}
 
-// // class Coach extends User {
-// //     constructor(){
-// //         super();
-// //     }
-// // }
-
-// // //export { User }
-// // //^not working
+export const getRequests = () => {
+    const currentRequests = auth.currentUser?.requests;
+    return requests;
+}
