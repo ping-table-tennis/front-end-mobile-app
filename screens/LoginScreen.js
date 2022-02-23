@@ -3,6 +3,7 @@ import React, { useState, useEffect, Component } from 'react'
 import { Alert, StyleSheet, Text, TextInput, View, KeyboardAvoidingView, TouchableOpacity, SafeAreaView } from 'react-native'
 import { firebase, auth } from '../firebase'
 import { LogBox } from 'react-native'
+import { NativeBaseProvider, HStack, VStack } from 'native-base'
 
 // ignores an error that results from using firebase with Expo
 LogBox.ignoreLogs(['Setting a timer for a long period of time'])
@@ -99,26 +100,35 @@ class LoginScreen extends Component {
         const {email, password, confirmPassword, name, param, rating} = this.state
         return (
             <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-                <View style={styles.headerContainer}> 
-                <Text>Hi {param}! {} </Text>
-                </View>
-                <View style={styles.inputContainer}>
-                    <TextInput placeholder="Email" value={email} onChangeText={text => this.handleOnChange(text)} style={styles.input} />
-                    {this.state.isRegistering && <TextInput placeholder="Full Name" value={name} onChangeText={text => this.handleOnChange(text)} style={styles.input} />}
-                    <TextInput placeholder="Password" value={password} onChangeText={text => this.handleOnChange(text)} style={styles.input} secureTextEntry />
-                    {this.state.isRegistering && <View>
-                        <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => this.handleOnChange(text)} style={styles.input} secureTextEntry />
-                        <TextInput placeholder="Current Rating" value={rating} onChangeText={num => this.handleOnChange(num)} style={styles.input} />
-                    </View>}
-                </View>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity onPress={() => { this.handleLogin() }} style={styles.button} >
-                        <Text style={styles.buttonText}>Login</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { this.handleRegister() }} style={[styles.button, styles.buttonOutline]}>
-                        <Text style={styles.buttonOutlineText}>Register</Text>
-                    </TouchableOpacity>
-                </View>
+                    <View style={styles.headerContainer}> 
+                        <Text style={{fontSize: 20}}>Hi {param} {"Coach!"} </Text>
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <TextInput placeholder="Email"  onChangeText={text => this.handleOnChange(text)} style={styles.input} />
+                        {this.state.isRegistering && <TextInput placeholder="Full Name" onChangeText={text => this.handleOnChange(text)} style={styles.input} />}
+                        <TextInput placeholder="Password" onChangeText={text => this.handleOnChange(text)} style={styles.input} secureTextEntry />
+                        {this.state.isRegistering && <View>
+                            <TextInput placeholder="Confirm Password"  onChangeText={text => this.handleOnChange(text)} style={styles.input} secureTextEntry />
+                            <TextInput placeholder="Current Rating"  onChangeText={num => this.handleOnChange(num)} style={styles.input} />
+                        </View>}
+                        <Text style={{width: "100%", textAlign: "center", marginTop: 15, fontSize: 13, fontWeight: "600"}}>Forgot your password?</Text>
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity onPress={() => { this.handleLogin() }} style={styles.button} >
+                            <Text style={styles.buttonText}>Login</Text>
+                        </TouchableOpacity>
+                        {/* <TouchableOpacity onPress={() => { this.handleRegister() }} style={[styles.button, styles.buttonOutline]}>
+                            <Text style={styles.buttonOutlineText}>Register</Text>
+                        </TouchableOpacity> */}
+                    </View>
+                    <NativeBaseProvider>
+                        <HStack marginTop={20}>
+                            <Text style={{fontSize: 16}}>Don't have an account yet? </Text>
+                            <TouchableOpacity onPress={() => this.handleRegister()}>
+                                <Text style={{ fontWeight: "bold", textDecorationLine: "underline", fontSize: 16 }}>Sign Up.</Text>
+                            </TouchableOpacity>            
+                        </HStack>
+                    </NativeBaseProvider>
             </KeyboardAvoidingView>
         )
     }
@@ -127,49 +137,48 @@ class LoginScreen extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        justifyContent: 'center',
+        // justifyContent: 'center',
         alignItems: 'center',
         flex: 1,
         backgroundColor: '#E3F6F5',
     },
     headerContainer:{
         width:'100%',
-        height:"20%",
-
-        backgroundColor: 'tomato',
-        marginBottom: '20%',
-        
+        height: 150,
         display: 'flex',
         justifyContent:'space-evenly',
         alignItems: 'center', 
     },
     inputContainer: {
-        width: '80%',
-        marginTop:'-10%', //maybe i need to change this
+        width: '100%',
+        height: 200,
+        padding: 20,
+
+        justifyContent: "center"
     },
     input: {
-        backgroundColor: 'white',
+        height: 45,
+        backgroundColor: 'rgba(216,216,216, 0.51)',
         paddingHorizontal: 15,
-        paddingVertical: 10,
-        borderRadius: 10,
-        marginTop: 5,
+        borderRadius: 25, 
+        marginTop: 25,
+        borderWidth: 0.5,
+        borderColor: "rgba(151,151,151, 0.51)",
     },
     buttonContainer: {
-        
-        width: '60%',
+        width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 40,
+        marginTop: 85,
     },
     button: {
-        backgroundColor: 'blue',
-        opacity: 0.5,
-        width: '100%',
-        padding: 15,
+        width: 200,
+        height: 45,
+        backgroundColor: 'rgba(39,38,67, 0.5)',
         borderRadius: 30,
-        borderColor: '#272643',
-        borderWidth: 2,
+        
         alignItems: 'center',
+        justifyContent: "center"
     },
     buttonOutline: {
         backgroundColor: 'blue',
@@ -178,7 +187,6 @@ const styles = StyleSheet.create({
         borderWidth: 2,
     },
     buttonText: {
-        color: 'white',
         fontWeight: '700',
         fontSize: 16,
         

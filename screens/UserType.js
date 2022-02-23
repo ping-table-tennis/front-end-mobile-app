@@ -2,6 +2,7 @@
 import React, { useState, Component } from 'react'
 import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native'
 import LoginScreen from './LoginScreen';
+import { NativeBaseProvider, HStack, VStack } from 'native-base'
 
 
 
@@ -15,43 +16,34 @@ class UserType extends Component {
 
     render() {
         return (
-
-            <View style={styles.UserType}>
-                <View style={styles.headerContainer}>
-                    <Text>Welcome Back!</Text>
-                    <Text>LOG IN AS</Text>
+            <NativeBaseProvider>
+                <View style={styles.UserType}>
+                    <VStack alignItems="center">
+                        <View style={[styles.headerContainer, {marginTop: 15}]}>
+                            <Text style={{fontSize: 20}}>Welcome Back!</Text>
+                            {/* <Text>LOG IN AS</Text> */}
+                        </View>
+                        <View style={styles.headerContainer}>
+                            <Text style={{fontSize: 20}}>LOG IN AS</Text>
+                        </View>
+                        <View style={[styles.UserTypeButtons, {marginTop: 30}]}>
+                            <TouchableOpacity style={[styles.CoachStudentButtons, {backgroundColor: "rgba(39,38,67,0.5)"}]} onPress={() => this.props.navigation.navigate("Login", { name: "Coach" })}>
+                                <Text style={{ fontSize: 20 }}  > COACH</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.CoachStudentButtons, {marginTop: 15}]} onPress={() => this.props.navigation.navigate("Login", { name: "Student" })} >
+                                <Text style={{ fontSize: 20 }}  >STUDENT</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </VStack>
+                    <View style={[styles.noAccount]}>
+                        <Text style={{fontSize: 16}}>Don't have an account yet? </Text>
+                        {/* Make sure it goes to register */}
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate("Login", { name: "Student", toRegister: true })}>
+                            <Text style={{ fontWeight: "bold", textDecorationLine: "underline", fontSize: 16 }}>Sign Up.</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-
-
-                {/* <View style={styles.buttonsContainer}> */}
-                {/* <Button style={{fontWeight:"bold"}} title='Coach' onPress={() => this.props.navigation.navigate("Login", { name: "Coach" })} /> */}
-                {/* <Button style={{fontWeight:"bold"}} title='Student' onPress={() => this.props.navigation.navigate("Login", { name: "Student" })} /> */}
-                {/* </View> */}
-
-                <View style={styles.UserTypeButtons}>
-
-                    <TouchableOpacity style={[styles.CoachStudentButtons, {backgroundColor: "rgba(39,38,67,0.5)"}]} onPress={() => this.props.navigation.navigate("Login", { name: "Coach" })}>
-                        <Text style={{ fontWeight: "bold" }}  > COACH</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.CoachStudentButtons} onPress={() => this.props.navigation.navigate("Login", { name: "Student" })} >
-                        <Text style={{ fontWeight: "bold" }}  >STUDENT</Text>
-                    </TouchableOpacity>
-
-
-                </View>
-
-
-
-
-                <View style={styles.noAccount}>
-                    <Text>Don't have an account yet? </Text>
-                    {/* Make sure it goes to register */}
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate("Login", { name: "Student", toRegister: true })}>
-                        <Text style={{ fontWeight: "bold", textDecorationLine: "underline" }}>Sign up.</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
+            </NativeBaseProvider>
 
         )
     }
@@ -65,18 +57,15 @@ const styles = StyleSheet.create({
         backgroundColor: "#E3F6F5",
 
         display: 'flex',
-        justifyContent: "space-evenly",
+        justifyContent: "space-between",
         alignItems: "center",
     },
 
     headerContainer: {
-        height: 50,
+        height: 80,
         width: "100%",
-        backgroundColor: 'tomato',
 
-
-
-        // display: 'flex',
+        display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -106,13 +95,9 @@ const styles = StyleSheet.create({
     },
 
     noAccount: {
-        // width: "100%",
-        height: 20,
-
-
+        height: 200,
         display: "flex",
         flexDirection: "row",
-        // alignItems: "center"
     }
 })
 
