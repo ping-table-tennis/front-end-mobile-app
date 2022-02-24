@@ -11,27 +11,67 @@ export const getEmail = () => {
     return currentEmail;
 }
 
-export const getName = () => {
-    const currentName = auth.currentUser?.name
-    return currentEmail;
+export const getName = (email) => {
+    db.collection('Users').doc(email).get().then(doc => {
+        if (doc.exists) {
+            let name = doc.data().name
+            return name;
+        }
+    }).catch(err => {
+        console.log(err)
+    })
+
+    return;
 }
 
-export const getFriends = () => {
-    const currentFriends = auth.currentUser?.friends;
-    return currentFriends;
+export const getFriends = (email) => {
+    db.collection('Users').doc(email).get().then(doc => {
+        if (doc.exists) {
+            let friends = doc.data().friends
+            return friends;
+        }
+    }).catch(err => {
+        console.log(err)
+    })
+
+    return;
 }
 
-export const getIsStudent = () => {
-    const currentIsStudent = auth.currentUser?.isStudent;
-    return isStudent;
+export const getIsStudent = (email) => {
+    db.collection('Users').doc(email).get().then(doc => {
+        if (doc.exists) {
+            let isStudent = doc.data().isStudent
+            return isStudent;
+        }
+    }).catch(err => {
+        console.log(err)
+    })
+
+    return;
 }
 
-export const getRating = () => {
-    const currentRating = auth.currentUser?.rating;
-    return rating;
+export const getRating = (email) => {
+    db.collection('Users').doc(email).get().then(doc => {
+        if (doc.exists) {
+            let rating = doc.data().rating
+            return rating;
+        }
+    }).catch(err => {
+        console.log(err)
+    })
+
+    return;
 }
 
-export const getRequests = () => {
-    const currentRequests = auth.currentUser?.requests;
-    return requests;
+export const getRequests = (email) => {
+    db.collection('Users').doc(email).get().then(doc => {
+        if (doc.exists) {
+            let requests = doc.data().requests
+            return requests;
+        }
+    }).catch(err => {
+        console.log(err)
+    })
+
+    return;
 }
