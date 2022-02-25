@@ -22,6 +22,7 @@ import EventScreen from "../screens/EventScreen"
 import NotificationScreen from "../screens/NotificationScreen"
 import ScheduleScreen from "../screens/ScheduleScreen"
 import TrainingPlanScreen from "../screens/TrainingPlanScreen"
+import FriendScreen from "../screens/FriendScreen"
 
 
 // Bar Icons
@@ -52,6 +53,7 @@ const TrainingStack = () => {
 		<Stack.Navigator >
 			<Stack.Screen name="Training" options={{ headerShown: true }} component={HomeScreen} />
 			<Stack.Screen name="TrainingPlan" options={{ headerShown: true }} component={TrainingPlanScreen} />
+			{/* <Stack.Screen name="Friend" options={{ headerShown: true }} component={FriendScreen} /> */}
 		</Stack.Navigator>
 	)
 }
@@ -64,7 +66,8 @@ const BottomTabNavigator = () => {
 				<Tab.Screen name="Training" options={{ headerShown: false }} component={TrainingStack} />
 				<Tab.Screen name="Events" component={EventScreen} />
 				<Tab.Screen name="Notifications" component={NotificationScreen} />
-				<Tab.Screen name="Schedule" component={ScheduleScreen} />
+				{/* <Tab.Screen name="Schedule" component={ScheduleScreen} /> */}
+				<Tab.Screen name="Schedule" component={FriendScreen} />
 			</Tab.Navigator>
 		</NavigationContainer>
 	)
