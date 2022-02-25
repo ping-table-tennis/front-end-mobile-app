@@ -101,42 +101,17 @@ class LoginScreen extends Component {
   }
   }
 
-//   handleLogin = () => {
-    // auth
-    //   .signInWithEmailAndPassword(email, password)
-    //   .then((credentials) => {
-        // const user = credentials.user;
-        // console.log("Logged in as: ", user.email);
-    //   })
-    //   .catch((error) =>
-        // Alert.alert(
-        //   "Login Failed",
-        //   "Please check that your email and password are correct."
-        // )
-    //   );
-//   };
 
   backendConnection = () => {
 
   }
 
-  // useEffect(() => {
-  // const unsub = auth.onAuthStateChanged(user => {
-  // if (user) {
-  // navigation.replace("Home")
-  // }
-  // })
-  // return unsub
-  // }, [])
 
   unsub = auth.onAuthStateChanged((user) => {
     if (user) {
       navigation.replace("Home");
     }
-    return this.unsub
   });
-
-
 
 
   handleOnChange = () => {};
