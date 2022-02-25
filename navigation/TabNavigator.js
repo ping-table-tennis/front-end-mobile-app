@@ -24,6 +24,14 @@ import ScheduleScreen from "../screens/ScheduleScreen"
 import TrainingPlanScreen from "../screens/TrainingPlanScreen"
 import FriendScreen from "../screens/FriendScreen"
 
+import LoginScreen from '../screens/LoginScreen'
+import Started from "../screens/Started"
+import UserType from "../screens/UserType"
+// import TrainingScreen from "../screens/TrainingScreen"
+
+
+import MainStackNavigator from "./StackNavigator"
+
 
 // Bar Icons
 const tabBarIcon = ({ route }) => ({
@@ -53,7 +61,11 @@ const TrainingStack = () => {
 		<Stack.Navigator >
 			<Stack.Screen name="Training" options={{ headerShown: true }} component={HomeScreen} />
 			<Stack.Screen name="TrainingPlan" options={{ headerShown: true }} component={TrainingPlanScreen} />
-			{/* <Stack.Screen name="Friend" options={{ headerShown: true }} component={FriendScreen} /> */}
+
+			<Stack.Screen name="Start" options={{ headerShown: false }} component={Started} />
+            <Stack.Screen name="UserType" options={{ headerShown: false }} component={UserType} />
+            <Stack.Screen name="Login"   options={{ headerShown: false }} component={LoginScreen} />
+            <Stack.Screen name="Event"  options={{ headerShown: false }} component={EventScreen} />
 		</Stack.Navigator>
 	)
 }
@@ -61,15 +73,13 @@ const TrainingStack = () => {
 
 const BottomTabNavigator = () => {
 	return (
-		<NavigationContainer>
-			<Tab.Navigator screenOptions={tabBarIcon} tabBarOptions={tabBarOptions} >
-				<Tab.Screen name="Training" options={{ headerShown: false }} component={TrainingStack} />
-				<Tab.Screen name="Events" component={EventScreen} />
-				<Tab.Screen name="Notifications" component={NotificationScreen} />
-				{/* <Tab.Screen name="Schedule" component={ScheduleScreen} /> */}
-				<Tab.Screen name="Schedule" component={FriendScreen} />
-			</Tab.Navigator>
-		</NavigationContainer>
+		<Tab.Navigator screenOptions={tabBarIcon} tabBarOptions={tabBarOptions} >
+			<Tab.Screen name="Training" options={{ headerShown: false }} component={TrainingStack} />
+			{/* <Tab.Screen name="Start" options={{ headerShown: false, tabBarStyle: {display: "none"} }} component={MainStackNavigator} /> */}
+			<Tab.Screen name="Events" component={EventScreen} />
+			<Tab.Screen name="Notifications" component={NotificationScreen} />
+			<Tab.Screen name="Schedule" component={FriendScreen} />
+		</Tab.Navigator>
 	)
 }
 

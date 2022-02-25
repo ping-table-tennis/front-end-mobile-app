@@ -10,7 +10,7 @@ class TrainingPlanScreen extends Component {
     render() {
         return (
             <View style={styles.TrainingPlanScreen}>
-                <Text onPress={() => navigation.navigate('Friend')} style={{fontSize:26, fontWeight:'bold'}}>Training Plan Screen </Text>
+                <Text onPress={() => navigation.navigate('Home')} style={{fontSize:26, fontWeight:'bold'}}>Training Plan Screen </Text>
             </View>
             
         );
