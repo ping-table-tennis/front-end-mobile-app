@@ -2,6 +2,9 @@ import { useNavigation } from "@react-navigation/core";
 import React, { useState, useEffect, Component } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import SelectDropdown from 'react-native-select-dropdown'
+
+
 import {
     Alert,
     StyleSheet,
@@ -31,6 +34,11 @@ class LoginScreen extends Component {
             name: "",
             rating: "",
             param: "",
+            usertype: [
+                "Coach",
+                "Student",
+            ]
+
         };
     }
 
@@ -135,6 +143,7 @@ class LoginScreen extends Component {
     }
 
     render() {
+
         const { email, password, confirmPassword, name, param, rating } =
             this.state;
         return (
@@ -147,22 +156,23 @@ class LoginScreen extends Component {
                         Hi {param} {"Coach!"}{" "}
                     </Text>
                 </View>
+
                 <View style={styles.inputContainer}>
                     <TextInput
                         placeholder="Email"
-                        onChangeText={(text) => this.handleOnChange("email",text)}
+                        onChangeText={(text) => this.handleOnChange("email", text)}
                         style={styles.input}
                     />
                     {this.state.isRegistering && (
                         <TextInput
                             placeholder="Full Name"
-                            onChangeText={(text) => this.handleOnChange("name",text)}
+                            onChangeText={(text) => this.handleOnChange("name", text)}
                             style={styles.input}
                         />
                     )}
                     <TextInput
                         placeholder="Password"
-                        onChangeText={(text) => this.handleOnChange("password",text)}
+                        onChangeText={(text) => this.handleOnChange("password", text)}
                         style={styles.input}
                         secureTextEntry
                     />
@@ -170,15 +180,32 @@ class LoginScreen extends Component {
                         <View>
                             <TextInput
                                 placeholder="Confirm Password"
-                                onChangeText={(text) => this.handleOnChange("confirmPassword",text)}
+                                onChangeText={(text) => this.handleOnChange("confirmPassword", text)}
                                 style={styles.input}
                                 secureTextEntry
                             />
                             <TextInput
                                 placeholder="Current Rating"
-                                onChangeText={(num) => this.handleOnChange("rating",num)}
+                                onChangeText={(num) => this.handleOnChange("rating", num)}
                                 style={styles.input}
                             />
+                            <SelectDropdown
+                                data={this.state.usertype}
+                                onSelect={(selectedItem, index) => {
+                                    console.log(selectedItem, index)
+                                }}
+                                buttonTextAfterSelection={(selectedItem, index) => {
+                                    // text represented after item is selected
+                                    // if data array is an array of objects then return selectedItem.property to render after item is selected
+                                    return selectedItem
+                                }}
+                                rowTextForSelection={(item, index) => {
+                                    // text represented for each item in dropdown
+                                    // if data array is an array of objects then return item.property to represent item in dropdown
+                                    return item
+                                }}
+                            />
+
                         </View>
                     )}
                     <Text
@@ -232,13 +259,14 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "space-evenly",
         alignItems: "center",
+
     },
     inputContainer: {
         width: "100%",
         height: 200,
         padding: 20,
-
         justifyContent: "center",
+        backgroundColor: 'tomato',
     },
     input: {
         height: 45,
