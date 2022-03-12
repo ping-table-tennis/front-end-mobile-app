@@ -1,11 +1,15 @@
 import { useNavigation } from '@react-navigation/core'
-import React from 'react'
+//import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { auth } from '../firebase'
+import { addDailyPlan } from '../DAOs/DailyPlanDAOs'
 
 const TrainingScreen = () => {
     const navigation = useNavigation()
     const currentEmail = auth.currentUser?.email
+
+    addDailyPlan();
 
     const [dailyPlans, setDailyPlans] = useState([]) // Array of user's current Daily Plans
     const [generalPlans, setGeneralPlans] = useState([]) // Array of user's current General Plans
