@@ -8,6 +8,7 @@ import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import FriendScreen from './screens/FriendScreen';
 import TrainingScreen from './screens/TrainingScreen';
+import NewDailyPlanScreen from "./screens/NewDailyPlanScreen";
 import Started from "./Views/Started";
 
 
@@ -22,6 +23,7 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Friend" component={FriendScreen} />
         <Stack.Screen name="Training" component={TrainingScreen} />
+        <Stack.Screen name="New Daily Plan" component={NewDailyPlanScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

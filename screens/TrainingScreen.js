@@ -1,15 +1,14 @@
 import { useNavigation } from '@react-navigation/core'
-//import React from 'react'
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { auth } from '../firebase'
-import { addDailyPlan } from '../DAOs/DailyPlanDAOs'
+import { addDailyPlan, getDailyPlans } from '../DAOs/DailyPlanDAOs'
 
 const TrainingScreen = () => {
     const navigation = useNavigation()
     const currentEmail = auth.currentUser?.email
 
-    addDailyPlan();
+    //addDailyPlan();
 
     const [dailyPlans, setDailyPlans] = useState([]) // Array of user's current Daily Plans
     const [generalPlans, setGeneralPlans] = useState([]) // Array of user's current General Plans
@@ -34,7 +33,13 @@ const TrainingScreen = () => {
     //when coach selects a students it shows the history of plans
 
     const updateTrainingPlans = () => {
+        setDailyPlans(getDailyPlans());
 
+    }
+
+    const handleNewDailyPlan = () => {
+        navigation.navigate("New Daily Plan");
+        return true;
     }
 
     return (
@@ -45,6 +50,13 @@ const TrainingScreen = () => {
             onPress = {() => {handleSignOut()}} >
                 <Text style = {styles.buttonText}>
                     Sign Out 
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+            style = {styles.button}
+            onPress = {() => {handleNewDailyPlan()}} >
+                <Text style = {styles.buttonText}>
+                    New Daily Plan 
                 </Text>
             </TouchableOpacity>
         </View>

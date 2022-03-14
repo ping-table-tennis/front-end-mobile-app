@@ -3,10 +3,20 @@ import { firebase, auth } from '../firebase'
 const db = firebase.firestore()
 
 export class DailyPlan {
-    constuctor(studentEmail = 'student email', coachEmail = 'coach email', checklist = []){
+    constuctor(studentEmail = 'student email', coachEmail = 'coach email', checklistTasks = [], checklistIsCompelted = []){
         this.studentEmail = studentEmail;
         this.coachEmail = coachEmail;
-        this.checklist = checklist;
+        this.checklistTasks = checklistTasks;
+        this.checklistIsCompelted = checklistIsCompelted;
+        this.date = new Date();
+    }
+
+    setStudentEmail = async (email = auth.currentUser?.email) => {
+        this.studentEmail = email;
+    }
+
+    setCoachEmail = async (email = auth.currentUser?.email) => {
+        this.coachEmail = email;
     }
 }
 
@@ -30,35 +40,6 @@ export const getDailyPlans = async (email) => {
 export const addDailyPlan = async () => {
     const dailyPlansRef = db.collection('Daily Plans');
     const plan = new DailyPlan('abc@abc.com');
-    await dailyPlansRef.doc().set(Object.assign({}, plan))
-
-    const snapshot = await dailyPlansRef.get();
-    const plansMap = snapshot.docs.map(doc => doc.data());
-    console.log(plansMap);
-
-    // const postConverter = {
-    //     toFirestore(post: Post): firebase.firestore.DocumentData {
-    //       return {title: post.title, author: post.author};
-    //     },
-    //     fromFirestore(
-    //       snapshot: firebase.firestore.QueryDocumentSnapshot,
-    //       options: firebase.firestore.SnapshotOptions
-    //     ): Post {
-    //       const data = snapshot.data(options)!;
-    //       return new Post(data.title, data.author);
-    //     }
-    //   };
-      
-    //   const postSnap = await firebase.firestore()
-    //     .collection('posts')
-    //     .withConverter(postConverter)
-    //     .doc().get();
-    //   const post = postSnap.data();
-    //   if (post !== undefined) {
-    //     post.title; // string
-    //     post.toString(); // Should be defined
-    //     post.someNonExistentProperty; // TS error
-    //   }
 }
 
 export const getChecklist = () => {
