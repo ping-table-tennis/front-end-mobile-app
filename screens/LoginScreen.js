@@ -34,6 +34,7 @@ class LoginScreen extends Component {
             name: "",
             rating: "",
             param: "",
+            type: "",
             usertype: [
                 "Coach",
                 "Student",
@@ -90,18 +91,39 @@ class LoginScreen extends Component {
                 rating: parseInt(rating),
                 friends: [],
             })
-            .then(() => console.log("User (" + email + ") created successfully."));
+            .then(async () => {
+                console.log("User (" + email + ") created successfully.")
+                await AsyncStorage.setItem("user", user.uid).then(() => {
+                        this.props.navigation.navigate("Training")
+                    })
+            })
     };
 
     handleRegister = () => {
-        const { email, password, rating } = this.state;
+        const { email, password, rating, name, type } = this.state;
+        console.log(this.state)
 
         if (this.state.isRegistering) {
-            console.log(Number.isInteger(parseInt(rating)));
+        //     console.log(Number.isInteger(parseInt(rating)));
             if (this.isRegistrationValid()) {
-                auth
-                    .createUserWithEmailAndPassword(email, password)
-                    .then(() => this.createUser())
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then( async (credentials) => {
+                        let data = {}
+                        data['email'] = email
+                        data['full_name'] = name
+                        data['rating'] = rating
+                        auth.collection('users').doc(credentials.user.id).set(data).then(() => {
+                            auth.signInWithEmailAndPassword(email.toLowerCase(), password).then(async credentials => {
+                                const user = credentials.user
+                                console.log('Logged in as: ', user.uid)
+                                await AsyncStorage.setItem("user", user.uid).then(async () => {
+                                    this.props.navigation.navigate("Training")
+                                })}).catch(error =>  {
+                                    Alert.alert("Login Failed", "Please check that your email and password are correct.", error)
+                                })})
+                        })
+
+
                     .catch((error) =>
                         Alert.alert(
                             "Registration Failed",
@@ -152,8 +174,7 @@ class LoginScreen extends Component {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
                 <View style={styles.headerContainer}>
-                    <Text style={{ fontSize: 20 }}>
-                        Hi {param} {"Coach!"}{" "}
+                    <Text style={{ fontSize: 24 }}>Hi {param} {"Coach!"}{" "}
                     </Text>
                 </View>
 
@@ -190,8 +211,14 @@ class LoginScreen extends Component {
                                 style={styles.input}
                             />
                             <SelectDropdown
+                                buttonTextStyle={{color: "rgba(000,000,000,0.5)"}}
+                                buttonStyle={[styles.input]}
+                                defaultButtonText="Select User Type"
                                 data={this.state.usertype}
                                 onSelect={(selectedItem, index) => {
+                                    this.setState({
+                                        type: selectedItem
+                                    })
                                     console.log(selectedItem, index)
                                 }}
                                 buttonTextAfterSelection={(selectedItem, index) => {
@@ -208,7 +235,7 @@ class LoginScreen extends Component {
 
                         </View>
                     )}
-                    <Text
+                   {!this.state.isRegistering ? <Text
                         style={{
                             width: "100%",
                             textAlign: "center",
@@ -218,21 +245,18 @@ class LoginScreen extends Component {
                         }}
                     >
                         Forgot your password?
-                    </Text>
+                    </Text> : null}
                 </View>
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity onPress={() => this.handleLogin()} style={styles.button}>
-                        <Text style={styles.buttonText}>Login</Text>
+                    <TouchableOpacity onPress={this.state.isRegistering ? this.handleRegister : this.handleLogin} style={styles.button}>
+                        <Text style={styles.buttonText}>{this.state.isRegistering ?  "Sign Up" : "Login"}</Text>
                     </TouchableOpacity>
-                    {/* <TouchableOpacity onPress={() => { this.handleRegister() }} style={[styles.button, styles.buttonOutline]}>
-                            <Text style={styles.buttonOutlineText}>Register</Text>
-                        </TouchableOpacity> */}
                 </View>
                 <NativeBaseProvider>
                     <HStack marginTop={20}>
-                        <Text style={{ fontSize: 16 }}>Don't have an account yet? </Text>
-                        <TouchableOpacity onPress={() => this.handleRegister()}>
-                            <Text style={styles.SignUpText}>Sign Up.</Text>
+                        <Text style={{ fontSize: 16 }}>{this.state.isRegistering ?  "Already have an account? " : "Don't have an account yet? "}</Text>
+                        <TouchableOpacity onPress={() => this.setState({isRegistering: !this.state.isRegistering})}>
+                            <Text style={styles.SignUpText}>{this.state.isRegistering ? "Login" : "Sign Up."}</Text>
                         </TouchableOpacity>
                     </HStack>
                 </NativeBaseProvider>
@@ -255,9 +279,11 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         width: "100%",
-        height: 150,
+        height: 250,
+        paddingTop: 10,
+
         display: "flex",
-        justifyContent: "space-evenly",
+        justifyContent: "center",
         alignItems: "center",
 
     },
@@ -266,7 +292,6 @@ const styles = StyleSheet.create({
         height: 200,
         padding: 20,
         justifyContent: "center",
-        backgroundColor: 'tomato',
     },
     input: {
         height: 45,
@@ -281,7 +306,7 @@ const styles = StyleSheet.create({
         width: "100%",
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 85,
+        marginTop: 150,
     },
     button: {
         width: 200,

@@ -22,6 +22,7 @@ import EventScreen from "../screens/EventScreen"
 import NotificationScreen from "../screens/NotificationScreen"
 import ScheduleScreen from "../screens/ScheduleScreen"
 import TrainingPlanScreen from "../screens/TrainingPlanScreen"
+import MoreToDo from "../screens/MoreToDo"
 import FriendScreen from "../screens/FriendScreen"
 
 import LoginScreen from '../screens/LoginScreen'
@@ -61,6 +62,7 @@ const TrainingStack = () => {
 		<Stack.Navigator >
 			<Stack.Screen name="Training" options={{ headerShown: true }} component={HomeScreen} />
 			<Stack.Screen name="TrainingPlan" options={{ headerShown: true }} component={TrainingPlanScreen} />
+			<Stack.Screen name="ToDo" options={{ headerShown: true }} component={MoreToDo} />
 
 			<Stack.Screen name="Start" options={{ headerShown: false }} component={Started} />
             <Stack.Screen name="UserType" options={{ headerShown: false }} component={UserType} />
