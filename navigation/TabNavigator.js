@@ -28,11 +28,14 @@ import FriendScreen from "../screens/FriendScreen"
 import LoginScreen from '../screens/LoginScreen'
 import Started from "../screens/Started"
 import UserType from "../screens/UserType"
+import RegistrationScreen from "../screens/RegistrationScreen"
 // import TrainingScreen from "../screens/TrainingScreen"
 
+import MatchesScreen from "../screens/MatchScreen"
+import InputMatchScreen from "../screens/InputMatchScreen"
 
 import MainStackNavigator from "./StackNavigator"
-
+import ProfileScreen from "../screens/ProfileScreen"
 
 // Bar Icons
 const tabBarIcon = ({ route }) => ({
@@ -60,14 +63,17 @@ const tabBarOptions = {
 const TrainingStack = () => {
 	return (
 		<Stack.Navigator >
-			<Stack.Screen name="Training" options={{ headerShown: true }} component={HomeScreen} />
+			<Stack.Screen name="Home" options={{ headerShown: true }} component={HomeScreen} />
 			<Stack.Screen name="TrainingPlan" options={{ headerShown: true }} component={TrainingPlanScreen} />
 			<Stack.Screen name="ToDo" options={{ headerShown: true }} component={MoreToDo} />
-
+			
+			<Stack.Screen name="Registration" options={{ headerShown: false }} component={RegistrationScreen} />
 			<Stack.Screen name="Start" options={{ headerShown: false }} component={Started} />
             <Stack.Screen name="UserType" options={{ headerShown: false }} component={UserType} />
-            <Stack.Screen name="Login"   options={{ headerShown: false }} component={LoginScreen} />
+            {/*<Stack.Screen name="Login"   options={{ headerShown: false }} component={LoginScreen} />*/}
             <Stack.Screen name="Event"  options={{ headerShown: false }} component={EventScreen} />
+			<Stack.Screen name="InputMatch" component={InputMatchScreen} />
+			<Stack.Screen name="Profile" component={ProfileScreen} />
 		</Stack.Navigator>
 	)
 }
@@ -80,7 +86,9 @@ const BottomTabNavigator = () => {
 			{/* <Tab.Screen name="Start" options={{ headerShown: false, tabBarStyle: {display: "none"} }} component={MainStackNavigator} /> */}
 			<Tab.Screen name="Events" component={EventScreen} />
 			<Tab.Screen name="Notifications" component={NotificationScreen} />
-			<Tab.Screen name="Schedule" component={FriendScreen} />
+			<Tab.Screen name="Schedule" component={ScheduleScreen} />
+			<Tab.Screen name="Friend" component={FriendScreen} />
+			<Tab.Screen name="Match" component={MatchesScreen} />
 		</Tab.Navigator>
 	)
 }

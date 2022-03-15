@@ -10,7 +10,10 @@ class Started extends Component {
 
     onPressUserType = () => {
         this.props.navigation.navigate("UserType")
+    }
 
+    goToRegistration = () => {
+        this.props.navigation.navigate("Registration")
     }
 
     render() {
@@ -18,7 +21,7 @@ class Started extends Component {
             <View style={styles.Started}>
                 <Image style={styles.ImageStarted} resizeMode="cover" source={startedImage}/>
                 <View style={styles.ActionButtons}>
-                    <TouchableOpacity style={[styles.StartedButton, {backgroundColor: "rgba(39,38,67,0.5)"}]} onPress={this.onPressUserType} >
+                    <TouchableOpacity style={[styles.StartedButton, {backgroundColor: "rgba(39,38,67,0.5)"}]} onPress={this.goToRegistration} >
                         <Text style={{fontWeight:"bold", fontSize: 18}}>GET STARTED</Text>
                     </TouchableOpacity>
                 </View>

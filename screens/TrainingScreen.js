@@ -1,6 +1,7 @@
 import React, { useState, Component } from 'react'
 import {View, Text} from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { firebase, auth } from '../firebase'
 
 class TrainingScreen extends Component {
     constructor(props) {
@@ -8,19 +9,28 @@ class TrainingScreen extends Component {
         this.state = {  }
     }
 
+    /*
     isUserLogedIn = async ()  => {
+        console.log("i am in this screen\n")
         await AsyncStorage.getItem("user").then((res) => {
             if (res == null) {
                 console.log(res === null, res)
-                this.props.navigation.navigate("Login", { name: "Student", toRegister: false })
+                this.props.navigation.navigate("Registration", { name: "Student", toRegister: false })
             } else {
                 this.props.navigation.navigate("Training")
             }
         })
     }
+    */
+
+    handleSignOut = () => {
+        auth.signOut().then(() => {
+            navigation.replace("Registration")
+        }).catch(error => alert(error.message))
+    } 
 
     componentDidMount() {
-        this.isUserLogedIn()
+        //this.handleSignOut()
     }
     
     render() {
