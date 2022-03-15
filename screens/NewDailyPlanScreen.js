@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/core'
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native'
 import { auth } from '../firebase'
-import { addDailyPlan, getDailyPlans } from '../DAOs/DailyPlanDAOs'
+import { addDailyPlan, getDailyPlans, DailyPlan } from '../DAOs/DailyPlanDAOs'
 
 const NewDailyPlanScreen = () => {
     //TODO: 
@@ -24,9 +24,9 @@ const NewDailyPlanScreen = () => {
         return true;
     }
 
-    const handleSave = () => {
-        navigation.navigate("Training");
-        return true;
+    const handleTest = async () => {
+        var testPlan = new DailyPlan('abc@abc.com','bac@bac.com',['task 1', 'task 2'], [false, true]);
+        testPlan.init();
     }
 
     return ( 
@@ -41,9 +41,9 @@ const NewDailyPlanScreen = () => {
             </TouchableOpacity>
             <TouchableOpacity 
             style = {styles.button}
-            onPress = {() => {handleSave()}} >
+            onPress = {() => {handleTest()}} >
                 <Text style = {styles.buttonText}>
-                    Save 
+                    Test 
                 </Text>
             </TouchableOpacity>
         </View>
