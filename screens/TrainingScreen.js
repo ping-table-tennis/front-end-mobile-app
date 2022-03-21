@@ -38,7 +38,7 @@ const TrainingScreen = () => {
     }
 
     const handleNewDailyPlan = () => {
-        navigation.navigate("New Daily Plan");
+        navigation.navigate("Test Training Plans");
         return true;
     }
 

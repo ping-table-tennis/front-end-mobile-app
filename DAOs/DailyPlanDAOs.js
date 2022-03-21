@@ -1,4 +1,3 @@
-import { getCurrentTimestamp } from 'react-native/Libraries/Utilities/createPerformanceLogger';
 import { firebase, auth } from '../firebase'
 
 const db = firebase.firestore()

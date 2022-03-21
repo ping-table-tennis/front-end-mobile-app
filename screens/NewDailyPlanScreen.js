@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native'
-import { auth } from '../firebase'
-import { addDailyPlan, getDailyPlans, DailyPlan, init } from '../DAOs/DailyPlanDAOs'
+//import { addDailyPlan, getDailyPlans, DailyPlan, init } from '../DAOs/DailyPlanDAOs'
+import { GeneralPlan } from '../DAOs/GeneralPlanDAOs'
 
 const NewDailyPlanScreen = () => {
     //TODO: 
