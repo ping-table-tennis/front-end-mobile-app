@@ -19,8 +19,8 @@ const InputMatchScreen = () => {
             opponentScore1: '',
             playerScore2: '',
             opponentScore2: '',
-            playerScore2: '',
-            opponentScore2: '',
+            playerScore3: '',
+            opponentScore3: '',
         });
 
     const handleChange = (key, value) => {
