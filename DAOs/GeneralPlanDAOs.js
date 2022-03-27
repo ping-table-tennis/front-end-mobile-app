@@ -16,8 +16,7 @@ export const init = async (plan) => {
     const data = {
         strengths: plan.strengths,
         weaknesses: plan.weaknesses,
-        student_email: plan.studentEmail,
-        coach_email: plan.coachEmail
+        emails: [plan.coachEmail, plan.studentEmail]
     }
 
     const res = await db.collection('General Plans').doc(plan.id).set(data);
@@ -26,23 +25,24 @@ export const init = async (plan) => {
     }
 }
 
-export const deleteDailyPlan = async (plan) => {
-    await db.collection('Daily Plans').doc(plan.id).delete();
+export const deleteGeneralPlan = async (plan) => {
+    await db.collection('General Plans').doc(plan.id).delete();
 }
 
-// gets the general plan for either the the coach email or the student email.
-export const getGeneralPlan = async (email) => {
-    const snapshot = await db.collection('General Plans').where('emails', 'array-contains', email).get();
-    const userDailyPlans = [];
-
-    if(snapshot.empty){
-        console.log('No Daily Plans for ', email);
-    }
-    else {
-        snapshot.forEach(doc => {
-            userDailyPlans.push(doc.data());
-        });
+export const updateGenralPlan = async (plan) => {
+    const data = {
+        strengths: plan.strengths,
+        weaknesses: plan.weaknesses,
+        emails: [plan.coachEmail, plan.studentEmail]
     }
 
-    return userDailyPlans;
+    const res = await db.collection('General Plans').doc(plan.id).update(data);
+}
+
+// gets the general plan for the the coach email and the student email.
+export const getGeneralPlan = async (studentEmail, coachEmail) => {
+    idstr = studentEmail + coachEmail
+    const userGeneralPlan = await db.collection('General Plans').doc(idstr).get();
+
+    return userGeneralPlan;
 }
