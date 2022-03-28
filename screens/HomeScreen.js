@@ -206,4 +206,14 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: "rgba(151,151,151, 0.51)",
     },
+    inputContainer: {
+        width: '80%'
+    },
+    input: {
+        backgroundColor: 'white',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        borderRadius: 10,
+        marginTop: 5,
+    },
 })

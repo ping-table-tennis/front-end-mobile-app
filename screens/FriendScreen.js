@@ -6,8 +6,13 @@ import * as Const from '../util/Constants'
 
 const db = firebase.firestore()
 
+<<<<<<< HEAD
 const FriendScreen = ({navigation}) => {
     //const navigation = useNavigation()
+=======
+const FriendScreen = () => {
+    const navigation = useNavigation()
+>>>>>>> origin/v-dev
 
     const [friends, setFriends] = useState([]) // Array of user's current friend list
     const [requests, setRequests] = useState([]) // Array of user's incoming friend requests
@@ -113,6 +118,7 @@ const FriendScreen = ({navigation}) => {
         );
     }
 
+<<<<<<< HEAD
     const showDeleteAlert = (friend) => {
         Alert.alert(
             Const.DEL_TITLE,
@@ -135,6 +141,8 @@ const FriendScreen = ({navigation}) => {
         updateUserData()
     }
 
+=======
+>>>>>>> origin/v-dev
     const displayFriendRequests = () => {
         let arr = []
         if (requests.length !== 0) {
@@ -156,18 +164,22 @@ const FriendScreen = ({navigation}) => {
         }
     }
 
+<<<<<<< HEAD
     const navigateToProfile = (email) => {
         navigation.navigate("Profile", {
             email: email
         })
     }
 
+=======
+>>>>>>> origin/v-dev
     const displayFriends = () => {
         let arr = []
         if (friends.length !== 0) {
             for (let i = 0; i < friends.length; i++) {
                 let req = friends[i]
                 arr.push(
+<<<<<<< HEAD
                     <View key = {i} style={{ flexDirection: 'row' }} >
                         <TouchableOpacity
                         onPress = {() => {navigateToProfile(friends[i])}} 
@@ -177,6 +189,13 @@ const FriendScreen = ({navigation}) => {
                         <TouchableOpacity onPress = {() => {showDeleteAlert(friends[i])}}>
                         <Text style={styles.deleteText}> X </Text>
                         </TouchableOpacity>
+=======
+                    <View key = {i} >
+                        <TouchableOpacity 
+                        style = {styles.item} >
+                            <Text style={styles.itemText}> {req} </Text>
+                        </TouchableOpacity>
+>>>>>>> origin/v-dev
                     </View>
                 )
             }
@@ -266,9 +285,13 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 16
     },
+<<<<<<< HEAD
     deleteText: {
         color: 'black',
         fontWeight: '700',
         fontSize: 20
     },
 })
+=======
+})
+>>>>>>> origin/v-dev
