@@ -2,6 +2,7 @@
 import React, { useState, Component } from 'react'
 import {View, Text} from 'react-native'
 import { Calendar, CalendarList, Agenda} from 'react-native-calendars'
+//calendar documentation and such below:
 //https://www.educba.com/react-native-calendar/
 //https://github.com/wix/react-native-calendars#readme
 
