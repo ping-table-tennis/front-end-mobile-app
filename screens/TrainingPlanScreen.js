@@ -4,19 +4,47 @@ import { NativeBaseProvider, HStack, VStack, Checkbox } from 'native-base'
 import { Feather, Entypo } from "@expo/vector-icons"
 import racket from "../assets/icons/racket.png"
 import moment from "moment"
+import firebase from 'firebase'
+
+
 
 class TrainingPlanScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            isGeneral: false,
+            isGeneral: true,
             generals: ["Work To Do/General", "Weaknesses", "Strenghts", "Physical Training"],
+            generalsPlan: [],
             daily: ["11/30/2021"]
         }
     }
+
+    fetGeneralPlan = async () => {
+        let generalsPlan = []
+        const snapshot = await firebase.firestore().collection('Yasiris').get()
+        const data =  snapshot.docs.map(doc => doc.data());
+        const dataGroupedByKey = this.groupByKey(data, "category")
+
+        for(const key in dataGroupedByKey) {
+            console.log(dataGroupedByKey[key])
+            generalsPlan.push(dataGroupedByKey[key])
+        }
+        console.log(generalsPlan)
+        this.setState({
+            generalsPlan
+        })
+    }
+
+    groupByKey = (list, key) => list.reduce((hash, obj) => ({...hash, [obj[key]]:( hash[obj[key]] || [] ).concat(obj)}), {})
+
+    
+    componentDidMount() {
+        this.fetGeneralPlan()
+    }
+    
     render() {
-        const { isGeneral, generals, daily } = this.state
-        const generalOrDaily = isGeneral ? generals : daily
+        const { isGeneral, generals, daily, generalsPlan } = this.state
+        const generalOrDaily = isGeneral ? generalsPlan : daily
         return (
             <NativeBaseProvider>
                 <View style={styles.TrainingPlanScreen}>
