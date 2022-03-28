@@ -12,6 +12,7 @@ export class GeneralPlan {
     }
 }
 
+//need to call init function after creating new object to add it to database
 export const init = async (plan) => {
     const data = {
         strengths: plan.strengths,
