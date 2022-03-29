@@ -62,8 +62,6 @@ const FriendScreen = ({navigation}) => {
         await reference.get().then(doc => {
             if (doc.exists) {
                 data = doc.data()
-                console.log("FRIENDS",data.friends)
-                console.log("REQ",data.requests)
                 // user has the requested email as a friend or pending request already, exit func
                 if (data.friends.indexOf(currentEmail) !== -1 
                 || data.requests.indexOf(currentEmail) !== -1) {
@@ -110,7 +108,28 @@ const FriendScreen = ({navigation}) => {
         .catch(err => {
             console.log(err)
         })
+        addFriendFromRequester(email)
         updateUserData()
+    }
+
+    const addFriendFromRequester = async (email) => {
+        let reference = db.collection('Users').doc(email)
+        console.log(email)
+        let friends
+        await reference.get().then((doc) => {
+            if (doc.exists) {
+                friends = doc.data().friends
+                console.log(friends)
+            }
+        }).catch(e => console.log(e))
+
+        friends.push(currentEmail)
+        await db.collection('Users').doc(email).update({
+            friends: friends,
+            })
+        .catch(err => {
+            console.log(err)
+        })
     }
 
     const showRequestAlert = (request) => {
