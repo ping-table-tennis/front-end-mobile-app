@@ -53,6 +53,7 @@ class HomeScreen extends Component {
     */
 
     handleSignOut = () => {
+        console.log("Signing out of", auth.currentUser?.email)
         auth.signOut().then(() => {
             this.props.navigation.navigate("Registration")
         }).catch(error => alert(error.message))
