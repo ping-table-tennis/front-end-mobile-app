@@ -1,72 +1,74 @@
 import { useNavigation, useFocusEffect } from '@react-navigation/core'
 import React, { useState, useEffect } from 'react'
-import { Image, BackHandler, Alert, StyleSheet, Text, FlatList, View, KeyboardAvoidingView, useWindowDimensions, TouchableOpacity } from 'react-native'
+import { Image, BackHandler, StyleSheet, Text, FlatList, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { firebase, auth } from '../firebase'
 import fab from '../assets/images/fab.png'
-import { Center } from 'native-base'
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 import Divider from 'react-native-divider';
 const db = firebase.firestore()
 
 
 const MatchesScreen = () => {
-
-    const currentEmail = auth.currentUser?.email
+    let currentEmail = auth.currentUser?.email
     const navigation = useNavigation()
     const [matches, setMatches] = useState([])
-    const [score, setScore] = useState([])
 
     function handleBackButtonClick() {
         navigation.navigate("Training");
         return true;
     }
 
-    const getUserMatches = () => {
+    const updateUserMatches = () => {
         db.collection('Matches').doc(currentEmail).get().then(doc => {
-            if (doc.exists) 
+            if (doc.exists) {
                 setMatches(doc.data().matches)       
+            }
         }).catch(e => {
             console.log(e)
         })
     }
 
     const getMatchData = () => {
-        let data = []
-        for (let i = 0; i < matches.length; i++) {
-            let current = matches[i]
-            let dataElement = {
-                key: i,
-                notes: current.notes,
-                opponent: current.opponent,
-                result: current.result,
-                tournament: current.tournament,
-                score: current.score
+        if (matches != null) {
+            let data = []
+            for (let i = 0; i < matches.length; i++) {
+                let current = matches[i]
+                let dataElement = {
+                    key: i,
+                    notes: current.notes,
+                    opponent: current.opponent,
+                    result: current.result,
+                    tournament: current.tournament,
+                    score: current.score
+                }
+                data.push(dataElement)
             }
-            data.push(dataElement)
+            return data
         }
-        console.log(data)
-        return data
     }     
 
     useEffect(() => {
+        /*
         const unsubscribe = navigation.addListener("tabPress", async (e) => {
-            getUserMatches()
+            updateUserMatches()
             return () => unsubscribe();
           }, [navigation])
+        */
         BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
         return () => {
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
         }
     }, [])
-
+    
+    
     useFocusEffect(
         React.useCallback(() => {
-            getUserMatches()
-            const unsubscribe = () => console.log("Removing focus from Matches Screen.")
-            
-            return () => unsubscribe();
+            currentEmail = auth.currentUser?.email
+            console.log("Focused:",currentEmail)
+            updateUserMatches()
+            return () => {}
         }, [])
     );
+    
 
     const getResultStyle = (mode) => {
         return {
@@ -78,7 +80,7 @@ const MatchesScreen = () => {
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.itemBackground}>
             <View style={styles.center}>
-                <Text style={styles.title}>Tournament: {item.tournament}</Text>
+                <Text style={styles.title}>{item.tournament}</Text>
                 <Text style={getResultStyle(item.result)}>{item.result}</Text>
                 <Text style={styles.a}>vs. {item.opponent}</Text>
             </View>
@@ -107,17 +109,16 @@ const MatchesScreen = () => {
     );
 
     return (
-
-
         <KeyboardAvoidingView
             style = {styles.container}
             behavior= {Platform.OS === "ios" ? "padding" : "height"} 
-        >
+        >   
             <FlatList 
                 data={getMatchData()}
                 renderItem={renderItem}
                 keyExtractor={item => item.key}
             />
+            
             <TouchableOpacity 
                 style = {styles.touchableOpacityStyle} 
                 onPress = {() => {navigation.navigate("InputMatch")}}>
