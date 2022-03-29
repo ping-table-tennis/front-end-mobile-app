@@ -1,22 +1,16 @@
-import { useNavigation, useFocusEffect, useIsFocused } from '@react-navigation/core'
+import { useNavigation, useFocusEffect } from '@react-navigation/core'
 import React, { useState, useEffect } from 'react'
-import { NavigationEvents } from "react-navigation";
-import { Image, BackHandler, Alert, StyleSheet, Text, FlatList, View, KeyboardAvoidingView, useWindowDimensions, TouchableOpacity } from 'react-native'
+import { Image, BackHandler, StyleSheet, Text, FlatList, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { firebase, auth } from '../firebase'
 import fab from '../assets/images/fab.png'
-import { Center } from 'native-base'
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 import Divider from 'react-native-divider';
 const db = firebase.firestore()
 
 
 const MatchesScreen = () => {
-
     let currentEmail = auth.currentUser?.email
     const navigation = useNavigation()
     const [matches, setMatches] = useState([])
-    const [score, setScore] = useState([])
-    const isFocused = useIsFocused()
 
     function handleBackButtonClick() {
         navigation.navigate("Training");
@@ -27,7 +21,6 @@ const MatchesScreen = () => {
         db.collection('Matches').doc(currentEmail).get().then(doc => {
             if (doc.exists) {
                 setMatches(doc.data().matches)       
-                //console.log(matches)
             }
         }).catch(e => {
             console.log(e)
@@ -52,11 +45,6 @@ const MatchesScreen = () => {
             return data
         }
     }     
-
-    const getUpdatedMatchesData = () => {
-        updateUserMatches()
-        return getMatchData()
-    }
 
     useEffect(() => {
         /*

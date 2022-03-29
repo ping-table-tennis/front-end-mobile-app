@@ -41,6 +41,7 @@ const RegistrationScreen = () => {
             rating: parseInt(rating),
             friends: [],
             requests: [],
+            notifications: [],
             isStudent: role
         }).then(() => console.log("User (" + email + ") created successfully."))
         .catch(err => {
