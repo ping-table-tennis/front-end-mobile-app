@@ -23,6 +23,7 @@ const RegistrationScreen = () => {
 
     const navigation = useNavigation()
 
+
     useEffect(() => {
         const unsub = auth.onAuthStateChanged(user => {
             if (user) {
@@ -84,7 +85,7 @@ const RegistrationScreen = () => {
             auth.signInWithEmailAndPassword(email, password)
             .then(credentials => {
                 const user = credentials.user
-                console.log('Logged in as: ', user.email)
+                console.log('Logged in as: ', auth.currentUser?.email)
             }).catch(error => 
                 Alert.alert(Const.LOG_FAILED_TITLE, Const.LOG_FAILED_EMAIL))  
         } else {

@@ -11,12 +11,11 @@ const db = firebase.firestore()
 
 const FriendScreen = ({navigation}) => {
     //const navigation = useNavigation()
-    const isFocused = useIsFocused()
 
     const [friends, setFriends] = useState([]) // Array of user's current friend list
     const [requests, setRequests] = useState([]) // Array of user's incoming friend requests
     const [newRequest, setNewRequest] = useState('') // Input field for adding a new friend
-    const currentEmail = auth.currentUser?.email
+    let currentEmail = auth.currentUser?.email
 
     // Using the built in back button puts the user back to the home screen
     function handleBackButtonClick() {
@@ -39,18 +38,22 @@ const FriendScreen = ({navigation}) => {
     }
 
     useEffect(() => {
-        const unsubscribe = navigation.addListener("tabPress", async (e) => {
-        updateUserData() 
-        return () => unsubscribe();
-      }, [navigation])
       BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
         return () => {
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
         }
     }, [])
 
+    useFocusEffect(
+        React.useCallback(() => {
+            currentEmail = auth.currentUser?.email
+            updateUserData()  
+            return () => {};
+        }, [])
+    );
+
     const sendFriendRequest = async () => {
-        if (newRequest == '') {
+        if (newRequest == '' || newRequest == currentEmail) {
             Alert.alert(Const.REQ_FAILED_TITLE, Const.REQ_FAILED_EMAIL)
             return
         }
@@ -59,6 +62,8 @@ const FriendScreen = ({navigation}) => {
         await reference.get().then(doc => {
             if (doc.exists) {
                 data = doc.data()
+                console.log("FRIENDS",data.friends)
+                console.log("REQ",data.requests)
                 // user has the requested email as a friend or pending request already, exit func
                 if (data.friends.indexOf(currentEmail) !== -1 
                 || data.requests.indexOf(currentEmail) !== -1) {
