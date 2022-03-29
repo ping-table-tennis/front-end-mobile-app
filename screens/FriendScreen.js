@@ -63,8 +63,7 @@ const FriendScreen = ({navigation}) => {
             if (doc.exists) {
                 data = doc.data()
                 // user has the requested email as a friend or pending request already, exit func
-                if (data.friends.indexOf(currentEmail) !== -1 
-                || data.requests.indexOf(currentEmail) !== -1) {
+                if (data.friends.indexOf(currentEmail) !== -1 || data.requests.indexOf(currentEmail) !== -1) {
                     Alert.alert(Const.ALERT_ERROR, Const.REQ_FAILED_SAME)
                     return { then: function() {} }; // exit promise
                 }
@@ -77,9 +76,13 @@ const FriendScreen = ({navigation}) => {
             console.log(err)
         })
         let updatedRequests = data.requests
+        let notifs = data.notifications
 
         updatedRequests.push(currentEmail)
-        await reference.update({requests: updatedRequests}).catch(err => {
+        // add new notification that 
+        let newNotif = Const.NOTIF_FRIEND_REQ + currentEmail
+        notifs.push(newNotif)
+        await reference.update({requests: updatedRequests, notifications: notifs}).catch(err => {
             console.log(err)
         }).catch(err => {
             console.log(err)
@@ -115,17 +118,20 @@ const FriendScreen = ({navigation}) => {
     const addFriendFromRequester = async (email) => {
         let reference = db.collection('Users').doc(email)
         console.log(email)
-        let friends
+        let friends, notifs
         await reference.get().then((doc) => {
             if (doc.exists) {
                 friends = doc.data().friends
-                console.log(friends)
+                notifs = doc.data().notifications
             }
         }).catch(e => console.log(e))
 
+        let newNotif = currentEmail + Const.NOTIF_FRIEND_ADD 
+        notifs.push(newNotif)
         friends.push(currentEmail)
         await db.collection('Users').doc(email).update({
             friends: friends,
+            notifications: notifs,
             })
         .catch(err => {
             console.log(err)

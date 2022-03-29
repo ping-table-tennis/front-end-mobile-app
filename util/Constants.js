@@ -36,3 +36,9 @@ export const ALERT_NO = "NO"
 export const ALERT_CANCEL = "CANCEL"
 export const ALERT_LATER = "LATER"
 export const ALERT_DELETE = "DELETE"
+
+
+/* NOTIFICATIONS */
+export const NOTIF_FRIEND_REQ = "You have received a friend request from "
+export const NOTIF_FRIEND_ADD = " has accepted your friend request"
+
