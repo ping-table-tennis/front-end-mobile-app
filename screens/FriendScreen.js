@@ -1,4 +1,5 @@
-import { useNavigation } from '@react-navigation/core'
+import { useNavigation  } from '@react-navigation/core'
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
 import { FlatList, BackHandler, Alert, StyleSheet, Text, TextInput, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { firebase, auth } from '../firebase'
@@ -6,8 +7,11 @@ import * as Const from '../util/Constants'
 
 const db = firebase.firestore()
 
+
+
 const FriendScreen = ({navigation}) => {
     //const navigation = useNavigation()
+    const isFocused = useIsFocused()
 
     const [friends, setFriends] = useState([]) // Array of user's current friend list
     const [requests, setRequests] = useState([]) // Array of user's incoming friend requests
@@ -35,13 +39,16 @@ const FriendScreen = ({navigation}) => {
     }
 
     useEffect(() => {
+        const unsubscribe = navigation.addListener("tabPress", async (e) => {
         updateUserData() 
-        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
+        return () => unsubscribe();
+      }, [navigation])
+      BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
         return () => {
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
         }
     }, [])
-    
+
     const sendFriendRequest = async () => {
         if (newRequest == '') {
             Alert.alert(Const.REQ_FAILED_TITLE, Const.REQ_FAILED_EMAIL)

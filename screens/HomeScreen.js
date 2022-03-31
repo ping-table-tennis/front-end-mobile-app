@@ -32,6 +32,7 @@ class HomeScreen extends Component {
         }
     }
 
+    /*
     getUserData = async () => {
         await db.collection('Users').doc(this.state.currentEmail).get().then(doc => {
             try {
@@ -46,6 +47,8 @@ class HomeScreen extends Component {
     }
 
     handleSignOut = () => {
+    /*
+    handleSignOut =  () => {
         // props.navigation.navigate("Training")
         auth.signOut().then(async (res) => {
             await AsyncStorage.removeItem("user")
@@ -57,12 +60,13 @@ class HomeScreen extends Component {
         await AsyncStorage.getItem("user").then((res) => {
             if (res == null) {
                 console.log(res === null, res)
-                this.props.navigation.navigate("Login", { name: "Student", toRegister: false })
+                this.props.navigation.navigate("Registration", { name: "Student", toRegister: false })
             } else {
                 this.props.navigation.navigate("Training")
             }
         })
     }
+    */
 
     PopOver = () => {
         return (
@@ -99,9 +103,15 @@ class HomeScreen extends Component {
     }
 
 
+    handleSignOut = () => {
+        auth.signOut().then(() => {
+            this.props.navigation.navigate("Registration")
+        }).catch(error => alert(error.message))
+    } 
+    
     componentDidMount() {
-        this.isUserLogedIn()
-        this.getUserData()
+        //this.isUserLogedIn()
+        //this.getUserData()
     }
 
     render() {
