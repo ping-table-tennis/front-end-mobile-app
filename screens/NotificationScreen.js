@@ -30,6 +30,16 @@ const NotificationScreen = () => {
         return data
     }
 
+    const removeNotification = async (key) => {
+        notifications.splice(key, 1)
+
+        await db.collection('Users').doc(currentEmail).update({notifications: notifications})
+        .catch(err => {
+            console.log(err)
+        })
+        updateNotifications()
+    }
+
     useFocusEffect(
         React.useCallback(() => {
             currentEmail = auth.currentUser?.email
@@ -39,15 +49,20 @@ const NotificationScreen = () => {
     );
 
     const renderItem = ({ item }) => (
-        <View style={styles.itemBackground}>
-            <View style={styles.center}>
-                <Text style={styles.title}>{item.content}</Text>
+        <TouchableOpacity onPress={() => removeNotification(item.key)} style={styles.itemBackground}>
+            <View>
+                <Text style={styles.content}>{item.content}</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     return (
-        <View>
+        <View style={styles.container}>
+            { notifications.length != 0 ? <View></View> :
+            <View style={styles.textContainer}>
+                  <Text style = {styles.text}> No Notifications</Text>
+            </View>
+            }
             <FlatList 
                 data={getNoficationsData()}
                 renderItem={renderItem}
@@ -60,6 +75,13 @@ const NotificationScreen = () => {
 export default NotificationScreen;
 
 const styles = StyleSheet.create({
+    textContainer: {
+        alignItems: 'center',
+        marginTop: '80%'
+    },
+    container: {
+        alignItems: 'center',
+    },
     itemBackground: {
         width: 350,
         height: 80,
@@ -68,5 +90,13 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginHorizontal: 10,
         backgroundColor: '#ffffff',
+    },
+    content: {
+        fontSize: 15,
+        textAlign: 'center'
+    },
+    text: {
+        fontSize: 22,
+        fontWeight: 'bold'
     },
 })
