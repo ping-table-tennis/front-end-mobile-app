@@ -1,12 +1,9 @@
-import { useNavigation, useFocusEffect, useIsFocused } from '@react-navigation/core'
+import { useNavigation, useFocusEffect } from '@react-navigation/core'
 import React, { useState, useEffect } from 'react'
-import { NavigationEvents } from "react-navigation";
-import { Image, BackHandler, Alert, StyleSheet, Text, FlatList, View, KeyboardAvoidingView, useWindowDimensions, TouchableOpacity } from 'react-native'
+import { Image, BackHandler, StyleSheet, Text, FlatList, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { firebase, auth } from '../firebase'
 import fab from '../assets/images/fab.png'
 import deleteImg from '../assets/icons/delete.png'
-import { Center } from 'native-base'
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 import Divider from 'react-native-divider';
 import * as Const from '../util/Constants'
 
@@ -14,7 +11,6 @@ const db = firebase.firestore()
 
 
 const MatchesScreen = ({navigation}) => {
-
     let currentEmail = auth.currentUser?.email
     const [matches, setMatches] = useState([])
 
@@ -27,7 +23,6 @@ const MatchesScreen = ({navigation}) => {
         db.collection('Matches').doc(currentEmail).get().then(doc => {
             if (doc.exists) {
                 setMatches(doc.data().matches)       
-                //console.log(matches)
             }
         }).catch(e => {
             console.log(e)
