@@ -3,13 +3,15 @@ import React, { useState, useEffect } from 'react'
 import { Image, BackHandler, StyleSheet, Text, FlatList, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { firebase, auth } from '../firebase'
 import fab from '../assets/images/fab.png'
+import deleteImg from '../assets/icons/delete.png'
 import Divider from 'react-native-divider';
+import * as Const from '../util/Constants'
+
 const db = firebase.firestore()
 
 
-const MatchesScreen = () => {
+const MatchesScreen = ({navigation}) => {
     let currentEmail = auth.currentUser?.email
-    const navigation = useNavigation()
     const [matches, setMatches] = useState([])
 
     function handleBackButtonClick() {
@@ -25,6 +27,27 @@ const MatchesScreen = () => {
         }).catch(e => {
             console.log(e)
         })
+    }
+
+    
+    const showDeleteAlert = (index) => {
+        Alert.alert(
+            "Delete Match",
+            "Are you sure that you want to delete this match? This cannot be undone.",
+            [
+              { text: Const.ALERT_CANCEL, style: "cancel"},
+              { text: Const.ALERT_YES, onPress: () => deleteMatch(index) }
+            ]
+        );
+    }
+
+    const deleteMatch = async (index) => {
+        matches.splice(index, 1)
+        await db.collection('Matches').doc(currentEmail).update({matches: matches})
+        .catch(err => {
+            console.log(err)
+        })
+        updateUserMatches()
     }
 
     const getMatchData = () => {
@@ -47,12 +70,6 @@ const MatchesScreen = () => {
     }     
 
     useEffect(() => {
-        /*
-        const unsubscribe = navigation.addListener("tabPress", async (e) => {
-            updateUserMatches()
-            return () => unsubscribe();
-          }, [navigation])
-        */
         BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
         return () => {
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
@@ -76,9 +93,23 @@ const MatchesScreen = () => {
             fontSize: 20,  
         }
     }
-          
+
+    const goToInputScreen = (index) => {
+        navigation.navigate("InputMatch", {index: index})
+    }
+
     const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.itemBackground}>
+        <TouchableOpacity 
+            style={styles.itemBackground}
+            onPress={() => goToInputScreen(item.key)}>
+            
+            <View>
+                <TouchableOpacity
+                    style={styles.deleteButtonBackground}
+                    onPress={() => showDeleteAlert(item.key)}>
+                    <Image source = {deleteImg} style = {styles.deleteButtonImage}></Image>
+                </TouchableOpacity>
+            </View>
             <View style={styles.center}>
                 <Text style={styles.title}>{item.tournament}</Text>
                 <Text style={getResultStyle(item.result)}>{item.result}</Text>
@@ -121,7 +152,7 @@ const MatchesScreen = () => {
             
             <TouchableOpacity 
                 style = {styles.touchableOpacityStyle} 
-                onPress = {() => {navigation.navigate("InputMatch")}}>
+                onPress = {() => goToInputScreen(-1)}>
                 <Image source={fab} style = {styles.floatingButtonStyle}/>
                 </TouchableOpacity>
         </KeyboardAvoidingView>
@@ -135,6 +166,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    deleteButtonBackground: {
+        width: 35,
+        height: 35,
+    },
+    deleteButtonImage: {
+        width: 30,
+        height: 30,
     },
     button: {
         backgroundColor: 'blue',
