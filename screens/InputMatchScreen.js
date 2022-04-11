@@ -7,9 +7,10 @@ import * as Const from '../util/Constants'
 
 const db = firebase.firestore()
 
-const InputMatchScreen = () => {
-    const navigation = useNavigation()
-
+const InputMatchScreen = ({route, navigation}) => {
+    const {index} = route.params
+    const currentEmail = auth.currentUser?.email
+    const [matches, setMatches] = useState([])
     const [result, setResult] = useState("")
     const [values, setValues] = useState({
             tournament: '',
@@ -23,6 +24,33 @@ const InputMatchScreen = () => {
             opponentScore3: '',
         });
 
+    const setEditValues = () => {
+        console.log(index)
+        if (index == -1) return
+
+        db.collection('Matches').doc(currentEmail).get().then(doc => {
+            if (doc.exists) {
+                setMatches(doc.data().matches)
+                let match = doc.data().matches[index]
+                setValues({
+                    tournament: match.tournament,
+                    opponent: match.opponent,
+                    notes: match.notes,
+                    playerScore1: match.score.round1[0].toString(),
+                    opponentScore1: match.score.round1[1].toString(),
+                    playerScore2: match.score.round2[0].toString(),
+                    opponentScore2: match.score.round2[1].toString(),
+                    playerScore3: match.score.round3[0].toString(),
+                    opponentScore3: match.score.round3[1].toString(), 
+                })       
+                setResult(match.result)
+            }
+        }).catch(e => {
+            console.log(e)
+        })
+
+    }
+
     const handleChange = (key, value) => {
         setValues({
         ...values,
@@ -30,14 +58,13 @@ const InputMatchScreen = () => {
         });
     };
 
-    const currentEmail = auth.currentUser?.email
-
     function handleBackButtonClick() {
         navigation.navigate("Match");
         return true;
     }
 
     useEffect(() => {
+        setEditValues()
         BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
         return () => {
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
@@ -73,7 +100,6 @@ const InputMatchScreen = () => {
                 round1: [parseInt(values.playerScore1), parseInt(values.opponentScore1)],
                 round2: [parseInt(values.playerScore2), parseInt(values.opponentScore2)],
                 round3: [parseInt(values.playerScore3), parseInt(values.opponentScore3)]
-
             },
             tournament: values.tournament,
             opponent: values.opponent,
@@ -83,15 +109,30 @@ const InputMatchScreen = () => {
     }
 
     const submitInputs = async () => {    
-        await db.collection('Matches').doc(currentEmail).update({
-            matches: firebase.firestore.FieldValue.arrayUnion(getDataMap())
-        }).then(() => {
-            console.log("Match input success.")
-            navigation.navigate("Match")  
-        })
-        .catch(err => {
-            console.log(err)
-        })
+        let reference = db.collection('Matches').doc(currentEmail)
+
+        if (index == -1) {
+            await reference.update({
+                matches: firebase.firestore.FieldValue.arrayUnion(getDataMap())
+            }).then(() => {
+                console.log("Match input success.")
+                navigation.navigate("Match")  
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        } else {
+            matches[index] = getDataMap()
+            await reference.update({
+                matches: matches
+            }).then(() => {
+                console.log("Match edit success.")
+                navigation.navigate("Match")  
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        }
     }
 
     return (
