@@ -9,6 +9,7 @@ import firebase from 'firebase'
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 
 import Upcoming from "../Components/UpcomingEvents"
+import MatchScreen from "./MatchScreen"
 
 class EventScreen extends Component {
     constructor(props) {
@@ -63,7 +64,7 @@ class EventScreen extends Component {
                         <Image resizeMode='contain' style={{ width: 22, height: 28 }} source={racket} />
                     </HStack>
 
-                    <HStack justifyContent='space-evenly' >
+                    <HStack paddingX={"15px"} justifyContent='space-evenly' >
                         <TouchableOpacity onPress={() => this.handleSwitch("Upcoming")} style={[styles.barContainer, { borderColor: isUpcoming == "Upcoming" ? '#0D0BAA' : "#979797" }]}>
                             <Text style={[styles.textContainer, { fontSize: 24, fontWeight: 'normal', color: isUpcoming == "Upcoming" ? '#0D0BAA' : "black" }]}>Upcoming</Text>
                         </TouchableOpacity>
@@ -74,7 +75,7 @@ class EventScreen extends Component {
                             <Text style={[styles.textContainer, { fontSize: 24, fontWeight: 'normal', color: isUpcoming == "Results" ? '#0D0BAA' : "black" }]}>Results</Text>
                         </TouchableOpacity>
                     </HStack>
-                    <Upcoming/>
+                    {isUpcoming == "Upcoming" ? <Upcoming/> : isUpcoming == "Matches" ? <MatchScreen/> : <Upcoming/>}
                 </View>
 
             

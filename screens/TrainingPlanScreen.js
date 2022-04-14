@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput } from 'react-native'
-import { NativeBaseProvider, HStack, VStack, Checkbox } from 'native-base'
+import { NativeBaseProvider, HStack, VStack, Checkbox, Heading } from 'native-base'
 import { Feather, Entypo } from "@expo/vector-icons"
 import racket from "../assets/icons/racket.png"
 import moment from "moment"
 import firebase from 'firebase'
-
-
+import GeneralPlans from "../DAOs/GeneralPlanDAOs"
+import DailyPlans from "../DAOs/DailyPlanDAOs"
+import { AntDesign } from '@expo/vector-icons'
+const db = firebase.database().ref()
 
 class TrainingPlanScreen extends Component {
     constructor(props) {
@@ -14,37 +16,57 @@ class TrainingPlanScreen extends Component {
         this.state = {
             isGeneral: true,
             generals: ["Work To Do/General", "Weaknesses", "Strenghts", "Physical Training"],
-            generalsPlan: [],
+            generalPlans: [],
+            dailyPlans: [],
             daily: ["11/30/2021"]
         }
+        this.general = new GeneralPlans()
+        this.daily = new DailyPlans()
     }
 
-    fetGeneralPlan = async () => {
-        let generalsPlan = []
-        const snapshot = await firebase.firestore().collection('Yasiris').get()
-        const data =  snapshot.docs.map(doc => doc.data());
-        const dataGroupedByKey = this.groupByKey(data, "category")
 
-        for(const key in dataGroupedByKey) {
-            console.log(dataGroupedByKey[key])
-            generalsPlan.push(dataGroupedByKey[key])
+    fetGeneralPlans = async () => {
+        const {email, coach} = this.props.route.params.student
+        if (firebase.auth().currentUser !== null) {
+            const userGeneralPlan = await db.collection('Students').get();
+            userGeneralPlan.query.where('emails', '==', [coach, email]).get().then((res) => {
+                // this.setState({
+                //     students: res.docs.map(doc => doc.data())
+                // })
+                console.log(res.docs.map(doc => doc.data()), "OK")
+            }).catch(err => {
+                console.log(err)
+            })
         }
-        console.log(generalsPlan)
-        this.setState({
-            generalsPlan
-        })
     }
 
-    groupByKey = (list, key) => list.reduce((hash, obj) => ({...hash, [obj[key]]:( hash[obj[key]] || [] ).concat(obj)}), {})
 
-    
+    fetDailyPlans = () => {
+        if (firebase.auth().currentUser !== null) {
+            const studentEmail = null
+            const coachEmail = firebase.auth().currentUser.email
+            this.daily.get(coachEmail, "student1@student.com").then((res) => {
+                this.setState({
+                    dailyPlans: res.docs.map(doc => doc.data())
+                })
+                console.log(result = res.docs.map(doc => doc.data()))
+            })
+            console.log("user id: " + firebase.auth().currentUser)
+        }
+    }
+
+    groupByKey = (list, key) => list.reduce((hash, obj) => ({ ...hash, [obj[key]]: (hash[obj[key]] || []).concat(obj) }), {})
+
+
     componentDidMount() {
-        this.fetGeneralPlan()
+        this.fetGeneralPlans()
+        this.fetDailyPlans()
+        console.log(this.props.route.params.student)
     }
-    
+
     render() {
-        const { isGeneral, generals, daily, generalsPlan } = this.state
-        const generalOrDaily = isGeneral ? generalsPlan : daily
+        const { isGeneral, generals, daily, generalPlans, dailyPlans } = this.state
+        const generalOrDaily = isGeneral ? generalPlans : dailyPlans
         return (
             <NativeBaseProvider>
                 <View style={styles.TrainingPlanScreen}>
@@ -70,9 +92,9 @@ class TrainingPlanScreen extends Component {
 
                     <VStack>
                         <ScrollView contentContainerStyle={{ paddingBottom: 200 }} showsVerticalScrollIndicator={false}>
-                            {generalOrDaily.map((general) => (
+                            {generalOrDaily.map((general, key) => (
                                 isGeneral ?
-                                    <VStack background={"white"} width="100%" height='180' marginTop={"15px"} paddingBottom="20px" borderRadius={'20px'}>
+                                    <VStack key={key + 10} background={"white"} width="100%" height='180' marginTop={"15px"} paddingBottom="20px" borderRadius={'20px'}>
                                         <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
                                             <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>{general}</Text>
                                             <TouchableOpacity>
@@ -93,23 +115,30 @@ class TrainingPlanScreen extends Component {
                                     </VStack> :
                                     <VStack background={"white"} width="100%" minHeight={"250px"} marginTop={"15px"} paddingBottom="20px" paddingX={"15px"} borderRadius={'20px'}>
                                         <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
-                                            <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '400' }]}>{moment().format("MMM Do YYYY")}</Text>
+                                            <Heading size={"sm"}>{moment().format("MMM Do YYYY")}</Heading>
+                                            {/* <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '400' }]}>{moment().format("MMM Do YYYY")}</Text> */}
                                             <TouchableOpacity>
                                                 <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
                                             </TouchableOpacity>
                                         </HStack>
                                         <HStack justifyContent='center' padding={'15px'} height="50px" >
-                                            <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>Goals For Today</Text>
+                                            <Heading height={"30px"} size={"md"}>Goals For Today</Heading>
                                         </HStack>
                                         <HStack paddingX={"10px"} >
-                                            <TextInput multiline style={[styles.textContainer, { fontSize: 12, fontWeight: 'normal' }]} value={"Improve topspin consistency when balls are going randomli."}/>
+                                            <Heading size={"sm"}>Improve top spin consistency when balls are going randomli.</Heading>
+                                            {/* <TextInput multiline style={[styles.textContainer, { fontSize: 12, fontWeight: 'normal' }]} value={"Improve topspin consistency when balls are going randomli."} /> */}
                                         </HStack>
                                         <VStack space={2} paddingX={"5px"} marginTop={"20px"}>
-                                            {[0,2,3, 4,5,3,4,5,6,7,7,8,8,].map(() => (
-                                                <HStack alignItems={"center"}>
-                                                    <Checkbox defaultIsChecked={true} value="" style={{borderRadius: 100, width: 30, height: 30, marginRight: 10}}/>
-                                                    <Text>20 topspins in random forehand side </Text>
-                                                </HStack>
+                                            {generalOrDaily.map((dailyPlan, key) => (
+                                                <View key={key + 40}>
+                                                    {dailyPlan.checklist_tasks.map((task, key) => (
+                                                        <HStack key={key + 20} paddingBottom={"10px"} alignItems={"center"}>
+                                                            <Checkbox alignItems={"center"} defaultIsChecked={true} value="" style={{ borderRadius: 100, width: 30, height: 30, marginRight: 10 }} >
+                                                                <Heading size={"xs"}>{task}.</Heading>
+                                                            </Checkbox>
+                                                        </HStack>
+                                                    ))}
+                                                </View>
                                             ))}
                                         </VStack>
                                     </VStack>

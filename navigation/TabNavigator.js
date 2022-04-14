@@ -70,7 +70,7 @@ const TrainingStack = () => {
 			<Stack.Screen name="TrainingPlan" options={{ headerShown: true }} component={TrainingPlanScreen} />
 			<Stack.Screen name="ToDo" options={{ headerShown: true }} component={MoreToDo} />
 			{/* <Stack.Screen name="Profile" options={{ headerShown: true }} component={ProfileScreen} /> */}
-			{/* <Stack.Screen name="Registration" options={{ headerShown: false }} component={RegistrationScreen} /> */}
+			<Stack.Screen name="Registration" options={{ headerShown: false }} component={RegistrationScreen} />
 			<Stack.Screen name="Start" options={{ headerShown: false }} component={Started} />
             <Stack.Screen name="UserType" options={{ headerShown: false }} component={UserType} />
             {/*<Stack.Screen name="Login"   options={{ headerShown: false }} component={LoginScreen} />*/}

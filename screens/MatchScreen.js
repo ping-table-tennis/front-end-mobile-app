@@ -9,7 +9,7 @@ import Divider from 'react-native-divider';
 const db = firebase.firestore()
 
 
-const MatchesScreen = () => {
+const MatchesScreen = (props) => {
 
     const currentEmail = auth.currentUser?.email
     const navigation = useNavigation()
@@ -64,7 +64,7 @@ const MatchesScreen = () => {
             getUserMatches()
             const unsubscribe = () => console.log("Removing focus from Matches Screen.")
             
-            return () => unsubscribe();
+            return () => unsubscribe()
         }, [])
     );
 
@@ -120,7 +120,7 @@ const MatchesScreen = () => {
             />
             <TouchableOpacity 
                 style = {styles.touchableOpacityStyle} 
-                onPress = {() => {navigation.navigate("InputMatch")}}>
+                onPress={() => navigation.navigate("InputMatch")}>
                 <Image source={fab} style = {styles.floatingButtonStyle}/>
                 </TouchableOpacity>
         </KeyboardAvoidingView>
