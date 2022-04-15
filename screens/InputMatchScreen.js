@@ -1,9 +1,7 @@
-import { useNavigation } from '@react-navigation/core'
 import React, { useState, useEffect } from 'react'
 import { Image, BackHandler, Alert, StyleSheet, Text, TextInput, View, KeyboardAvoidingView, useWindowDimensions, TouchableOpacity } from 'react-native'
 import { firebase, auth } from '../firebase'
 import Divider from 'react-native-divider';
-import * as Const from '../util/Constants'
 
 const db = firebase.firestore()
 

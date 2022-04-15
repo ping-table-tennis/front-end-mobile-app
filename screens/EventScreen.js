@@ -1,20 +1,116 @@
 
-import React, { useState, Component } from 'react'
-import {View, Text} from 'react-native'
+import React, { Component } from 'react'
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput } from 'react-native'
+import { NativeBaseProvider, HStack, VStack, Checkbox } from 'native-base'
+import { Feather, Entypo } from "@expo/vector-icons"
+import racket from "../assets/icons/racket.png"
+
+import Upcoming from "../Components/UpcomingEvents"
+import MatchScreen from "./MatchScreen"
 
 class EventScreen extends Component {
     constructor(props) {
-        super(props);
-        this.state = {  };
+        super(props)
+        this.state = {
+            isUpcoming: "Upcoming",
+            matches: [],
+            results: [],
+            upcoming: [],
+
+        }
     }
+
+    handleSwitch = (tab) => {
+        switch (tab) {
+            case "Upcoming":
+                this.setState({
+                    isUpcoming: "Upcoming",
+                })
+
+                break;
+            case "Matches":
+                this.setState({
+                    isUpcoming: "Matches",
+                })
+
+                break;
+            case "Results":
+                this.setState({
+                    isUpcoming: "Results",
+                })
+
+                break;
+        }
+    }
+
+
     render() {
+        const { isUpcoming, matches, upcoming, results } = this.state
+        // sub-branching the second clause
+        const generalOrDaily = isUpcoming ? upcoming : upcoming ? matches : results
+
         return (
-            <View style={{flex: 1, alignItems: 'center', justifyContent:'center'}}>
-                <Text onPress={() => navigation.navigate('Home')} style={{fontSize:26, fontWeight:'bold'}}> Event Screen </Text>
-            </View>
+            <NativeBaseProvider>
+                <View style={styles.EventScreen}>
+                    <HStack justifyContent="space-between" marginBottom="10px">
+                        <Feather name="menu" size={30} color="black" />
+                        <Feather name="more-vertical" size={30} color="black" />
+                    </HStack>
+                    <HStack justifyContent='center' marginTop="10px">
+                        <Text style={styles.textContainer}>Tournaments</Text>
+                        <Image resizeMode='contain' style={{ width: 22, height: 28 }} source={racket} />
+                    </HStack>
+
+                    <HStack paddingX={"15px"} justifyContent='space-evenly' >
+                        <TouchableOpacity onPress={() => this.handleSwitch("Upcoming")} style={[styles.barContainer, { borderColor: isUpcoming == "Upcoming" ? '#0D0BAA' : "#979797" }]}>
+                            <Text style={[styles.textContainer, { fontSize: 24, fontWeight: 'normal', color: isUpcoming == "Upcoming" ? '#0D0BAA' : "black" }]}>Upcoming</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => this.handleSwitch("Matches")} style={[styles.barContainer, { borderColor: isUpcoming == "Matches"  ? '#0D0BAA' : "#979797" }]}>
+                            <Text style={[styles.textContainer, { fontSize: 24, fontWeight: 'normal', color: isUpcoming == "Matches" ? '#0D0BAA' : "black" }]}>Matches</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => this.handleSwitch("Results")} style={[styles.barContainer, { borderColor: isUpcoming == "Results" ? '#0D0BAA' : "#979797" }]}>
+                            <Text style={[styles.textContainer, { fontSize: 24, fontWeight: 'normal', color: isUpcoming == "Results" ? '#0D0BAA' : "black" }]}>Results</Text>
+                        </TouchableOpacity>
+                    </HStack>
+                    {isUpcoming == "Upcoming" ? <Upcoming/> : isUpcoming == "Matches" ? <MatchScreen/> : <Upcoming/>}
+                </View>
+
             
-        );
+
+            </NativeBaseProvider>
+        )
     }
 }
 
 export default EventScreen;
+
+
+const styles = StyleSheet.create({
+    EventScreen: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: "#E3F6F5",
+        
+    },
+    textContainer: {
+        paddingRight: 6,
+        fontSize: 24,
+        fontWeight: "bold",
+
+    },
+    barContainer: {
+        width: "35%",
+        height: 85,
+        paddingBottom: 10,
+        
+        
+
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        borderBottomWidth: 4,
+    },
+    listContainer: {
+
+    }
+
+})

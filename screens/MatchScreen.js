@@ -29,7 +29,6 @@ const MatchesScreen = ({navigation}) => {
         })
     }
 
-    
     const showDeleteAlert = (index) => {
         Alert.alert(
             "Delete Match",
