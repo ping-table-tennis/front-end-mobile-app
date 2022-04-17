@@ -19,7 +19,7 @@ class UpcomingEvents extends Component {
     }
 
     fetchUpcoming = async () => { 
-        if (firebase.auth().currentUser !== null) {
+        if (auth.currentUser?.email !== null) {
             const userGeneralPlan = await db.collection('UpcomingEvents').get();
             // return userGeneralPlan.query.where('emails', '==', [coachEmail, studentEmail]).limit(1).get()
             userGeneralPlan.query.get().then((res) => {
@@ -59,7 +59,7 @@ class UpcomingEvents extends Component {
                     </HStack>
                     {filterTableData.map((data) => (
                         <HStack paddingX={"20px"} alignItems="center" justifyContent="space-between" style={styles.TableRow}>
-                            <Text style={[styles.TableTR]}>{moment(data.date).format("ll")}</Text>
+                            <Text style={[styles.TableTR]}>{data.date}</Text>
                             <Text onPress={() => Linking.openURL(data.url)}  style={[styles.TableTR, {color: "blue", textDecorationLine: "line"}]}>{data.title}</Text>
                             <Text  style={[styles.TableTR]}>{data.location}</Text>
                         </HStack>

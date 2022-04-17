@@ -1,8 +1,7 @@
 import React from "react"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { NavigationContainer } from '@react-navigation/native'
-import { Text, View, Image } from 'react-native'
+import { createDrawerNavigator } from '@react-navigation/drawer'
 
 
 // Icons
@@ -14,6 +13,7 @@ import Schedule from "../assets/icons/schedule"
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
+const Drawer = createDrawerNavigator()
 
 
 // Screens
@@ -24,6 +24,8 @@ import ScheduleScreen from "../screens/ScheduleScreen"
 import TrainingPlanScreen from "../screens/TrainingPlanScreen"
 import MoreToDo from "../screens/MoreToDo"
 import FriendScreen from "../screens/FriendScreen"
+import DrawerScreen from "../screens/DrawerScreen"
+import ProfileScreen from "../screens/ProfileScreen"
 
 import LoginScreen from '../screens/LoginScreen'
 import Started from "../screens/Started"
@@ -35,7 +37,7 @@ import MatchesScreen from "../screens/MatchScreen"
 import InputMatchScreen from "../screens/InputMatchScreen"
 
 import MainStackNavigator from "./StackNavigator"
-import ProfileScreen from "../screens/ProfileScreen"
+// import ProfileScreen from "../screens/ProfileScreen"
 
 // Bar Icons
 const tabBarIcon = ({ route }) => ({
@@ -60,13 +62,14 @@ const tabBarOptions = {
 }
 
 
+
 const TrainingStack = () => {
 	return (
 		<Stack.Navigator >
 			<Stack.Screen name="Home" options={{ headerShown: true }} component={HomeScreen} />
 			<Stack.Screen name="TrainingPlan" options={{ headerShown: true }} component={TrainingPlanScreen} />
 			<Stack.Screen name="ToDo" options={{ headerShown: true }} component={MoreToDo} />
-			
+			{/* <Stack.Screen name="Profile" options={{ headerShown: true }} component={ProfileScreen} /> */}
 			<Stack.Screen name="Registration" options={{ headerShown: false }} component={RegistrationScreen} />
 			<Stack.Screen name="Start" options={{ headerShown: false }} component={Started} />
             <Stack.Screen name="UserType" options={{ headerShown: false }} component={UserType} />
@@ -94,5 +97,12 @@ const BottomTabNavigator = () => {
 }
 
 
+const DrawerNavigator = () => {
+	return (
+		<Drawer.Navigator drawerContent={DrawerScreen} initialRouteName="Training">
+			<Drawer.Screen options={{ headerShown: false }} name="Tab" component={BottomTabNavigator} />
+		</Drawer.Navigator>
+	)
+}
 
-export default BottomTabNavigator
+export default DrawerNavigator
