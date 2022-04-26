@@ -1,6 +1,6 @@
 import { useNavigation, useFocusEffect } from '@react-navigation/core'
 import React, { useState, useEffect } from 'react'
-import { Image, BackHandler, StyleSheet, Text, FlatList, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
+import { Image, BackHandler, StyleSheet, Alert, Text, FlatList, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { firebase, auth } from '../firebase'
 import fab from '../assets/images/fab.png'
 import deleteImg from '../assets/icons/delete.png'
@@ -106,7 +106,7 @@ const MatchesScreen = ({navigation}) => {
                 <TouchableOpacity
                     style={styles.deleteButtonBackground}
                     onPress={() => showDeleteAlert(item.key)}>
-                    <Image source = {deleteImg} style = {styles.deleteButtonImage}></Image>
+                    <Image alt='' source = {deleteImg} style = {styles.deleteButtonImage}></Image>
                 </TouchableOpacity>
             </View>
             <View style={styles.center}>

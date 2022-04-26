@@ -19,6 +19,7 @@ const NotificationScreen = () => {
     }
 
     const getNoficationsData = () => {
+        if (notifications === null) return
         let data = []
         for (let i = 0; i < notifications.length; i++) {
             let entry = {
@@ -58,7 +59,7 @@ const NotificationScreen = () => {
 
     return (
         <View style={styles.container}>
-            { notifications.length != 0 ? <View></View> :
+            { notifications.length !== 0 ? <View></View> :
             <View style={styles.textContainer}>
                   <Text style = {styles.text}> No Notifications</Text>
             </View>

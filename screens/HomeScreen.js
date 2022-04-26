@@ -2,9 +2,12 @@ import { useNavigation } from '@react-navigation/core'
 import React, { useState, Component } from 'react'
 import { Pressable, Alert, Modal, StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
 import { firebase, auth } from '../firebase'
-import { NativeBaseProvider, HStack, Popover, VStack, Divider, Button } from 'native-base'
+import { NativeBaseProvider, HStack, Popover, VStack, Divider, Image } from 'native-base'
 import { Feather, AntDesign } from "@expo/vector-icons"
+import deleteImg from '../assets/icons/delete.png'
 import Student from "../DAOs/StudentDAOs"
+import * as Const from '../util/Constants'
+
 const db = firebase.firestore()
 
 class HomeScreen extends Component {
@@ -153,6 +156,35 @@ class HomeScreen extends Component {
         Alert.alert("", name + " has been added to your account.")
     }
 
+    showDeleteAlert = (index) => {
+        Alert.alert(
+            "Delete User",
+            "Are you sure that you want to delete this user? This cannot be undone.",
+            [
+              { text: Const.ALERT_CANCEL, style: "cancel"},
+              { text: Const.ALERT_YES, onPress: () => this.deleteUser(index) }
+            ]
+        );
+    }
+
+    deleteUser = async (name) => {
+        let id
+        const ref = db.collection('Students')
+        const snapshot = await ref.where('name', '==', name).get()
+
+        if (snapshot.empty) {
+            console.log('No matching documents.');
+            return;
+        }  
+          
+        snapshot.forEach(doc => {
+            console.log(doc.id, '=>', doc.data());
+            id = doc.id
+        });
+
+        await db.collection('Students').doc(id).delete()
+        this.fetchStudents()
+    }
 
     componentDidMount() {
         this.setUserData()
@@ -211,32 +243,13 @@ class HomeScreen extends Component {
                             <TouchableOpacity key={key} onPress={() => this.handleOnPressStudent(student)}>
                                 <HStack marginTop="15px" style={styles.studentBox} alignItems="center">
                                     <VStack width={"100%"} space={5}>
-                                        <HStack justifyContent={"flex-end"}>
-                                            <Popover placement='left' trigger={triggerProps => (
-                                                <TouchableOpacity {...triggerProps}>
-                                                    <Feather name="more-vertical" size={25} color="black" />
-                                                </TouchableOpacity>
-                                            )}>
-                                                <Popover.Content accessibilityLabel="Delete Customerd" w="56">
-                                                    <Popover.Arrow />
-                                                    <Popover.Header>{""}</Popover.Header>
-                                                    <Popover.CloseButton style={{ height: 50, paddingTop: 20, position: "relative", top: -5 }} />
-                                                    <Popover.Body>
-                                                        <VStack>
-                                                            <Divider />
-                                                            <TouchableOpacity style={styles.EditOption}>
-                                                                <Text>Edit {this.getParsedRole()}</Text>
-                                                            </TouchableOpacity>
-                                                            <Divider />
-                                                            <TouchableOpacity style={styles.EditOption}>
-                                                                <Text>Delete {this.getParsedRole()}</Text>
-                                                            </TouchableOpacity>
-                                                            {/* <Divider/> */}
-                                                        </VStack>
-                                                    </Popover.Body>
-                                                </Popover.Content>
-                                            </Popover>
-                                        </HStack>
+                                    <View style={styles.imageContainer}>
+                                        <TouchableOpacity
+                                            style={styles.deleteButtonBackground}
+                                            onPress={() => this.showDeleteAlert(student.name)}>
+                                            <Image alt = 'student' source = {deleteImg} style = {styles.deleteButtonImage}></Image>
+                                        </TouchableOpacity>
+                                    </View>
                                         <HStack style={{ position: "relative", top: -20 }} >
                                             <AntDesign name="user" size={30} color="black" />
                                             <Text style={{ paddingLeft: 20, fontSize: 18, fontWeight: "400" }}>{student.name}</Text>
@@ -360,5 +373,17 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: '700',
         fontSize: 16
+    },
+    deleteButtonBackground: {
+        width: 35,
+        height: 35,
+        alignItems: 'flex-end',
+    },
+    deleteButtonImage: {
+        width: 30,
+        height: 30,
+    },
+    imageContainer: {
+        alignItems: 'flex-end'
     },
 })
