@@ -7,6 +7,8 @@ import { Feather, AntDesign } from "@expo/vector-icons"
 import Student from "../DAOs/StudentDAOs"
 const db = firebase.firestore()
 
+import FriendScreen from "./FriendScreen"
+
 class HomeScreen extends Component {
     constructor(props) {
         super(props)
@@ -97,6 +99,10 @@ class HomeScreen extends Component {
         this.props.navigation.navigate("TrainingPlan", { student: student })
     }
 
+    handleNewStudentForm = () => {
+       this.props.navigation.navigate("Friend")
+    }
+
     render() {
         return (
             <NativeBaseProvider>
@@ -106,7 +112,7 @@ class HomeScreen extends Component {
                             <Feather name="menu" size={30} color="black" />
                         </TouchableOpacity>
                         <HStack>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={this.handleNewStudentForm}>
                                 <AntDesign name="pluscircleo" size={30} color="black" />
                             </TouchableOpacity>
                         </HStack>

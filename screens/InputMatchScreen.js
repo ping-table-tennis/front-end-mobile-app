@@ -9,6 +9,7 @@ const db = firebase.firestore()
 
 const InputMatchScreen = ({route, navigation}) => {
     const {index} = route.params
+ 
     const currentEmail = auth.currentUser?.email
     const [matches, setMatches] = useState([])
     const [result, setResult] = useState("")

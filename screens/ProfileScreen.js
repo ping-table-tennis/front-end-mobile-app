@@ -9,7 +9,7 @@ import * as Const from '../util/Constants'
 const db = firebase.firestore()
 
 const ProfileScreen = ({route, navigation}) => {
-    const {email} = route.params // get email from previous screen
+    // const {email} = route.params // get email from previous screen
     const [name, setName] = useState('')
     const [rating, setRating] = useState(0)
     const [role, setRole] = useState(false)
@@ -19,30 +19,30 @@ const ProfileScreen = ({route, navigation}) => {
         return true;
     }
 
-    const updateUserData = () => {
-        db.collection('Users').doc(email).get().then(doc => {
-            if (doc.exists) {   
-                let data = doc.data()
-                setName(data.name)
-                setRating(data.rating)
-                setRole(data.isStudent)
-            }
-        }).catch(err => {
-            console.log(err)
-        })
-    }
+    // const updateUserData = () => {
+        // db.collection('Users').doc(email).get().then(doc => {
+            // if (doc.exists) {   
+                // let data = doc.data()
+                // setName(data.name)
+                // setRating(data.rating)
+                // setRole(data.isStudent)
+            // }
+        // }).catch(err => {
+            // console.log(err)
+        // })
+    // }
 
     const parseRole = () => {
         return (role ? "Student" : "Coach")
     }
 
-    useEffect(() => {
-        updateUserData() 
-        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
-        return () => {
-            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
-        }
-    }, [])
+    // useEffect(() => {
+        // updateUserData() 
+        // BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
+        // return () => {
+            // BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
+        // }
+    // }, [])
 
     return (
         <KeyboardAvoidingView
@@ -50,11 +50,11 @@ const ProfileScreen = ({route, navigation}) => {
             behavior= {Platform.OS === "ios" ? "padding" : "height"} 
         >
                 <View style = {styles.cardContainer}>
-                    <View style = {styles.cardOutline}> 
-                        <Text style = {styles.roleText}> {parseRole()} </Text>
-                    </View>
+                    {/* <View style = {styles.cardOutline}>  */}
+                        {/* <Text style = {styles.roleText}> {parseRole()} </Text> */}
+                    {/* </View> */}
                     <Text style = {styles.nameText}>{name}</Text>
-                    <Text>{email}</Text>
+                    {/* <Text>{email}</Text> */}
                     <Image source = {pfp} style = {styles.pfp}/>
                     <Text style = {styles.ratingText}>{rating}</Text>
                     <Text style = {styles.ratingSubtext}>RATING</Text>

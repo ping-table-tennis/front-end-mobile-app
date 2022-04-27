@@ -46,6 +46,7 @@ class UpcomingEvents extends Component {
         const filterTableData = tableData.filter((data) => {
             return data.title.includes(this.state.searchValue) == true
         })
+        console.log(filterTableData)
         return (
             <VStack style={styles.UpcomingEvents} marginTop={"10px"}>
                 <HStack space={2} alignItems={"center"} style={[styles.TableRow, {borderTopRightRadius: 25,borderTopLeftRadius: 25}]} paddingX={"20px"}>
