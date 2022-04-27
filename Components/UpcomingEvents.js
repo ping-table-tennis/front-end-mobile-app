@@ -60,7 +60,7 @@ class UpcomingEvents extends Component {
                     {filterTableData.map((data) => (
                         <HStack paddingX={"20px"} alignItems="center" justifyContent="space-between" style={styles.TableRow}>
                             <Text style={[styles.TableTR]}>{data.date}</Text>
-                            <Text onPress={() => Linking.openURL(data.url)}  style={[styles.TableTR, {color: "blue", textDecorationLine: "line"}]}>{data.title}</Text>
+                            <Text onPress={() => Linking.openURL(data.url)}  style={[styles.TableTR, {color: "blue"}]}>{data.title}</Text>
                             <Text  style={[styles.TableTR]}>{data.location}</Text>
                         </HStack>
                     ))}

@@ -89,7 +89,7 @@ class HomeScreen extends Component {
     fetchStudents = async () => {
         if (firebase.auth().currentUser !== null) {
             const userGeneralPlan = await db.collection('Students').get();
-            userGeneralPlan.query.where('coach', '==', firebase.auth().currentUser.email).get().then((res) => {
+            userGeneralPlan.query.where('addedByEmail', '==', firebase.auth().currentUser.email).get().then((res) => {
                 this.setState({
                     students: res.docs.map(doc => doc.data())
                 })
@@ -107,7 +107,7 @@ class HomeScreen extends Component {
             await db.collection('Users').doc(this.state.friends[i]).get().then((doc) => {
                 let data = doc.data()
                 if (data.isStudent === !this.state.isStudent)
-                    arr.push(data.name)
+                    arr.push(data)
             })
         }
         this.setState({availableUsers: arr})
@@ -118,6 +118,7 @@ class HomeScreen extends Component {
         await db.collection('Users').doc(email).get().then(doc => {
             if (doc.exists) {
                 let data = doc.data()
+                this.setState({name: data.name})
                 this.setState({friends: data.friends})
                 this.setState({isStudent: data.isStudent})
             }
@@ -139,21 +140,46 @@ class HomeScreen extends Component {
                     <TouchableOpacity 
                         style = {styles.item}
                         onPress = { () => this.addNewUser(element) } >
-                            <Text style={styles.itemText}> {element} </Text>
+                            <Text style={styles.itemText}> {element.name} </Text>
                         </TouchableOpacity>
                 </View>)
         }
         return arr
     }
 
-    addNewUser = async (name) => {
+    addNewUser = async (user) => {
         await db.collection('Students').add({
-            name: name,
-            coach: auth.currentUser?.email
+            name: user.name,
+            addedByEmail: auth.currentUser?.email,
+            email: user.email
         });
         this.fetchStudents()
         this.showModal(false)
-        Alert.alert("", name + " has been added to your account.")
+        Alert.alert("", user.name + " has been added to your account.")
+
+        // send notification to the added person that they were added by this user
+        this.sendNotification(user)
+
+    }
+
+    sendNotification = async (user) => {
+        let notifs = []
+        let reference = db.collection('Users').doc(user.email)
+        await reference.get().then((doc) => {
+            if (doc.exists) {
+                notifs = doc.data().notifications
+            }
+        }).catch(e => console.log(e))
+
+        let notificationMsg = "You have been added by " + this.state.name + " (" +
+            auth.currentUser?.email + ")."
+        notifs.push(notificationMsg)
+        await db.collection('Users').doc(user.email).update({
+            notifications: notifs,
+            })
+        .catch(err => {
+            console.log(err)
+        })
     }
 
     showDeleteAlert = (index) => {
@@ -178,7 +204,6 @@ class HomeScreen extends Component {
         }  
           
         snapshot.forEach(doc => {
-            console.log(doc.id, '=>', doc.data());
             id = doc.id
         });
 
