@@ -2,6 +2,7 @@ import React from "react"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createDrawerNavigator } from '@react-navigation/drawer'
+import { auth } from '../firebase'
 
 
 // Icons
@@ -76,7 +77,7 @@ const TrainingStack = () => {
             {/*<Stack.Screen name="Login"   options={{ headerShown: false }} component={LoginScreen} />*/}
             <Stack.Screen name="Event"  options={{ headerShown: false }} component={EventScreen} />
 			<Stack.Screen name="InputMatch" component={InputMatchScreen} />
-			<Stack.Screen name="Profile" component={ProfileScreen} />
+			<Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} />
 		</Stack.Navigator>
 	)
 }
