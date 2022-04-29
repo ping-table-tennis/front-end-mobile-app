@@ -24,6 +24,7 @@ import ScheduleScreen from "../screens/ScheduleScreen"
 import TrainingPlanScreen from "../screens/TrainingPlanScreen"
 import MoreToDo from "../screens/MoreToDo"
 import FriendScreen from "../screens/FriendScreen"
+import AgendaScreen from "../screens/AgendaScreen"
 
 import LoginScreen from '../screens/LoginScreen'
 import Started from "../screens/Started"
@@ -74,6 +75,7 @@ const TrainingStack = () => {
             <Stack.Screen name="Event"  options={{ headerShown: false }} component={EventScreen} />
 			<Stack.Screen name="InputMatch" component={InputMatchScreen} />
 			<Stack.Screen name="Profile" component={ProfileScreen} />
+			<Stack.Screen name="Agenda" component={AgendaScreen} />
 		</Stack.Navigator>
 	)
 }

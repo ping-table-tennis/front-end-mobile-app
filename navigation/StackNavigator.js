@@ -9,6 +9,7 @@ import UserType from "../screens/UserType"
 // import TrainingScreen from "../screens/TrainingScreen"
 import EventScreen from "../screens/EventScreen"
 import RegistrationScreen from '../screens/RegistrationScreen'
+import AgendaScreen from "../screens/AgendaScreen"
 
 const Stack = createNativeStackNavigator()
 
@@ -22,6 +23,7 @@ const MainStackNavigator = async () => {
                 <Stack.Screen name="Registration" component={RegistrationScreen} />
                 <Stack.Screen name="Login"  component={LoginScreen} />
                 <Stack.Screen name="Event"  component={EventScreen} />
+                <Stack.Screen name= "Agenda" component={AgendaScreen} />
             </Stack.Navigator>
         // </NavigationContainer>
     )
