@@ -1,72 +1,90 @@
 import { useNavigation, useFocusEffect } from '@react-navigation/core'
 import React, { useState, useEffect } from 'react'
-import { Image, BackHandler, Alert, StyleSheet, Text, FlatList, View, KeyboardAvoidingView, useWindowDimensions, TouchableOpacity } from 'react-native'
+import { Image, BackHandler, StyleSheet, Alert, Text, FlatList, View, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { firebase, auth } from '../firebase'
 import fab from '../assets/images/fab.png'
-import { Center } from 'native-base'
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
+import deleteImg from '../assets/icons/delete.png'
 import Divider from 'react-native-divider';
+import * as Const from '../util/Constants'
+
 const db = firebase.firestore()
 
 
-const MatchesScreen = (props) => {
-
-    const currentEmail = auth.currentUser?.email
-    const navigation = useNavigation()
+const MatchesScreen = ({navigation}) => {
+    let currentEmail = auth.currentUser?.email
     const [matches, setMatches] = useState([])
-    const [score, setScore] = useState([])
 
     function handleBackButtonClick() {
         navigation.navigate("Training");
         return true;
     }
 
-    const getUserMatches = () => {
+    const updateUserMatches = () => {
         db.collection('Matches').doc(currentEmail).get().then(doc => {
-            if (doc.exists) 
+            if (doc.exists) {
                 setMatches(doc.data().matches)       
+            }
         }).catch(e => {
             console.log(e)
         })
     }
 
+    const showDeleteAlert = (index) => {
+        Alert.alert(
+            "Delete Match",
+            "Are you sure that you want to delete this match? This cannot be undone.",
+            [
+              { text: Const.ALERT_CANCEL, style: "cancel"},
+              { text: Const.ALERT_YES, onPress: () => deleteMatch(index) }
+            ]
+        );
+    }
+
+    const deleteMatch = async (index) => {
+        matches.splice(index, 1)
+        await db.collection('Matches').doc(currentEmail).update({matches: matches})
+        .catch(err => {
+            console.log(err)
+        })
+        updateUserMatches()
+    }
+
     const getMatchData = () => {
-        let data = []
-        for (let i = 0; i < matches.length; i++) {
-            let current = matches[i]
-            let dataElement = {
-                key: i,
-                notes: current.notes,
-                opponent: current.opponent,
-                result: current.result,
-                tournament: current.tournament,
-                score: current.score
+        if (matches != null) {
+            let data = []
+            for (let i = 0; i < matches.length; i++) {
+                let current = matches[i]
+                let dataElement = {
+                    key: i,
+                    notes: current.notes,
+                    opponent: current.opponent,
+                    result: current.result,
+                    tournament: current.tournament,
+                    score: current.score
+                }
+                data.push(dataElement)
             }
-            data.push(dataElement)
+            return data
         }
-        console.log(data)
-        return data
     }     
 
     useEffect(() => {
-        const unsubscribe = navigation.addListener("tabPress", async (e) => {
-            getUserMatches()
-            return () => unsubscribe();
-          }, [navigation])
         BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
         return () => {
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
         }
     }, [])
-
+    
+    
     useFocusEffect(
         React.useCallback(() => {
-            getUserMatches()
-            const unsubscribe = () => console.log("Removing focus from Matches Screen.")
-            
-            return () => unsubscribe()
+            currentEmail = auth.currentUser?.email
+            console.log("Focused:",currentEmail)
+            updateUserMatches()
+            return () => {}
         }, [])
     );
+    
 
     const getResultStyle = (mode) => {
         return {
@@ -74,11 +92,25 @@ const MatchesScreen = (props) => {
             fontSize: 20,  
         }
     }
-          
+
+    const goToInputScreen = (index) => {
+        navigation.navigate("InputMatch", {index: index})
+    }
+
     const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.itemBackground}>
+        <TouchableOpacity 
+            style={styles.itemBackground}
+            onPress={() => goToInputScreen(item.key)}>
+            
+            <View>
+                <TouchableOpacity
+                    style={styles.deleteButtonBackground}
+                    onPress={() => showDeleteAlert(item.key)}>
+                    <Image alt='' source = {deleteImg} style = {styles.deleteButtonImage}></Image>
+                </TouchableOpacity>
+            </View>
             <View style={styles.center}>
-                <Text style={styles.title}>Tournament: {item.tournament}</Text>
+                <Text style={styles.title}>{item.tournament}</Text>
                 <Text style={getResultStyle(item.result)}>{item.result}</Text>
                 <Text style={styles.a}>vs. {item.opponent}</Text>
             </View>
@@ -107,20 +139,19 @@ const MatchesScreen = (props) => {
     );
 
     return (
-
-
         <KeyboardAvoidingView
             style = {styles.container}
             behavior= {Platform.OS === "ios" ? "padding" : "height"} 
-        >
+        >   
             <FlatList 
                 data={getMatchData()}
                 renderItem={renderItem}
                 keyExtractor={item => item.key}
             />
+            
             <TouchableOpacity 
                 style = {styles.touchableOpacityStyle} 
-                onPress={() => navigation.navigate("InputMatch")}>
+                onPress = {() => goToInputScreen(-1)}>
                 <Image source={fab} style = {styles.floatingButtonStyle}/>
                 </TouchableOpacity>
         </KeyboardAvoidingView>
@@ -134,6 +165,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    deleteButtonBackground: {
+        width: 35,
+        height: 35,
+    },
+    deleteButtonImage: {
+        width: 30,
+        height: 30,
     },
     button: {
         backgroundColor: 'blue',

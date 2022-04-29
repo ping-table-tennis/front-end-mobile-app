@@ -9,6 +9,7 @@ import Event from "../assets/icons/events"
 import PingPong from "../assets/icons/pingPong"
 import Notification from "../assets/icons/notification"
 import Schedule from "../assets/icons/schedule"
+import { auth } from '../firebase'
 
 
 const Tab = createBottomTabNavigator()
@@ -77,7 +78,7 @@ const TrainingStack = () => {
             {/*<Stack.Screen name="Login"   options={{ headerShown: false }} component={LoginScreen} />*/}
             <Stack.Screen name="Event"  options={{ headerShown: false }} component={EventScreen} />
 			<Stack.Screen name="InputMatch" component={InputMatchScreen} />
-			{/* <Stack.Screen name="Profile" component={ProfileScreen} /> */}
+			{/* <Stack.Screen name="Profile" initialParams={{'email':auth.currentUser?.email}} component={ProfileScreen} /> */}
 			<Stack.Screen name="Profile" component={Profile} />
 			<Stack.Screen name="Friend" component={FriendScreen} />
 		</Stack.Navigator>
