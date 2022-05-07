@@ -19,7 +19,7 @@ class UpcomingEvents extends Component {
     }
 
     fetchUpcoming = async () => { 
-        if (auth.currentUser?.email !== null) {
+        if (firebase.auth().currentUser !== null) {
             const userGeneralPlan = await db.collection('UpcomingEvents').get();
             // return userGeneralPlan.query.where('emails', '==', [coachEmail, studentEmail]).limit(1).get()
             userGeneralPlan.query.get().then((res) => {
@@ -46,6 +46,7 @@ class UpcomingEvents extends Component {
         const filterTableData = tableData.filter((data) => {
             return data.title.includes(this.state.searchValue) == true
         })
+        console.log(filterTableData)
         return (
             <VStack style={styles.UpcomingEvents} marginTop={"10px"}>
                 <HStack space={2} alignItems={"center"} style={[styles.TableRow, {borderTopRightRadius: 25,borderTopLeftRadius: 25}]} paddingX={"20px"}>
@@ -59,8 +60,8 @@ class UpcomingEvents extends Component {
                     </HStack>
                     {filterTableData.map((data) => (
                         <HStack paddingX={"20px"} alignItems="center" justifyContent="space-between" style={styles.TableRow}>
-                            <Text style={[styles.TableTR]}>{data.date}</Text>
-                            <Text onPress={() => Linking.openURL(data.url)}  style={[styles.TableTR, {color: "blue"}]}>{data.title}</Text>
+                            <Text style={[styles.TableTR]}>{moment(data.date).format("ll")}</Text>
+                            <Text onPress={() => Linking.openURL(data.url)}  style={[styles.TableTR, {color: "blue", textDecorationLine: "line"}]}>{data.title}</Text>
                             <Text  style={[styles.TableTR]}>{data.location}</Text>
                         </HStack>
                     ))}

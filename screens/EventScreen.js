@@ -6,7 +6,9 @@ import { Feather, Entypo } from "@expo/vector-icons"
 import racket from "../assets/icons/racket.png"
 
 import Upcoming from "../Components/UpcomingEvents"
+// import Results from "../Components/ResultsEvents"
 import MatchScreen from "./MatchScreen"
+import InputMatchScreen from './InputMatchScreen'
 
 class EventScreen extends Component {
     constructor(props) {

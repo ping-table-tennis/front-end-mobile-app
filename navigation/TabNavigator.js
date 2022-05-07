@@ -12,6 +12,7 @@ import Notification from "../assets/icons/notification"
 import Schedule from "../assets/icons/schedule"
 
 
+
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 const Drawer = createDrawerNavigator()
@@ -27,6 +28,8 @@ import MoreToDo from "../screens/MoreToDo"
 import FriendScreen from "../screens/FriendScreen"
 import DrawerScreen from "../screens/DrawerScreen"
 import ProfileScreen from "../screens/ProfileScreen"
+
+// import Profile from "../screens/Profile"
 
 import LoginScreen from '../screens/LoginScreen'
 import Started from "../screens/Started"
@@ -78,6 +81,8 @@ const TrainingStack = () => {
             <Stack.Screen name="Event"  options={{ headerShown: false }} component={EventScreen} />
 			<Stack.Screen name="InputMatch" component={InputMatchScreen} />
 			<Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} />
+			<Stack.Screen name="Friends" component={FriendScreen}/>
+			
 		</Stack.Navigator>
 	)
 }
@@ -91,8 +96,8 @@ const BottomTabNavigator = () => {
 			<Tab.Screen name="Events" component={EventScreen} />
 			<Tab.Screen name="Notifications" component={NotificationScreen} />
 			<Tab.Screen name="Schedule" component={ScheduleScreen} />
-			<Tab.Screen name="Friend" component={FriendScreen} />
-			<Tab.Screen name="Match" component={MatchesScreen} />
+			{/* <Tab.Screen name="Match" component={MatchesScreen} /> */}
+			{/* <Stack.Screen name="Friends" component={FriendScreen}/> */}
 		</Tab.Navigator>
 	)
 }

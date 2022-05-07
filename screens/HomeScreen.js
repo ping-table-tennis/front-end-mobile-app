@@ -79,13 +79,6 @@ class HomeScreen extends Component {
         )
     }
 
-    handleSignOut = () => {
-        console.log("Signing out of", auth.currentUser?.email)
-        auth.signOut().then(() => {
-            this.props.navigation.navigate("Registration", { toRegister: false })
-        }).catch(error => alert(error.message))
-    }
-
     fetchStudents = async () => {
         if (firebase.auth().currentUser !== null) {
             const userGeneralPlan = await db.collection('Students').get();
@@ -214,6 +207,8 @@ class HomeScreen extends Component {
     componentDidMount() {
         this.setUserData()
         this.fetchStudents()
+        console.log("User:" ,  this.state)
+
     }
 
     handleOnPressStudent = (student) => {
@@ -221,7 +216,7 @@ class HomeScreen extends Component {
     }
 
     render() {
-        const { modalVisible } = this.state;
+        const { modalVisible, isStudent } = this.state;
         return (
             <NativeBaseProvider>
                 <View>
@@ -258,10 +253,9 @@ class HomeScreen extends Component {
                             </TouchableOpacity>
                         </HStack>
                     </HStack>
-                    {
-                        this.state.isStudent ? <Text style={styles.studentTitle}>Coaches</Text>
-                        : <Text style={styles.studentTitle}>Students</Text>
-                    }
+
+                     <Text style={styles.studentTitle}>{isStudent ? "Students" : "Coaches"}</Text>
+                    
                     <Text style={styles.studentTitle}></Text>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         {this.state.students.map((student, key) => (
@@ -284,9 +278,6 @@ class HomeScreen extends Component {
                             </TouchableOpacity>
                         ))}
                     </ScrollView>
-                    <TouchableOpacity onPress={this.handleSignOut}>
-                        <Text style={{ color: "blue" }}>LOGOUT</Text>
-                    </TouchableOpacity>
                 </View>
             </NativeBaseProvider>
         )

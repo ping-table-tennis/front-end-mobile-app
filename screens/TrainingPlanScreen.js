@@ -14,18 +14,32 @@ class TrainingPlanScreen extends Component {
             daily: ["11/30/2021"]
         }
     }
+
+    componentDidMount() {
+        console.log(this.props.route.params);
+    }
+
+
     render() {
         const { isGeneral, generals, daily } = this.state
         const generalOrDaily = isGeneral ? generals : daily
+        const {student} = this.props.route.params
         return (
             <NativeBaseProvider>
                 <View style={styles.TrainingPlanScreen}>
+                    
                     <HStack justifyContent="space-between" marginBottom="10px">
-                        <Feather name="menu" size={30} color="black" />
-                        <Feather name="more-vertical" size={30} color="black" />
+                        <TouchableOpacity onPress={() => this.props.navigation.toggleDrawer()}>
+                            <Feather name="menu" size={30} color="black" />
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity onPress={() => {}}>
+                            <Feather name="more-vertical" size={30} color="black" /> 
+                        </TouchableOpacity>
+                        
                     </HStack>
                     <HStack justifyContent='center' marginTop="10px">
-                        <Text style={styles.textContainer}>Leonador Diaz</Text>
+                        <Text style={styles.textContainer}>{student.name}</Text>
                         <Image resizeMode='contain' style={{ width: 22, height: 28 }} source={racket} />
                     </HStack>
                     <HStack justifyContent='center' marginTop="10px">
@@ -45,6 +59,7 @@ class TrainingPlanScreen extends Component {
                             {generalOrDaily.map((general) => (
                                 isGeneral ?
                                     <VStack background={"white"} width="100%" height='180' marginTop={"15px"} paddingBottom="20px" borderRadius={'20px'}>
+                                        {/* add functionality for the general plan - create an editable page */}
                                         <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
                                             <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>{general}</Text>
                                             <TouchableOpacity>
@@ -65,7 +80,7 @@ class TrainingPlanScreen extends Component {
                                     </VStack> :
                                     <VStack background={"white"} width="100%" minHeight={"250px"} marginTop={"15px"} paddingBottom="20px" paddingX={"15px"} borderRadius={'20px'}>
                                         <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
-                                            <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '400' }]}>{moment().format("MMM Do YYYY")}</Text>
+                                            <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '400' }]}>{moment().format("LL")}</Text>
                                             <TouchableOpacity>
                                                 <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
                                             </TouchableOpacity>

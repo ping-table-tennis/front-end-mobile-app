@@ -6,7 +6,7 @@ import Divider from 'react-native-divider';
 const db = firebase.firestore()
 
 const InputMatchScreen = ({route, navigation}) => {
-    const {index} = route.params
+    // const {index} = route.params
     const currentEmail = auth.currentUser?.email
     const [matches, setMatches] = useState([])
     const [result, setResult] = useState("")
@@ -23,9 +23,6 @@ const InputMatchScreen = ({route, navigation}) => {
         });
 
     const setEditValues = () => {
-        console.log(index)
-        if (index == -1) return
-
         db.collection('Matches').doc(currentEmail).get().then(doc => {
             if (doc.exists) {
                 setMatches(doc.data().matches)
