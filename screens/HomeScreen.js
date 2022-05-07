@@ -159,7 +159,6 @@ class HomeScreen extends Component {
 
         // send notification to the added person that they were added by this user
         this.sendNotification(user)
-
     }
 
     sendNotification = async (user) => {
@@ -212,8 +211,18 @@ class HomeScreen extends Component {
     }
 
     componentDidMount() {
+        this.state.currentEmail = auth.currentUser?.email
         this.setUserData()
         this.fetchStudents()
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
+            this.state.currentEmail = auth.currentUser?.email
+            this.setUserData()
+            this.fetchStudents()
+        });
+    } 
+
+    componentWillUnmount() {
+        this._unsubscribe()
     }
 
     handleOnPressStudent = (student) => {
