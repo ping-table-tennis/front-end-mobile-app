@@ -27,8 +27,9 @@ function DrawerScreen(props) {
             </Drawer.Section>
             <Drawer.Section >
                 <Drawer.Item style={{ padding: 7 }} label="Training" onPress={() => props.navigation.navigate("Training")} />
-                <Drawer.Item style={{ padding: 7 }} label="Profile" onPress={() => props.navigation.navigate("Profile")} />
+                {/* <Drawer.Item style={{ padding: 7 }} label="Profile" onPress={() => props.navigation.navigate("Profile")} /> */}
                 <Drawer.Item style={{ padding: 7 }} label="Friends" onPress={() => props.navigation.navigate("Friends")} />
+                <Drawer.Item style={{ padding: 7 }} label="Profile" onPress={() => props.navigation.navigate("Profile")} />
             </Drawer.Section>
              <Drawer.Item style={{ padding: 7 }} label="Logout" onPress={handleSignOut}/>
         </View>
@@ -70,3 +71,5 @@ const styles = StyleSheet.create({
     }
 })
 export default DrawerScreen
+
+

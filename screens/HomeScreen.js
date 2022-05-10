@@ -110,8 +110,7 @@ class HomeScreen extends Component {
         let email = auth.currentUser?.email
         await db.collection('Users').doc(email).get().then(doc => {
             if (doc.exists) {
-                let data = doc.data()
-
+                const data = doc.data()
 
                 this.setState({ name: data.name })
                 this.setState({ friends: data.friends })
@@ -122,7 +121,7 @@ class HomeScreen extends Component {
     }
 
     showModal = (visible) => {
-        this.setState({ modalVisible: visible });
+        this.setState({ modalVisible: visible })
     }
 
 

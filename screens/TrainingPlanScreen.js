@@ -16,10 +16,17 @@ class TrainingPlanScreen extends Component {
             daily: ["11/30/2021"],
             dailyPlans: [],
             generalPlans: [],
-            showModal: false,
+            showGeneralModal: false,
             dailyTasks: [],
             modalTitle: "",
-            modalData: {}
+            modalvalue: "",
+            modalData: {},
+            generalPlansIDs: {
+                "Work To Do/General": "",
+                "Weaknesses": "",
+                "Strenghts": "",
+                "Physical Training": ""
+            }
         }
     }
 
@@ -30,11 +37,33 @@ class TrainingPlanScreen extends Component {
             modalTitle: ""
         })
     }
+    handleGeneralModalCancel = () => {
+        this.setState({
+            showGeneralModal: false,
+            modalTitle: "",
+            modalvalue: ""
+        })
+    }
+    handleGeneralModalSave = async () => {
+        const { modalTitle, modalvalue, generalPlansIDs } = this.state
+        await db.collection("General Plans").doc(generalPlansIDs[modalTitle]).update({
+            title: modalvalue
+        }).then(async () => {
+            console.log("Doc created successfully.")
+            this.setState({
+                showGeneralModal: false,
+                modalvalue: ""
+            })
+            this.fetGeneralPlan()
+        }).catch(err => console.log(err))
+        console.log(generalPlansIDs[modalTitle]);
+    }
 
     handleModalOnPress = (title) => {
         this.setState({
-            showModal: true,
-            modalTitle: title
+            showGeneralModal: true,
+            modalTitle: title,
+            modalvalue: ""
         })
     }
 
@@ -43,9 +72,15 @@ class TrainingPlanScreen extends Component {
             const { student } = this.props.route.params
             const userGeneralPlan = await db.collection('General Plans').get();
             userGeneralPlan.query.where('emails', '==', [firebase.auth().currentUser.email, student.email]).get().then((res) => {
+                const datas = res.docs.map(doc => doc.data())
+                let ids = {}
+                res.docs.map((doc, key) => {
+                    ids[datas[key].category] = doc.id
+                })
 
                 this.setState({
-                    generalPlans: res.docs.map(doc => doc.data())
+                    generalPlans: res.docs.map(doc => doc.data()),
+                    generalPlansIDs: ids
                 })
             }).catch(err => {
                 console.log(err)
@@ -79,7 +114,6 @@ class TrainingPlanScreen extends Component {
         const { isGeneral, generals, daily, dailyPlans, generalPlans } = this.state
         const generalOrDaily = isGeneral ? generals : daily
         const { student } = this.props.route.params
-        console.log(generalPlans)
         return (
             <NativeBaseProvider>
                 <View style={styles.TrainingPlanScreen}>
@@ -115,7 +149,7 @@ class TrainingPlanScreen extends Component {
                                 <VStack key={key} background={"white"} width="100%" height='180' marginTop={"15px"} paddingBottom="20px" borderRadius={'20px'}>
                                     <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
                                         <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>{generalTask.category}</Text>
-                                        <TouchableOpacity onPress={() => this.handleModalOnPress("general")}>
+                                        <TouchableOpacity onPress={() => this.handleModalOnPress(generalTask.category)}>
                                             <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
                                         </TouchableOpacity>
                                     </HStack>
@@ -129,7 +163,26 @@ class TrainingPlanScreen extends Component {
                                             <Text style={{ color: "blue" }}>View more</Text>
                                         </TouchableOpacity>
                                     </View>
+                                    <Modal isOpen={this.state.showGeneralModal} onClose={this.handleGeneralModalCancel}>
+                                        <Modal.Content maxWidth="400px">
+                                            <Modal.CloseButton />
+                                            <Modal.Header>{this.state.modalTitle}</Modal.Header>
+                                            <Modal.Body>
+                                                <FormControl mt="3">
+                                                    <FormControl.Label>Title</FormControl.Label>
+                                                    <Input value={this.state.modalvalue} onChangeText={(value) => this.setState({ modalvalue: value })} />
+                                                </FormControl>
+                                            </Modal.Body>
+                                            <Modal.Footer>
+                                                <Button.Group space={2}>
+                                                    <Button variant="ghost" colorScheme="blueGray" onPress={this.handleGeneralModalCancel}>Cancel</Button>
+                                                    <Button onPress={this.handleGeneralModalSave}>Save</Button>
+                                                </Button.Group>
+                                            </Modal.Footer>
+                                        </Modal.Content>
+                                    </Modal>
                                 </VStack>
+
                             ))}
                         </ScrollView> :
                         <VStack>
@@ -223,6 +276,6 @@ const styles = StyleSheet.create({
     },
     ScrollView: {
         height: "100%",
-        paddingBottom: 200 
+        paddingBottom: 200
     }
 })
