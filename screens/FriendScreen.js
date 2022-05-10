@@ -174,7 +174,7 @@ const FriendScreen = ({navigation}) => {
 
     const displayFriendRequests = () => {
         let arr = []
-        if (requests.length !== 0) {
+        if (requests !== undefined && requests.length !== 0) {
             for (let i = 0; i < requests.length; i++) {
                 let req = requests[i]
                 arr.push(
