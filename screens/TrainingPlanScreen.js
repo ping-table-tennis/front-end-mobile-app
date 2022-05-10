@@ -1,42 +1,97 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput } from 'react-native'
-import { NativeBaseProvider, HStack, VStack, Checkbox } from 'native-base'
+import { NativeBaseProvider, HStack, VStack, Checkbox, Modal, Button, FormControl, Input } from 'native-base'
 import { Feather, Entypo } from "@expo/vector-icons"
 import racket from "../assets/icons/racket.png"
 import moment from "moment"
+import { auth, firebase } from '../firebase'
+const db = firebase.firestore()
 
 class TrainingPlanScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            isGeneral: false,
+            isGeneral: true,
             generals: ["Work To Do/General", "Weaknesses", "Strenghts", "Physical Training"],
-            daily: ["11/30/2021"]
+            daily: ["11/30/2021"],
+            dailyPlans: [],
+            generalPlans: [],
+            showModal: false,
+            dailyTasks: [],
+            modalTitle: "",
+            modalData: {}
+        }
+    }
+
+
+    handleModalCancel = () => {
+        this.setState({
+            showModal: false,
+            modalTitle: ""
+        })
+    }
+
+    handleModalOnPress = (title) => {
+        this.setState({
+            showModal: true,
+            modalTitle: title
+        })
+    }
+
+    fetGeneralPlan = async () => {
+        if (firebase.auth().currentUser !== null) {
+            const { student } = this.props.route.params
+            const userGeneralPlan = await db.collection('General Plans').get();
+            userGeneralPlan.query.where('emails', '==', [firebase.auth().currentUser.email, student.email]).get().then((res) => {
+
+                this.setState({
+                    generalPlans: res.docs.map(doc => doc.data())
+                })
+            }).catch(err => {
+                console.log(err)
+            })
+        }
+    }
+
+    groupByKey = (list, key) => list.reduce((hash, obj) => ({ ...hash, [obj[key]]: (hash[obj[key]] || []).concat(obj) }), {})
+
+    fetDailyPlan = async () => {
+        if (firebase.auth().currentUser !== null) {
+            const { student } = this.props.route.params
+            const userDailyPlan = await db.collection('Daily Plans').get();
+            userDailyPlan.query.where('emails', '==', [firebase.auth().currentUser.email, student.email]).get().then((res) => {
+                this.setState({
+                    dailyPlans: res.docs.map(doc => doc.data()),
+                })
+            }).catch(err => {
+                console.log(err)
+            })
         }
     }
 
     componentDidMount() {
-        console.log(this.props.route.params);
+        this.fetGeneralPlan()
+        this.fetDailyPlan()
     }
 
 
     render() {
-        const { isGeneral, generals, daily } = this.state
+        const { isGeneral, generals, daily, dailyPlans, generalPlans } = this.state
         const generalOrDaily = isGeneral ? generals : daily
-        const {student} = this.props.route.params
+        const { student } = this.props.route.params
+        console.log(generalPlans)
         return (
             <NativeBaseProvider>
                 <View style={styles.TrainingPlanScreen}>
-                    
+
                     <HStack justifyContent="space-between" marginBottom="10px">
                         <TouchableOpacity onPress={() => this.props.navigation.toggleDrawer()}>
                             <Feather name="menu" size={30} color="black" />
                         </TouchableOpacity>
-                        
-                        <TouchableOpacity onPress={() => {}}>
-                            <Feather name="more-vertical" size={30} color="black" /> 
+
+                        <TouchableOpacity onPress={() => { }}>
+                            <Feather name="more-vertical" size={30} color="black" />
                         </TouchableOpacity>
-                        
                     </HStack>
                     <HStack justifyContent='center' marginTop="10px">
                         <Text style={styles.textContainer}>{student.name}</Text>
@@ -54,57 +109,86 @@ class TrainingPlanScreen extends Component {
                         </TouchableOpacity>
                     </HStack>
 
+                    {isGeneral &&
+                        generalPlans.map((generalTask, key) => (
+                            <VStack key={key} background={"white"} width="100%" height='180' marginTop={"15px"} paddingBottom="20px" borderRadius={'20px'}>
+                                <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
+                                    <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>{"general"}</Text>
+                                    <TouchableOpacity onPress={() => this.handleModalOnPress("general")}>
+                                        <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
+                                    </TouchableOpacity>
+                                </HStack>
+                                <View style={{ paddingBottom: 10 }} showsVerticalScrollIndicator={false}>
+                                    {[0].map(() => (
+                                        <HStack alignItems={"center"} marginLeft="20px">
+                                            <Text style={styles.listContainer}>{generalTask.title}</Text>
+                                        </HStack>
+                                    ))}
+                                    <TouchableOpacity onPress={() => this.props.navigation.navigate("ToDo")} style={{ marginTop: 10, paddingLeft: 20 }}>
+                                        <Text style={{ color: "blue" }}>View more</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </VStack>
+                        ))
+                    }
+
                     <VStack>
                         <ScrollView contentContainerStyle={{ paddingBottom: 200 }} showsVerticalScrollIndicator={false}>
-                            {generalOrDaily.map((general) => (
-                                isGeneral ?
-                                    <VStack background={"white"} width="100%" height='180' marginTop={"15px"} paddingBottom="20px" borderRadius={'20px'}>
-                                        {/* add functionality for the general plan - create an editable page */}
-                                        <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
-                                            <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>{general}</Text>
-                                            <TouchableOpacity>
-                                                <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
-                                            </TouchableOpacity>
-                                        </HStack>
-                                        <View style={{ paddingBottom: 10 }} showsVerticalScrollIndicator={false}>
-                                            {[0, 1, 2].map(() => (
-                                                <HStack alignItems={"center"} marginLeft="20px">
-                                                    <Entypo name="dot-single" size={20} color="black" />
-                                                    <Text style={styles.listContainer}>Leonador Diaz</Text>
-                                                </HStack>
-                                            ))}
-                                            <TouchableOpacity onPress={() => this.props.navigation.navigate("ToDo")} style={{ marginTop: 10, paddingLeft: 35 }}>
-                                                <Text style={{ color: "blue" }}>View more</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </VStack> :
-                                    <VStack background={"white"} width="100%" minHeight={"250px"} marginTop={"15px"} paddingBottom="20px" paddingX={"15px"} borderRadius={'20px'}>
-                                        <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
-                                            <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '400' }]}>{moment().format("LL")}</Text>
-                                            <TouchableOpacity>
-                                                <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
-                                            </TouchableOpacity>
-                                        </HStack>
-                                        <HStack justifyContent='center' padding={'15px'} height="50px" >
-                                            <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>Goals For Today</Text>
-                                        </HStack>
-                                        <HStack paddingX={"10px"} >
-                                            <TextInput multiline style={[styles.textContainer, { fontSize: 12, fontWeight: 'normal' }]} value={"Improve topspin consistency when balls are going randomli."}/>
-                                        </HStack>
-                                        <VStack space={2} paddingX={"5px"} marginTop={"20px"}>
-                                            {[0,2,3, 4,5,3,4,5,6,7,7,8,8,].map(() => (
-                                                <HStack alignItems={"center"}>
-                                                    <Checkbox defaultIsChecked={true} value="" style={{borderRadius: 100, width: 30, height: 30, marginRight: 10}}/>
-                                                    <Text>20 topspins in random forehand side </Text>
-                                                </HStack>
-                                            ))}
-                                        </VStack>
+                            {
+                                !isGeneral &&
+                                <VStack background={"white"} width="100%" minHeight={"250px"} marginTop={"15px"} paddingBottom="20px" paddingX={"15px"} borderRadius={'20px'}>
+                                    <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
+                                        <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '400' }]}>{moment().format("LL")}</Text>
+                                        <TouchableOpacity onPress={() => this.handleModalOnPress(moment().format("LL"))}>
+                                            <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
+                                        </TouchableOpacity>
+                                    </HStack>
+                                    <HStack justifyContent='center' padding={'15px'} height="50px" >
+                                        <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>Goals For Today</Text>
+                                    </HStack>
+                                    <HStack paddingX={"10px"} >
+                                        <TextInput multiline style={[styles.textContainer, { fontSize: 12, fontWeight: 'normal' }]} value={"Improve topspin consistency when balls are going randomli."} />
+                                    </HStack>
+                                    <VStack space={2} paddingX={"5px"} marginTop={"20px"}>
+                                        {dailyPlans[0].checklist_tasks.map((dailyTask, key) => (
+                                            <HStack key={key} alignItems={"center"}>
+                                                <Checkbox defaultIsChecked={dailyPlans[0].checklist_iscompleted[key] ? true : false} value="" style={{ borderRadius: 100, width: 30, height: 30, marginRight: 10 }} />
+                                                <Text>{dailyTask}</Text>
+                                            </HStack>
+                                        ))}
                                     </VStack>
-                            ))}
+                                </VStack>}
+
                         </ScrollView>
                     </VStack>
-                </View>
-            </NativeBaseProvider>
+                </View >
+                <Modal isOpen={this.state.showModal} onClose={this.handleModalCancel}>
+                    <Modal.Content maxWidth="400px">
+                        <Modal.CloseButton />
+                        <Modal.Header>{this.state.modalTitle}</Modal.Header>
+                        <Modal.Body>
+                            <FormControl mt="3">
+                                <FormControl.Label>Email</FormControl.Label>
+                                <Input />
+                            </FormControl>
+                            <FormControl mt="3">
+                                <FormControl.Label>Email</FormControl.Label>
+                                <Input />
+                            </FormControl>
+                            <FormControl mt="3">
+                                <FormControl.Label>Email</FormControl.Label>
+                                <Input />
+                            </FormControl>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button.Group space={2}>
+                                <Button variant="ghost" colorScheme="blueGray" onPress={this.handleModalCancel}>Cancel</Button>
+                                <Button onPress={this.handleModalCancel}>Save</Button>
+                            </Button.Group>
+                        </Modal.Footer>
+                    </Modal.Content>
+                </Modal>
+            </NativeBaseProvider >
         )
     }
 }

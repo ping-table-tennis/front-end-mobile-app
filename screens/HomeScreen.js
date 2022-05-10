@@ -30,21 +30,21 @@ class HomeScreen extends Component {
         this.student = new Student()
     }
 
-    fetchUpcoming = async () => { 
+    fetchUpcoming = async () => {
         if (firebase.auth().currentUser !== null) {
             const userGeneralPlan = await db.collection('UpcomingEvents').get();
             // return userGeneralPlan.query.where('emails', '==', [coachEmail, studentEmail]).limit(1).get()
             userGeneralPlan.query.get().then((res) => {
                 console.log(res.docs.map(doc => doc.data()))
-            //     this.setState({
-            //         tableData: res.docs.map(doc => doc.data())
-            //     })
+                //     this.setState({
+                //         tableData: res.docs.map(doc => doc.data())
+                //     })
             })
         }
         console.log("error: " + firebase.auth().currentUser)
     }
 
-    
+
     PopOver = () => {
         return (
             <VStack>
@@ -103,7 +103,7 @@ class HomeScreen extends Component {
                     arr.push(data)
             })
         }
-        this.setState({availableUsers: arr})
+        this.setState({ availableUsers: arr })
     }
 
     setUserData = async () => {
@@ -111,9 +111,11 @@ class HomeScreen extends Component {
         await db.collection('Users').doc(email).get().then(doc => {
             if (doc.exists) {
                 let data = doc.data()
-                this.setState({name: data.name})
-                this.setState({friends: data.friends})
-                this.setState({isStudent: data.isStudent})
+
+
+                this.setState({ name: data.name })
+                this.setState({ friends: data.friends })
+                this.setState({ isStudent: data.isStudent })
             }
         })
         this.setAvailableUsers()
@@ -123,18 +125,18 @@ class HomeScreen extends Component {
         this.setState({ modalVisible: visible });
     }
 
-        
+
     displayModalContent = () => {
         let arr = []
         for (let i = 0; i < this.state.availableUsers.length; i++) {
             let element = this.state.availableUsers[i]
             arr.push(
-                <View key = {i}>
-                    <TouchableOpacity 
-                        style = {styles.item}
-                        onPress = { () => this.addNewUser(element) } >
-                            <Text style={styles.itemText}> {element.name} </Text>
-                        </TouchableOpacity>
+                <View key={i}>
+                    <TouchableOpacity
+                        style={styles.item}
+                        onPress={() => this.addNewUser(element)} >
+                        <Text style={styles.itemText}> {element.name} </Text>
+                    </TouchableOpacity>
                 </View>)
         }
         return arr
@@ -169,10 +171,10 @@ class HomeScreen extends Component {
         notifs.push(notificationMsg)
         await db.collection('Users').doc(user.email).update({
             notifications: notifs,
-            })
-        .catch(err => {
-            console.log(err)
         })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     showDeleteAlert = (index) => {
@@ -180,8 +182,8 @@ class HomeScreen extends Component {
             "Delete User",
             "Are you sure that you want to delete this user? This cannot be undone.",
             [
-              { text: Const.ALERT_CANCEL, style: "cancel"},
-              { text: Const.ALERT_YES, onPress: () => this.deleteUser(index) }
+                { text: Const.ALERT_CANCEL, style: "cancel" },
+                { text: Const.ALERT_YES, onPress: () => this.deleteUser(index) }
             ]
         );
     }
@@ -194,8 +196,8 @@ class HomeScreen extends Component {
         if (snapshot.empty) {
             console.log('No matching documents.');
             return;
-        }  
-          
+        }
+
         snapshot.forEach(doc => {
             id = doc.id
         });
@@ -204,16 +206,14 @@ class HomeScreen extends Component {
         this.fetchStudents()
     }
 
-    componentDidMount() {
-        this.setUserData()
-        this.fetchStudents()
-        console.log("User:" ,  this.state)
-
-    }
-
     handleOnPressStudent = (student) => {
         this.props.navigation.navigate("TrainingPlan", { student: student })
     }
+    componentDidMount() {
+        this.setUserData()
+        this.fetchStudents()
+    }
+
 
     render() {
         const { modalVisible, isStudent } = this.state;
@@ -221,25 +221,25 @@ class HomeScreen extends Component {
             <NativeBaseProvider>
                 <View>
                     <Modal
-                    animationType="fade"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        this.setModalVisible(!modalVisible);
-                    }}
+                        animationType="fade"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => {
+                            this.setModalVisible(!modalVisible);
+                        }}
                     >
-                    <View style={styles.centeredView}>
-                        <View style={styles.modalView}>
-                            <Text style={styles.modalTitle}> Add a New {this.getParsedRole()}</Text>
-                            {this.displayModalContent()}
-                            <Pressable
-                                style={[styles.button, styles.buttonClose]}
-                                onPress={() => this.showModal(!modalVisible)}
-                            >
-                                <Text style={styles.textStyle}>Close</Text>
-                            </Pressable>
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <Text style={styles.modalTitle}> Add a New {this.getParsedRole()}</Text>
+                                {this.displayModalContent()}
+                                <Pressable
+                                    style={[styles.button, styles.buttonClose]}
+                                    onPress={() => this.showModal(!modalVisible)}
+                                >
+                                    <Text style={styles.textStyle}>Close</Text>
+                                </Pressable>
+                            </View>
                         </View>
-                    </View>
                     </Modal>
                 </View>
                 <View style={styles.HomeScreen}>
@@ -248,27 +248,27 @@ class HomeScreen extends Component {
                             <Feather name="menu" size={30} color="black" />
                         </TouchableOpacity>
                         <HStack>
-                            <TouchableOpacity onPress = {() => this.showModal(true)}>
+                            <TouchableOpacity onPress={() => this.showModal(true)}>
                                 <AntDesign name="pluscircleo" size={30} color="black" />
                             </TouchableOpacity>
                         </HStack>
                     </HStack>
 
-                     <Text style={styles.studentTitle}>{isStudent ? "Students" : "Coaches"}</Text>
-                    
+                    <Text style={styles.studentTitle}>{isStudent ? "Students" : "Coaches"}</Text>
+
                     <Text style={styles.studentTitle}></Text>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         {this.state.students.map((student, key) => (
                             <TouchableOpacity key={key} onPress={() => this.handleOnPressStudent(student)}>
                                 <HStack marginTop="15px" style={styles.studentBox} alignItems="center">
                                     <VStack width={"100%"} space={5}>
-                                    <View style={styles.imageContainer}>
-                                        <TouchableOpacity
-                                            style={styles.deleteButtonBackground}
-                                            onPress={() => this.showDeleteAlert(student.name)}>
-                                            <Image alt = 'student' source = {deleteImg} style = {styles.deleteButtonImage}></Image>
-                                        </TouchableOpacity>
-                                    </View>
+                                        <View style={styles.imageContainer}>
+                                            <TouchableOpacity
+                                                style={styles.deleteButtonBackground}
+                                                onPress={() => this.showDeleteAlert(student.name)}>
+                                                <Image alt='student' source={deleteImg} style={styles.deleteButtonImage}></Image>
+                                            </TouchableOpacity>
+                                        </View>
                                         <HStack style={{ position: "relative", top: -20 }} >
                                             <AntDesign name="user" size={30} color="black" />
                                             <Text style={{ paddingLeft: 20, fontSize: 18, fontWeight: "400" }}>{student.name}</Text>
