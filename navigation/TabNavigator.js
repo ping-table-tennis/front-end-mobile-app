@@ -48,13 +48,13 @@ const tabBarIcon = ({ route }) => ({
 	tabBarIcon: ({ focused }) => {
 		switch (route.name) {
 			case "Training":
-				return  focused ? <PingPong fill="#0D0BAA"/> : <PingPong fill="#666666" /> 
+				return focused ? <PingPong fill="#0D0BAA" /> : <PingPong fill="#666666" />
 			case "Events":
-				return  focused ? <Event fill="#0D0BAA"/> : <Event fill="#666666"/> 
+				return focused ? <Event fill="#0D0BAA" /> : <Event fill="#666666" />
 			case "Notifications":
-				return  focused ? <Notification fill="#0D0BAA"/> : <Notification fill="#666666"/> 
+				return focused ? <Notification fill="#0D0BAA" /> : <Notification fill="#666666" />
 			case "Schedule":
-				return  focused ? <Schedule fill="#0D0BAA"/> : <Schedule fill="#666666"/> 
+				return focused ? <Schedule fill="#0D0BAA" /> : <Schedule fill="#666666" />
 		}
 	}
 })
@@ -62,7 +62,7 @@ const tabBarIcon = ({ route }) => ({
 // Tab Options
 const tabBarOptions = {
 	activeTintColor: "#0D0BAA",
-	inactiveTintColor:"#666666" 
+	inactiveTintColor: "#666666"
 }
 
 
@@ -74,15 +74,15 @@ const TrainingStack = () => {
 			<Stack.Screen name="TrainingPlan" options={{ headerShown: true }} component={TrainingPlanScreen} />
 			<Stack.Screen name="ToDo" options={{ headerShown: true }} component={MoreToDo} />
 			{/* <Stack.Screen name="Profile" options={{ headerShown: true }} component={ProfileScreen} /> */}
-			<Stack.Screen name="Registration" options={{ headerShown: false }} component={RegistrationScreen} />
+			{/* <Stack.Screen name="Registration" options={{ headerShown: false }} component={RegistrationScreen} /> */}
 			<Stack.Screen name="Start" options={{ headerShown: false }} component={Started} />
-            <Stack.Screen name="UserType" options={{ headerShown: false }} component={UserType} />
-            {/*<Stack.Screen name="Login"   options={{ headerShown: false }} component={LoginScreen} />*/}
-            <Stack.Screen name="Event"  options={{ headerShown: false }} component={EventScreen} />
+			<Stack.Screen name="UserType" options={{ headerShown: false }} component={UserType} />
+			{/*<Stack.Screen name="Login"   options={{ headerShown: false }} component={LoginScreen} />*/}
+			<Stack.Screen name="Event" options={{ headerShown: false }} component={EventScreen} />
 			<Stack.Screen name="InputMatch" component={InputMatchScreen} />
-			<Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} />
-			<Stack.Screen name="Friends" component={FriendScreen}/>
-			
+			<Stack.Screen name="Profile" initialParams={{ 'email': auth.currentUser?.email }} component={ProfileScreen} />
+			<Stack.Screen name="Friends" component={FriendScreen} />
+
 		</Stack.Navigator>
 	)
 }
@@ -103,7 +103,10 @@ const BottomTabNavigator = () => {
 }
 
 
-const DrawerNavigator = () => {
+const DrawerNavigator = (props) => {
+	if (!auth.currentUser) {
+		// props.navigation.navigate("Registration", { toRegister: false })
+	}
 	return (
 		<Drawer.Navigator drawerContent={DrawerScreen} initialRouteName="Training">
 			<Drawer.Screen options={{ headerShown: false }} name="Tab" component={BottomTabNavigator} />
@@ -111,4 +114,13 @@ const DrawerNavigator = () => {
 	)
 }
 
-export default DrawerNavigator
+const MainNavigator = () => {
+	return (
+		<Stack.Navigator>
+			<Stack.Screen options={{ headerShown: false }} name="Drawer" component={DrawerNavigator} />
+			<Stack.Screen options={{ headerShown: false, gestureEnabled: false }} name="Registration" component={LoginScreen} />
+		</Stack.Navigator>
+	)
+}
+
+export default MainNavigator

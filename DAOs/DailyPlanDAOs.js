@@ -13,7 +13,7 @@ export class DailyPlan {
 
     get = async (coachEmail, studentEmail) => {
         const userGeneralPlan = await db.collection('Daily Plans').get();
-        return userGeneralPlan.query.where('emails', '==', [coachEmail, studentEmail]).limit(1).get()
+        return userGeneralPlan.query.where('emails', '==', [coachEmail, studentEmail]).get()
     }
 
     post = async (plan) => {

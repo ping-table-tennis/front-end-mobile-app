@@ -47,20 +47,17 @@ class LoginScreen extends Component {
         this.setState({
             [input]: value
         })
-        // console.log(this.state)
     }
 
     handleLogin = () => {
         const { email, password } = this.state
         if (!this.state.isRegistering) {
-            // console.log(this.state)
             auth.signInWithEmailAndPassword(email.toLowerCase(), password)
                 .then(async credentials => {
+                    this.props.navigation.navigate("Training")
                     const user = credentials.user
                     console.log('Logged in as: ', user.uid)
-                    await AsyncStorage.setItem("user", user.uid).then(() => {
-                        this.props.navigation.navigate("Training")
-                    })
+                    // await AsyncStorage.setItem("user", user.uid)
                 }).catch(error =>
                     Alert.alert("Login Failed", "Please check that your email and password are correct.", error))
         } else {
@@ -94,8 +91,8 @@ class LoginScreen extends Component {
             .then(async () => {
                 console.log("User (" + email + ") created successfully.")
                 await AsyncStorage.setItem("user", user.uid).then(() => {
-                        this.props.navigation.navigate("Training")
-                    })
+                    this.props.navigation.navigate("Training")
+                })
             })
     };
 
@@ -104,10 +101,10 @@ class LoginScreen extends Component {
         console.log(this.state)
 
         if (this.state.isRegistering) {
-        //     console.log(Number.isInteger(parseInt(rating)));
+            //     console.log(Number.isInteger(parseInt(rating)));
             if (this.isRegistrationValid()) {
                 auth.createUserWithEmailAndPassword(email, password)
-                    .then( async (credentials) => {
+                    .then(async (credentials) => {
                         let data = {}
                         data['email'] = email
                         data['full_name'] = name
@@ -118,10 +115,12 @@ class LoginScreen extends Component {
                                 console.log('Logged in as: ', user.uid)
                                 await AsyncStorage.setItem("user", user.uid).then(async () => {
                                     this.props.navigation.navigate("Training")
-                                })}).catch(error =>  {
-                                    Alert.alert("Login Failed", "Please check that your email and password are correct.", error)
-                                })})
+                                })
+                            }).catch(error => {
+                                Alert.alert("Login Failed", "Please check that your email and password are correct.", error)
+                            })
                         })
+                    })
 
 
                     .catch((error) =>
@@ -211,7 +210,7 @@ class LoginScreen extends Component {
                                 style={styles.input}
                             />
                             <SelectDropdown
-                                buttonTextStyle={{color: "rgba(000,000,000,0.5)"}}
+                                buttonTextStyle={{ color: "rgba(000,000,000,0.5)" }}
                                 buttonStyle={[styles.input]}
                                 defaultButtonText="Select User Type"
                                 data={this.state.usertype}
@@ -235,7 +234,7 @@ class LoginScreen extends Component {
 
                         </View>
                     )}
-                   {!this.state.isRegistering ? <Text
+                    {!this.state.isRegistering ? <Text
                         style={{
                             width: "100%",
                             textAlign: "center",
@@ -249,13 +248,13 @@ class LoginScreen extends Component {
                 </View>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity onPress={this.state.isRegistering ? this.handleRegister : this.handleLogin} style={styles.button}>
-                        <Text style={styles.buttonText}>{this.state.isRegistering ?  "Sign Up" : "Login"}</Text>
+                        <Text style={styles.buttonText}>{this.state.isRegistering ? "Sign Up" : "Login"}</Text>
                     </TouchableOpacity>
                 </View>
                 <NativeBaseProvider>
                     <HStack marginTop={20}>
-                        <Text style={{ fontSize: 16 }}>{this.state.isRegistering ?  "Already have an account? " : "Don't have an account yet? "}</Text>
-                        <TouchableOpacity onPress={() => this.setState({isRegistering: !this.state.isRegistering})}>
+                        <Text style={{ fontSize: 16 }}>{this.state.isRegistering ? "Already have an account? " : "Don't have an account yet? "}</Text>
+                        <TouchableOpacity onPress={() => this.setState({ isRegistering: !this.state.isRegistering })}>
                             <Text style={styles.SignUpText}>{this.state.isRegistering ? "Login" : "Sign Up."}</Text>
                         </TouchableOpacity>
                     </HStack>
