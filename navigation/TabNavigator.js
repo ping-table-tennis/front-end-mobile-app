@@ -28,6 +28,7 @@ import MoreToDo from "../screens/MoreToDo"
 import FriendScreen from "../screens/FriendScreen"
 import DrawerScreen from "../screens/DrawerScreen"
 import ProfileScreen from "../screens/ProfileScreen"
+import Profile from "../screens/Profile"
 
 // import Profile from "../screens/Profile"
 
@@ -80,8 +81,9 @@ const TrainingStack = () => {
             {/*<Stack.Screen name="Login"   options={{ headerShown: false }} component={LoginScreen} />*/}
             <Stack.Screen name="Event"  options={{ headerShown: false }} component={EventScreen} />
 			<Stack.Screen name="InputMatch" component={InputMatchScreen} />
-			<Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} />
+			{/* <Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} /> */}
 			<Stack.Screen name="Friends" component={FriendScreen}/>
+			<Stack.Screen name="Profile" component={Profile} />
 			
 		</Stack.Navigator>
 	)
@@ -96,6 +98,7 @@ const BottomTabNavigator = () => {
 			<Tab.Screen name="Events" component={EventScreen} />
 			<Tab.Screen name="Notifications" component={NotificationScreen} />
 			<Tab.Screen name="Schedule" component={ScheduleScreen} />
+			
 			{/* <Tab.Screen name="Match" component={MatchesScreen} /> */}
 			{/* <Stack.Screen name="Friends" component={FriendScreen}/> */}
 		</Tab.Navigator>
