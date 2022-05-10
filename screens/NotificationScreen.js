@@ -59,7 +59,7 @@ const NotificationScreen = () => {
 
     return (
         <View style={styles.container}>
-            { notifications.length !== 0 ? <View></View> :
+            { notifications !== undefined && notifications.length !== 0 ? <View></View> :
             <View style={styles.textContainer}>
                   <Text style = {styles.text}> No Notifications</Text>
             </View>
