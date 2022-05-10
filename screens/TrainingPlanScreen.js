@@ -109,33 +109,31 @@ class TrainingPlanScreen extends Component {
                         </TouchableOpacity>
                     </HStack>
 
-                    {isGeneral &&
-                        generalPlans.map((generalTask, key) => (
-                            <VStack key={key} background={"white"} width="100%" height='180' marginTop={"15px"} paddingBottom="20px" borderRadius={'20px'}>
-                                <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
-                                    <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>{"general"}</Text>
-                                    <TouchableOpacity onPress={() => this.handleModalOnPress("general")}>
-                                        <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
-                                    </TouchableOpacity>
-                                </HStack>
-                                <View style={{ paddingBottom: 10 }} showsVerticalScrollIndicator={false}>
-                                    {[0].map(() => (
-                                        <HStack alignItems={"center"} marginLeft="20px">
-                                            <Text style={styles.listContainer}>{generalTask.title}</Text>
-                                        </HStack>
-                                    ))}
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate("ToDo")} style={{ marginTop: 10, paddingLeft: 20 }}>
-                                        <Text style={{ color: "blue" }}>View more</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </VStack>
-                        ))
-                    }
-
-                    <VStack>
-                        <ScrollView contentContainerStyle={{ paddingBottom: 200 }} showsVerticalScrollIndicator={false}>
-                            {
-                                !isGeneral &&
+                    {isGeneral ?
+                        <ScrollView>
+                            {generalPlans.map((generalTask, key) => (
+                                <VStack key={key} background={"white"} width="100%" height='180' marginTop={"15px"} paddingBottom="20px" borderRadius={'20px'}>
+                                    <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
+                                        <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>{generalTask.category}</Text>
+                                        <TouchableOpacity onPress={() => this.handleModalOnPress("general")}>
+                                            <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
+                                        </TouchableOpacity>
+                                    </HStack>
+                                    <View style={{ paddingBottom: 10 }} showsVerticalScrollIndicator={false}>
+                                        {[0].map(() => (
+                                            <HStack alignItems={"center"} marginLeft="20px">
+                                                <Text style={styles.listContainer}>{generalTask.title}</Text>
+                                            </HStack>
+                                        ))}
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate("ToDo")} style={{ marginTop: 10, paddingLeft: 20 }}>
+                                            <Text style={{ color: "blue" }}>View more</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </VStack>
+                            ))}
+                        </ScrollView> :
+                        <VStack>
+                            <ScrollView contentContainerStyle={{ paddingBottom: 200 }} showsVerticalScrollIndicator={false}>
                                 <VStack background={"white"} width="100%" minHeight={"250px"} marginTop={"15px"} paddingBottom="20px" paddingX={"15px"} borderRadius={'20px'}>
                                     <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
                                         <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '400' }]}>{moment().format("LL")}</Text>
@@ -157,10 +155,11 @@ class TrainingPlanScreen extends Component {
                                             </HStack>
                                         ))}
                                     </VStack>
-                                </VStack>}
+                                </VStack>
+                            </ScrollView>
+                        </VStack>
+                    }
 
-                        </ScrollView>
-                    </VStack>
                 </View >
                 <Modal isOpen={this.state.showModal} onClose={this.handleModalCancel}>
                     <Modal.Content maxWidth="400px">
@@ -201,6 +200,8 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: "#E3F6F5",
+
+
     },
     textContainer: {
         paddingRight: 6,
@@ -219,6 +220,9 @@ const styles = StyleSheet.create({
     },
     listContainer: {
 
+    },
+    ScrollView: {
+        height: "100%",
+        paddingBottom: 200 
     }
-
 })
