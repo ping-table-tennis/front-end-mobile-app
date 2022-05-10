@@ -26,17 +26,13 @@ class TrainingPlanScreen extends Component {
                 "Weaknesses": "",
                 "Strenghts": "",
                 "Physical Training": ""
-            }
+            },
+            dailyPlansID: ""
         }
     }
 
 
-    handleModalCancel = () => {
-        this.setState({
-            showModal: false,
-            modalTitle: ""
-        })
-    }
+
     handleGeneralModalCancel = () => {
         this.setState({
             showGeneralModal: false,
@@ -44,6 +40,7 @@ class TrainingPlanScreen extends Component {
             modalvalue: ""
         })
     }
+
     handleGeneralModalSave = async () => {
         const { modalTitle, modalvalue, generalPlansIDs } = this.state
         await db.collection("General Plans").doc(generalPlansIDs[modalTitle]).update({
@@ -97,11 +94,31 @@ class TrainingPlanScreen extends Component {
             userDailyPlan.query.where('emails', '==', [firebase.auth().currentUser.email, student.email]).get().then((res) => {
                 this.setState({
                     dailyPlans: res.docs.map(doc => doc.data()),
+                    dailyPlansID: res.docs.map(doc => doc.id)[0]
                 })
             }).catch(err => {
                 console.log(err)
             })
         }
+    }
+
+    handleOnTaskUpdate = async (value, key, tasks) => {
+        const { dailyPlansID } = this.state
+        let updatedTask = tasks
+        updatedTask[key] = value
+
+        await db.collection("Daily Plans").doc(dailyPlansID).update({
+            checklist_iscompleted: updatedTask
+        }).then(async () => {
+            console.log("Doc created successfully.")
+            this.fetDailyPlan()
+            this.setState({
+                showGeneralModal: false,
+                modalvalue: ""
+            })
+            this.fetGeneralPlan()
+        }).catch(err => console.log(err))
+
     }
 
     componentDidMount() {
@@ -142,7 +159,6 @@ class TrainingPlanScreen extends Component {
                             <Text style={[styles.textContainer, { fontSize: 24, fontWeight: 'normal', color: !isGeneral ? '#0D0BAA' : "black" }]}>Daily</Text>
                         </TouchableOpacity>
                     </HStack>
-
                     {isGeneral ?
                         <ScrollView>
                             {generalPlans.map((generalTask, key) => (
@@ -182,7 +198,6 @@ class TrainingPlanScreen extends Component {
                                         </Modal.Content>
                                     </Modal>
                                 </VStack>
-
                             ))}
                         </ScrollView> :
                         <VStack>
@@ -203,7 +218,7 @@ class TrainingPlanScreen extends Component {
                                     <VStack space={2} paddingX={"5px"} marginTop={"20px"}>
                                         {dailyPlans[0].checklist_tasks.map((dailyTask, key) => (
                                             <HStack key={key} alignItems={"center"}>
-                                                <Checkbox defaultIsChecked={dailyPlans[0].checklist_iscompleted[key] ? true : false} value="" style={{ borderRadius: 100, width: 30, height: 30, marginRight: 10 }} />
+                                                <Checkbox onChange={(value) => this.handleOnTaskUpdate(value, key, dailyPlans[0].checklist_iscompleted)} defaultIsChecked={dailyPlans[0].checklist_iscompleted[key] ? true : false} value="" style={{ borderRadius: 100, width: 30, height: 30, marginRight: 10 }} />
                                                 <Text>{dailyTask}</Text>
                                             </HStack>
                                         ))}
@@ -212,7 +227,6 @@ class TrainingPlanScreen extends Component {
                             </ScrollView>
                         </VStack>
                     }
-
                 </View >
                 <Modal isOpen={this.state.showModal} onClose={this.handleModalCancel}>
                     <Modal.Content maxWidth="400px">
