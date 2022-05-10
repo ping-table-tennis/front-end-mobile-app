@@ -83,8 +83,8 @@ const TrainingStack = () => {
 			<Stack.Screen name="InputMatch" component={InputMatchScreen} />
 			{/* <Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} /> */}
 			<Stack.Screen name="Friends" component={FriendScreen}/>
-			{/* <Stack.Screen name="Profile" component={Profile} /> */}
-			<Stack.Screen name="Profile" initialParams={{ 'email': auth.currentUser?.email }} component={ProfileScreen} />
+			<Stack.Screen name="Profile" component={Profile} />
+			{/* <Stack.Screen name="Profile" initialParams={{ 'email': auth.currentUser?.email }} component={ProfileScreen} /> */}
 			
 		</Stack.Navigator>
 	)
