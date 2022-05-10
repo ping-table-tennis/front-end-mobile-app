@@ -19,7 +19,7 @@ const NotificationScreen = () => {
     }
 
     const getNoficationsData = () => {
-        if (notifications === null) return
+        if (notifications === undefined) return
         let data = []
         for (let i = 0; i < notifications.length; i++) {
             let entry = {
