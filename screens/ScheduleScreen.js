@@ -14,6 +14,7 @@ LogBox.ignoreAllLogs();//Ignore all log notifications
 
 //https://www.educba.com/react-native-calendar/
 //https://github.com/wix/react-native-calendars#readme
+// https://github.com/wix/react-native-calendars/issues/610
 
 class ScheduleScreen extends Component {
     constructor(props) {
