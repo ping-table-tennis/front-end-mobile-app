@@ -1,6 +1,6 @@
 
 import React, { useState, Component } from 'react'
-import {View, Text, StyleSheet, Modal, Pressable, TouchableOpacity, Alert} from 'react-native'
+import {View, Text, StyleSheet, Modal, Pressable, TouchableOpacity, Alert, TextInput } from 'react-native'
 import { Calendar, CalendarList, Agenda} from 'react-native-calendars'
 import { Table, Row, Rows } from 'react-native-table-component';
 import { firebase, auth } from '../firebase'
@@ -33,7 +33,8 @@ class ScheduleScreen extends Component {
             ],
             modalVisible: false,
             availableCoaches: [],
-            currentCoachText: ''
+            currentCoachText: '',
+            eventModal: false
         }
     }
 
@@ -143,9 +144,28 @@ class ScheduleScreen extends Component {
     componentWillUnmount() {
         this._unsubscribe()
     }
+    
+   showEventModal = (visible) => {
+      this.setState({ eventModal: visible });
+    }
+
+    displayEventModalContent = () => {
+        return (
+          <View style={styles.inputContainer}>
+                <View style={styles.row}>
+                  <Text> Time </Text>
+                    <TextInput
+                        placeholder = "HH:MM"
+                        style = {styles.input}
+                    />
+                </View>
+          </View>
+        );
+    }
 
     render() {
         const { modalVisible } = this.state;
+        const { eventModal } = this.state;
         const state = this.state
         return (
                 <View style={{flex: 1, alignItems: 'center', justifyContent:'center'}}>
@@ -193,15 +213,43 @@ class ScheduleScreen extends Component {
                         </View>
                         </Modal>
                     </View>
-                    <Text onPress={() => this.props.navigation.navigate('Home')} style={{fontSize:26, fontWeight:'bold'}}> Schedule Screen </Text>
+                   
+                    {/* start Vivi Modal */}
+                    <TouchableOpacity onPress={() => this.showEventModal(true)}>
+                            <Text style = {{textAlign:'center', color:'blue'}}> Add Event </Text>
+                        </TouchableOpacity>
+                    <View>
+                        <Modal
+                        animationType="fade"
+                        transparent={true}
+                        visible={eventModal}
+                        onRequestClose={() => {
+                            this.setModalVisible(!eventModal);
+                        }}
+                        >
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <Text style={styles.modalText}> Add Event</Text>
+                                {this.displayEventModalContent()}
+                                <Pressable
+                                    style={[styles.button, styles.buttonClose]}
+                                    onPress={() => this.showEventModal(!eventModal)}
+                                >
+                                    <Text style={styles.textStyle}>Close</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                        </Modal>
+                    </View>
+                    {/* end Vivi modal */}
+
+
                     <Calendar
                         // Initially visible month. Default = Date()
                         //current={'2022-03-28'}
                         minDate={'2020-01-01'}
                         // Handler which gets executed on day press. Default = undefined
-                        onDayPress={day => {
-                            console.log('selected day', day);
-                        }}
+                        onDayPress={day => {  }}
                         // Handler which gets executed on day long press. Default = undefined
                         onDayLongPress={day => {
                             console.log('selected day', day);
@@ -209,9 +257,7 @@ class ScheduleScreen extends Component {
                         // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
                         monthFormat={'MMMM yyyy'}
                         // Handler which gets executed when visible month changes in calendar. Default = undefined
-                        onMonthChange={month => {
-                            console.log('month changed', month);
-                        }}
+                        onMonthChange={month => { }}
                         // If firstDay=1 week starts from Monday. Note that dayNames and dayNamesShort should still start from Sunday.
                         firstDay={1}
                     />
@@ -304,5 +350,41 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     head: { height: 40, backgroundColor: '#f1f8ff' },
-    text: { margin: 2 }
+    text: { margin: 2 },
+
+    // stuff for input in Vivi modal
+    inputContainer: {
+        alignItems: 'center',
+        backgroundColor: 'white',
+        padding: 3,
+        borderRadius: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        marginTop: 1,
+        marginBottom: 1,
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    input: {
+        width: 75,
+        height: 40,
+        marginLeft: 5,
+        marginRight: 5,
+        borderWidth: 0.7,
+        borderRadius: 2,
+        borderColor: 'black', 
+        textAlign: 'center',
+    },
+   row: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 5,
+        marginBottom: 5,
+        height: 50,
+    }
 })
