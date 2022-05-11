@@ -4,8 +4,12 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput 
 import { NativeBaseProvider, HStack, VStack, Checkbox } from 'native-base'
 import { Feather, Entypo } from "@expo/vector-icons"
 import racket from "../assets/icons/racket.png"
+import moment from "moment"
+import firebase from 'firebase'
+import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 
 import Upcoming from "../Components/UpcomingEvents"
+import Results from "../Components/ResultsEvents"
 import MatchScreen from "./MatchScreen"
 import InputMatchScreen from './InputMatchScreen'
 
@@ -73,7 +77,7 @@ class EventScreen extends Component {
                             <Text style={[styles.textContainer, { fontSize: 24, fontWeight: 'normal', color: isUpcoming == "Results" ? '#0D0BAA' : "black" }]}>Results</Text>
                         </TouchableOpacity>
                     </HStack>
-                    {isUpcoming == "Upcoming" ? <Upcoming/> : isUpcoming == "Matches" ? <MatchScreen/> : <Upcoming/>}
+                    {isUpcoming == "Upcoming" ? <Upcoming/> : isUpcoming == "Matches" ? <MatchScreen/> : <Results/>}
                 </View>
             </NativeBaseProvider>
         )

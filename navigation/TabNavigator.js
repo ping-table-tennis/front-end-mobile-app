@@ -42,6 +42,7 @@ import MatchesScreen from "../screens/MatchScreen"
 import InputMatchScreen from "../screens/InputMatchScreen"
 
 import MainStackNavigator from "./StackNavigator"
+import AvailabilityScreen from "../screens/AvailabilityScreen"
 // import ProfileScreen from "../screens/ProfileScreen"
 
 // Bar Icons
@@ -85,7 +86,8 @@ const TrainingStack = () => {
 			<Stack.Screen name="Friends" component={FriendScreen}/>
 			<Stack.Screen name="Profile" component={Profile} />
 			{/* <Stack.Screen name="Profile" initialParams={{ 'email': auth.currentUser?.email }} component={ProfileScreen} /> */}
-			
+			{/* <Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} /> */}
+            <Stack.Screen name="Availability" component={AvailabilityScreen} />
 		</Stack.Navigator>
 	)
 }

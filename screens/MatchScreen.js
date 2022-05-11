@@ -52,7 +52,7 @@ const MatchesScreen = () => {
     }
 
     const getMatchData = () => {
-        if (matches != null) {
+        if (matches !== undefined) {
             let data = []
             for (let i = 0; i < matches.length; i++) {
                 let current = matches[i]
