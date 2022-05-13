@@ -204,8 +204,8 @@ class HomeScreen extends Component {
         const snapshot = await ref.where('email', '==', email).get()
 
         if (snapshot.empty) {
-            console.log('No matching documents.');
-            return;
+            console.log('No matching documents.')
+            return
         }
 
         snapshot.forEach(doc => {
@@ -258,7 +258,7 @@ class HomeScreen extends Component {
             this.state.currentEmail = auth.currentUser?.email
             this.fetchUserData()
             this.fetchStudents()
-        });
+        })
     }
 
    
