@@ -191,7 +191,6 @@ class HomeScreen extends Component {
     showDeleteAlert = (index) => {
         Alert.alert(
             "Delete User",
-            
             "Are you sure that you want to delete this user? This cannot be undone.",
             [
                 { text: Const.ALERT_CANCEL, style: "cancel" },
