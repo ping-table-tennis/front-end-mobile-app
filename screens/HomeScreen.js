@@ -35,7 +35,7 @@ class HomeScreen extends Component {
     }
 
     fetchUpcoming = async () => {
-        if (firebase.auth().currentUser !== null) {
+        if (firebase.auth().currentUser !== undefined) {
             const userGeneralPlan = await db.collection('UpcomingEvents').get();
             // return userGeneralPlan.query.where('emails', '==', [coachEmail, studentEmail]).limit(1).get()
             userGeneralPlan.query.get().then((res) => {
@@ -84,7 +84,7 @@ class HomeScreen extends Component {
     }
 
     fetchStudents = async () => {
-        if (firebase.auth().currentUser !== null) {
+        if (firebase.auth().currentUser !== undefined) {
             const userGeneralPlan = await db.collection('Students').get();
             userGeneralPlan.query.where('addedByEmail', '==', firebase.auth().currentUser.email).get().then((res) => {
                 this.setState({
@@ -165,7 +165,6 @@ class HomeScreen extends Component {
 
         // send notification to the added person that they were added by this user
         this.sendNotification(user)
-
     }
 
     sendNotification = async (user) => {
@@ -252,21 +251,17 @@ class HomeScreen extends Component {
     }
 
     componentDidMount() {
+        this.state.currentEmail = auth.currentUser?.email
         this.fetchUserData()
         this.fetchStudents()
-
         this.props.navigation.addListener('focus', () => {
+            this.state.currentEmail = auth.currentUser?.email
             this.fetchUserData()
             this.fetchStudents()
-        })
-
-        setTimeout(() => {
-            this.fetchUserData()
-            this.fetchStudents()
-        }, 500)
+        });
     }
 
-
+   
     render() {
         const { modalVisible, isStudent } = this.state
         return (

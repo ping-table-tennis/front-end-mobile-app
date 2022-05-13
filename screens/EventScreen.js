@@ -4,8 +4,12 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput 
 import { NativeBaseProvider, HStack, VStack, Checkbox } from 'native-base'
 import { Feather, Entypo } from "@expo/vector-icons"
 import racket from "../assets/icons/racket.png"
+import moment from "moment"
+import firebase from 'firebase'
+import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 
 import Upcoming from "../Components/UpcomingEvents"
+import Results from "../Components/ResultsEvents"
 import MatchScreen from "./MatchScreen"
 import InputMatchScreen from './InputMatchScreen'
 
@@ -54,7 +58,9 @@ class EventScreen extends Component {
             <NativeBaseProvider>
                 <View style={styles.EventScreen}>
                     <HStack justifyContent="space-between" marginBottom="10px">
-                        <Feather name="menu" size={30} color="black" />
+                        <TouchableOpacity onPress={() => this.props.navigation.toggleDrawer()}>
+                            <Feather name="menu" size={30} color="black" />
+                        </TouchableOpacity>
                         <Feather name="more-vertical" size={30} color="black" />
                     </HStack>
                     <HStack justifyContent='center' marginTop="10px">
@@ -73,7 +79,7 @@ class EventScreen extends Component {
                             <Text style={[styles.textContainer, { fontSize: 24, fontWeight: 'normal', color: isUpcoming == "Results" ? '#0D0BAA' : "black" }]}>Results</Text>
                         </TouchableOpacity>
                     </HStack>
-                    {isUpcoming == "Upcoming" ? <Upcoming/> : isUpcoming == "Matches" ? <MatchScreen/> : <Upcoming/>}
+                    {isUpcoming == "Upcoming" ? <Upcoming/> : isUpcoming == "Matches" ? <MatchScreen/> : <Results/>}
                 </View>
             </NativeBaseProvider>
         )
