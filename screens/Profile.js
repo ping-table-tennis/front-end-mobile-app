@@ -69,13 +69,6 @@ class Profile extends Component {
             // })
 
             if (!result.cancelled) {
-                const storage = getStorage()
-                const ref = ref(storage, "image.png")
-
-                const byte = (await fetch(result.uri)).blob()
-
-                await uploadBytes(ref, byte)
-
                 this.setState({
                     image: result.uri
                 })

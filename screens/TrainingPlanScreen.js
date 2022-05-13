@@ -170,9 +170,9 @@ class TrainingPlanScreen extends Component {
                                         </TouchableOpacity>
                                     </HStack>
                                     <View style={{ paddingBottom: 10 }} showsVerticalScrollIndicator={false}>
-                                        {[0].map(() => (
+                                        {generalTask.map((task) => (
                                             <HStack alignItems={"center"} marginLeft="20px">
-                                                <Text style={styles.listContainer}>{generalTask.title}</Text>
+                                                <Text style={styles.listContainer}>{task}</Text>
                                             </HStack>
                                         ))}
                                         <TouchableOpacity onPress={() => this.props.navigation.navigate("ToDo")} style={{ marginTop: 10, paddingLeft: 20 }}>

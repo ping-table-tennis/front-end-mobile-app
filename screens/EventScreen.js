@@ -58,7 +58,9 @@ class EventScreen extends Component {
             <NativeBaseProvider>
                 <View style={styles.EventScreen}>
                     <HStack justifyContent="space-between" marginBottom="10px">
-                        <Feather name="menu" size={30} color="black" />
+                        <TouchableOpacity onPress={() => this.props.navigation.toggleDrawer()}>
+                            <Feather name="menu" size={30} color="black" />
+                        </TouchableOpacity>
                         <Feather name="more-vertical" size={30} color="black" />
                     </HStack>
                     <HStack justifyContent='center' marginTop="10px">
