@@ -113,7 +113,7 @@ class Profile extends Component {
 
     handleOnPress = async () => {
         const { name, email, rating, style, homeClub, lessonRate, image } = this.state
-        await db.collection("Users").doc(firebase.auth().currentUser.email).set({
+        await db.collection("Users").doc(firebase.auth().currentUser.email).update({
             email,
             name,
             rating: parseInt(rating),

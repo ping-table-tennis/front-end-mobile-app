@@ -27,11 +27,10 @@ class TrainingPlanScreen extends Component {
                 "Strenghts": "",
                 "Physical Training": ""
             },
-            dailyPlansID: ""
+            dailyPlansID: "",
+            generalTask: null
         }
     }
-
-
 
     handleGeneralModalCancel = () => {
         this.setState({
@@ -42,29 +41,31 @@ class TrainingPlanScreen extends Component {
     }
 
     handleGeneralModalSave = async () => {
-        const { modalTitle, modalvalue, generalPlansIDs } = this.state
-        await db.collection("General Plans").doc(generalPlansIDs[modalTitle]).update({
-            title: modalvalue
-        }).then(async () => {
+        const { modalTitle, modalvalue, generalPlansIDs, generalTask } = this.state
+        let tasks = generalTask
+        tasks.push(modalvalue)
+
+        await db.collection("General Plans").doc(generalPlansIDs[modalTitle]).update({ tasks }).then(async () => {
             console.log("Doc created successfully.")
             this.setState({
                 showGeneralModal: false,
                 modalvalue: ""
             })
-            this.fetGeneralPlan()
+            this.fetchGeneralPlan()
         }).catch(err => console.log(err))
-        console.log(generalPlansIDs[modalTitle]);
+        console.log("generalTask:", tasks)
     }
 
-    handleModalOnPress = (title) => {
+    handleModalOnPress = (generalTask) => {
         this.setState({
             showGeneralModal: true,
-            modalTitle: title,
-            modalvalue: ""
+            modalTitle: generalTask.category,
+            modalvalue: "",
+            generalTask: generalTask.tasks
         })
     }
 
-    fetGeneralPlan = async () => {
+    fetchGeneralPlan = async () => {
         if (firebase.auth().currentUser !== null) {
             const { student } = this.props.route.params
             const userGeneralPlan = await db.collection('General Plans').get();
@@ -116,34 +117,36 @@ class TrainingPlanScreen extends Component {
                 showGeneralModal: false,
                 modalvalue: ""
             })
-            this.fetGeneralPlan()
+            this.fetchGeneralPlan()
         }).catch(err => console.log(err))
 
     }
 
     componentDidMount() {
-        this.fetGeneralPlan()
+        this.fetchGeneralPlan()
         this.fetDailyPlan()
+
+        this.props.navigation.addListener('focus', () => {
+            this.fetchGeneralPlan()
+            this.fetDailyPlan()
+        })
+    }
+
+    reverseArray = (input) => {
+        var ret = new Array;
+        for (var i = input.length - 1; i >= 0; i--) {
+            ret.push(input[i]);
+        }
+        return ret
     }
 
 
     render() {
-        const { isGeneral, generals, daily, dailyPlans, generalPlans } = this.state
-        const generalOrDaily = isGeneral ? generals : daily
+        const { isGeneral, generalPlansIDs, daily, dailyPlans, generalPlans } = this.state
         const { student } = this.props.route.params
         return (
             <NativeBaseProvider>
-                <View style={styles.TrainingPlanScreen}>
-
-                    <HStack justifyContent="space-between" marginBottom="10px">
-                        <TouchableOpacity onPress={() => this.props.navigation.toggleDrawer()}>
-                            <Feather name="menu" size={30} color="black" />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={() => { }}>
-                            <Feather name="more-vertical" size={30} color="black" />
-                        </TouchableOpacity>
-                    </HStack>
+                <VStack px={"20px"} style={styles.TrainingPlanScreen}>
                     <HStack justifyContent='center' marginTop="10px">
                         <Text style={styles.textContainer}>{student.name}</Text>
                         <Image resizeMode='contain' style={{ width: 22, height: 28 }} source={racket} />
@@ -160,22 +163,23 @@ class TrainingPlanScreen extends Component {
                         </TouchableOpacity>
                     </HStack>
                     {isGeneral ?
-                        <ScrollView>
+                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
                             {generalPlans.map((generalTask, key) => (
                                 <VStack key={key} background={"white"} width="100%" height='180' marginTop={"15px"} paddingBottom="20px" borderRadius={'20px'}>
                                     <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
                                         <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>{generalTask.category}</Text>
-                                        <TouchableOpacity onPress={() => this.handleModalOnPress(generalTask.category)}>
+                                        <TouchableOpacity onPress={() => this.handleModalOnPress(generalTask)}>
                                             <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
                                         </TouchableOpacity>
                                     </HStack>
                                     <View style={{ paddingBottom: 10 }} showsVerticalScrollIndicator={false}>
-                                        {[0].map(() => (
-                                            <HStack alignItems={"center"} marginLeft="20px">
-                                                <Text style={styles.listContainer}>{generalTask.title}</Text>
+                                        {generalTask?.tasks && this.reverseArray(generalTask.tasks).slice(0, 3).map((task, key) => (
+                                            <HStack key={key} alignItems={"center"} marginLeft="20px">
+                                                <Entypo name="dot-single" size={24} color="black" />
+                                                <Text style={styles.listContainer}>{task}</Text>
                                             </HStack>
                                         ))}
-                                        <TouchableOpacity onPress={() => this.props.navigation.navigate("ToDo")} style={{ marginTop: 10, paddingLeft: 20 }}>
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate("ToDo", { title: generalTask.category, tasks: generalTask.tasks, id: generalPlansIDs[generalTask.category] })} style={{ marginTop: 10, paddingLeft: 20 }}>
                                             <Text style={{ color: "blue" }}>View more</Text>
                                         </TouchableOpacity>
                                     </View>
@@ -192,7 +196,7 @@ class TrainingPlanScreen extends Component {
                                             <Modal.Footer>
                                                 <Button.Group space={2}>
                                                     <Button variant="ghost" colorScheme="blueGray" onPress={this.handleGeneralModalCancel}>Cancel</Button>
-                                                    <Button onPress={this.handleGeneralModalSave}>Save</Button>
+                                                    <Button onPress={this.handleGeneralModalSave}>Add</Button>
                                                 </Button.Group>
                                             </Modal.Footer>
                                         </Modal.Content>
@@ -205,9 +209,6 @@ class TrainingPlanScreen extends Component {
                                 <VStack background={"white"} width="100%" minHeight={"250px"} marginTop={"15px"} paddingBottom="20px" paddingX={"15px"} borderRadius={'20px'}>
                                     <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
                                         <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '400' }]}>{moment().format("LL")}</Text>
-                                        <TouchableOpacity onPress={() => this.handleModalOnPress(moment().format("LL"))}>
-                                            <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
-                                        </TouchableOpacity>
                                     </HStack>
                                     <HStack justifyContent='center' padding={'15px'} height="50px" >
                                         <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>Goals For Today</Text>
@@ -216,7 +217,7 @@ class TrainingPlanScreen extends Component {
                                         <TextInput multiline style={[styles.textContainer, { fontSize: 12, fontWeight: 'normal' }]} value={"Improve topspin consistency when balls are going randomli."} />
                                     </HStack>
                                     <VStack space={2} paddingX={"5px"} marginTop={"20px"}>
-                                        {dailyPlans[0].checklist_tasks.map((dailyTask, key) => (
+                                        {dailyPlans[0]?.checklist_tasks && dailyPlans[0].checklist_tasks.map((dailyTask, key) => (
                                             <HStack key={key} alignItems={"center"}>
                                                 <Checkbox onChange={(value) => this.handleOnTaskUpdate(value, key, dailyPlans[0].checklist_iscompleted)} defaultIsChecked={dailyPlans[0].checklist_iscompleted[key] ? true : false} value="" style={{ borderRadius: 100, width: 30, height: 30, marginRight: 10 }} />
                                                 <Text>{dailyTask}</Text>
@@ -227,33 +228,7 @@ class TrainingPlanScreen extends Component {
                             </ScrollView>
                         </VStack>
                     }
-                </View >
-                <Modal isOpen={this.state.showModal} onClose={this.handleModalCancel}>
-                    <Modal.Content maxWidth="400px">
-                        <Modal.CloseButton />
-                        <Modal.Header>{this.state.modalTitle}</Modal.Header>
-                        <Modal.Body>
-                            <FormControl mt="3">
-                                <FormControl.Label>Email</FormControl.Label>
-                                <Input />
-                            </FormControl>
-                            <FormControl mt="3">
-                                <FormControl.Label>Email</FormControl.Label>
-                                <Input />
-                            </FormControl>
-                            <FormControl mt="3">
-                                <FormControl.Label>Email</FormControl.Label>
-                                <Input />
-                            </FormControl>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button.Group space={2}>
-                                <Button variant="ghost" colorScheme="blueGray" onPress={this.handleModalCancel}>Cancel</Button>
-                                <Button onPress={this.handleModalCancel}>Save</Button>
-                            </Button.Group>
-                        </Modal.Footer>
-                    </Modal.Content>
-                </Modal>
+                </VStack >
             </NativeBaseProvider >
         )
     }
@@ -265,8 +240,9 @@ export default TrainingPlanScreen
 const styles = StyleSheet.create({
     TrainingPlanScreen: {
         flex: 1,
-        padding: 20,
+        // padding: 20,
         backgroundColor: "#E3F6F5",
+        paddingTop: 40
 
 
     },
@@ -284,9 +260,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'center',
         borderBottomWidth: 4,
-    },
-    listContainer: {
-
     },
     ScrollView: {
         height: "100%",

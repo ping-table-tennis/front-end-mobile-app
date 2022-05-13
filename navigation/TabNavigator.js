@@ -108,9 +108,9 @@ const BottomTabNavigator = () => {
 
 
 const DrawerNavigator = (props) => {
-	if (!auth.currentUser) {
-		// props.navigation.navigate("Registration", { toRegister: false })
-	}
+	// if (!auth.currentUser) {
+	// 	props.navigation.navigate("Registration", { toRegister: false })
+	// }
 	return (
 		<Drawer.Navigator drawerContent={DrawerScreen} initialRouteName="Training">
 			<Drawer.Screen options={{ headerShown: false }} name="Tab" component={BottomTabNavigator} />

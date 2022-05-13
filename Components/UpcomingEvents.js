@@ -63,7 +63,7 @@ class UpcomingEvents extends Component {
                             style={[styles.TableRow, key + 1 === filterTableData.length ? styles.TableRowLast : {}]
                             }>
                             <Text style={[styles.TableTR]}>{moment(data.date).format("ll")}</Text>
-                            <Text onPress={() => Linking.openURL(data.url)} style={[styles.TableTR, { color: "blue", textDecorationLine: "line" }]}>{data.title}</Text>
+                            <Text onPress={() => Linking.openURL(data.url)} style={[styles.TableTR, { color: "blue", textDecorationLine: "underline" }]}>{data.title}</Text>
                             <Text style={[styles.TableTR]}>{data.location}</Text>
                         </HStack>
                     ))}
