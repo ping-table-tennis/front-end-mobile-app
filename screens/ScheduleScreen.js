@@ -34,7 +34,9 @@ class ScheduleScreen extends Component {
             modalVisible: false,
             availableCoaches: [],
             currentCoachText: '',
-            eventModal: false
+            eventModal: false,
+            eventTime:"",
+            markedDates: []
         }
     }
 
@@ -149,6 +151,28 @@ class ScheduleScreen extends Component {
       this.setState({ eventModal: visible });
     }
 
+    async submitEvent(time, day, name){
+        let d = new Date();
+        let data = {};
+        //TODO: turn d into the datetime it's supposed to be
+        db.collection('CalendarEvents').doc(currentEmail).get().then(doc => {
+            if (doc.exists) {   
+                data = doc.data;
+                data.dates.push(d);
+                data.eventNames.push(name);
+            }
+            else{
+                data = {
+                    dates: [d],
+                    eventNames: [name]
+                };
+            }
+            db.collection('CalendarEvents').doc(currentEmail).set(data);
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
     displayEventModalContent = () => {
         return (
           <View style={styles.inputContainer}>
@@ -158,6 +182,15 @@ class ScheduleScreen extends Component {
                         placeholder = "HH:MM"
                         style = {styles.input}
                     />
+                </View>
+                <View style={styles.row}>
+                    <Text> Event Name </Text>
+                    <TextInput placeholder='Match with Joe Bob' style={styles.input}/>
+                </View>
+                <View style={styles.row}>
+                    <TouchableOpacity style={styles.button} onPress = { () => {this.submitEvent()} }>
+                        <Text style={styles.buttonText}> Confirm </Text>
+                    </TouchableOpacity>
                 </View>
           </View>
         );
