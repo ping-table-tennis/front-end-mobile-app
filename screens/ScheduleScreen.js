@@ -166,7 +166,6 @@ class ScheduleScreen extends Component {
                 unformattedDates.forEach((day) => {
                     const d = day.toDate().toISOString().substring(0,10);
                     formattedDates[d] = {
-                        selected: true,
                         marked: true
                     };
                 });    
