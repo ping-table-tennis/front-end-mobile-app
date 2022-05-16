@@ -36,7 +36,10 @@ class ScheduleScreen extends Component {
             currentCoachText: '',
             eventModal: false,
             eventTime:"",
-            markedDates: []
+            markedDates: {},
+            newEventDay: "",
+            newEventTime: "",
+            newEventName: ""
         }
     }
 
@@ -130,6 +133,7 @@ class ScheduleScreen extends Component {
         this.state.currentEmail = auth.currentUser?.email
         this.setIsStudent()
         this.setCoachesAvailability()
+        this.showEvents()
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
             this.state.currentEmail = auth.currentUser?.email
             this.setIsStudent()
@@ -151,45 +155,109 @@ class ScheduleScreen extends Component {
       this.setState({ eventModal: visible });
     }
 
-    async submitEvent(time, day, name){
-        let d = new Date();
-        let data = {};
-        //TODO: turn d into the datetime it's supposed to be
-        db.collection('CalendarEvents').doc(currentEmail).get().then(doc => {
+    async showEvents(){
+        let formattedDates = {};
+
+        await db.collection('CalendarEvents').doc(this.state.currentEmail).get().then(doc => {
             if (doc.exists) {   
-                data = doc.data;
-                data.dates.push(d);
-                data.eventNames.push(name);
+                let unformattedDates = doc.get("dates");
+                let eventNames = doc.get("eventNames");
+
+                unformattedDates.forEach((day) => {
+                    const d = day.toDate().toISOString().substring(0,10);
+                    formattedDates[d] = {
+                        selected: true,
+                        marked: true
+                    };
+                });    
             }
-            else{
-                data = {
-                    dates: [d],
-                    eventNames: [name]
-                };
-            }
-            db.collection('CalendarEvents').doc(currentEmail).set(data);
         }).catch(err => {
             console.log(err)
         })
+
+        this.setState({ markedDates: formattedDates })
+    }
+
+    async submitEvent(){
+        const t = this.state.newEventTime;
+        const d = this.state.newEventDay;
+        const n = this.state.newEventName;
+
+        const tValid = /^((1[012]|[1-9]):[0-5][0-9])?$/.test(t);
+        const dValid = /^\d{4}-\d{2}-\d{2}$/.test(d)
+
+        if (tValid && dValid) {
+            Alert.alert(
+                "Invalid entry",
+                "Please make sure that you are entering a valid time and date.",
+                [
+                  { text: Const.ALERT_CANCEL, style: "cancel"}
+                ]
+            )
+            return
+        }
+
+        //TODO: turn d into the datetime it's supposed to be
+        const dstring = d + 'T' + t + ':00';
+        const dobj = new Date(dstring);
+        const timestamp = firebase.firestore.Timestamp.fromDate(dobj);
+        let data = {};
+
+        await db.collection('CalendarEvents').doc(this.state.currentEmail).get().then(doc => {
+            let dates = []
+            let names = []
+            if (doc.exists) {   
+                dates = doc.get("dates");
+                names = doc.get("eventNames");
+            }
+            dates.push(timestamp);
+            names.push(n);
+            data = {
+                dates: dates,
+                eventNames: names
+            };
+        }).catch(err => {
+            console.log(err)
+        })
+
+        await db.collection('CalendarEvents').doc(this.state.currentEmail).set(data);
+
+        this.showEvents();
     }
 
     displayEventModalContent = () => {
         return (
           <View style={styles.inputContainer}>
                 <View style={styles.row}>
+                  <Text> Date </Text>
+                    <TextInput
+                        placeholder = "YYYY-MM-DD"
+                        style = {styles.input}
+                        placeholderTextColor={'grey'}
+                        onChangeText={text => this.setState({newEventDay : text})}
+                    />
+                </View>
+                <View style={styles.row}>
                   <Text> Time </Text>
                     <TextInput
                         placeholder = "HH:MM"
                         style = {styles.input}
+                        placeholderTextColor={'grey'}
+                        onChangeText={text => this.setState({newEventTime : text})}
                     />
                 </View>
                 <View style={styles.row}>
-                    <Text> Event Name </Text>
-                    <TextInput placeholder='Match with Joe Bob' style={styles.input}/>
+                    <Text>Event Name</Text>
+                    <TextInput 
+                        placeholder='Event Name' 
+                        style={styles.input}
+                        placeholderTextColor={'grey'}
+                        onChangeText={text => this.setState({newEventName : text})}
+                    />
                 </View>
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.button} onPress = { () => {this.submitEvent()} }>
-                        <Text style={styles.buttonText}> Confirm </Text>
+                    <TouchableOpacity onPress = { () => {this.submitEvent()} }>
+                        <Text style={{}}>Submit</Text>
                     </TouchableOpacity>
                 </View>
           </View>
@@ -293,6 +361,7 @@ class ScheduleScreen extends Component {
                         onMonthChange={month => { }}
                         // If firstDay=1 week starts from Monday. Note that dayNames and dayNamesShort should still start from Sunday.
                         firstDay={1}
+                        markedDates={this.state.markedDates}
                     />
                 </View>
         ); 
@@ -387,9 +456,10 @@ const styles = StyleSheet.create({
 
     // stuff for input in Vivi modal
     inputContainer: {
+        width: 250,
         alignItems: 'center',
         backgroundColor: 'white',
-        padding: 3,
+        padding: 2,
         borderRadius: 5,
         shadowColor: "#000",
         shadowOffset: {
@@ -414,10 +484,20 @@ const styles = StyleSheet.create({
     },
    row: {
         flexDirection: 'row',
+        justifyContent: 'left',
+        alignItems: 'center',
+        marginTop: 5,
+        marginBottom: 5,
+        height: 50,
+        width: 150,
+    },
+    rowCenter: {
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 5,
         marginBottom: 5,
         height: 50,
+        width: 150,
     }
 })
