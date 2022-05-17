@@ -347,9 +347,9 @@ class ScheduleScreen extends Component {
                     <Calendar
                         // Initially visible month. Default = Date()
                         //current={'2022-03-28'}
-                        minDate={'2020-01-01'}
+                        minDate={'2022-01-01'}
                         // Handler which gets executed on day press. Default = undefined
-                        onDayPress={day => {  }}
+                        onDayPress={day => { this.props.navigation.navigate('Agenda') }}
                         // Handler which gets executed on day long press. Default = undefined
                         onDayLongPress={day => {
                             console.log('selected day', day);
