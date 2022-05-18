@@ -165,13 +165,17 @@ class AgendaScreen extends Component {
         );
     }
 
-    AddItem() {
+    flatListItemSeparator(){
         return (
-        <View style={styles.row}>
-            <Text>Enter task to add to list</Text>
-            <TextInput style={styles.input} onChangeText={(text) => this.setState({ newEventName: text})}></TextInput>
-            <Button title="Submit" onPress={()=>this.submitEvent()}></Button>
-        </View>);}
+          <View
+            style={{
+              height: 1,
+              width: "100%",
+              backgroundColor: "black",
+            }}
+          />
+        );
+    }
 
 
         
@@ -184,6 +188,7 @@ class AgendaScreen extends Component {
                     data={this.eventArr()}
                     renderItem={this.renderItem}
                     keyExtractor={item => item.key}
+                    ItemSeparatorComponent = {this.flatListItemSeparator}
                 />
                 <View>
                     <Modal
