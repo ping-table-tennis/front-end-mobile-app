@@ -1,6 +1,6 @@
 
 import React, { useState, Component } from 'react'
-import {View, Text, TextInput, StyleSheet, Modal, Pressable, TouchableOpacity, Alert} from 'react-native'
+import {View, Text, StyleSheet, Modal, Pressable, TouchableOpacity, Alert} from 'react-native'
 import { Calendar } from 'react-native-calendars'
 import { Table, Row, Rows } from 'react-native-table-component';
 import { firebase, auth } from '../firebase'
