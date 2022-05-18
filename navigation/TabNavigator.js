@@ -4,19 +4,15 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import { auth } from '../firebase'
 
-
 // Icons
 import Event from "../assets/icons/events"
 import PingPong from "../assets/icons/pingPong"
 import Notification from "../assets/icons/notification"
 import Schedule from "../assets/icons/schedule"
 
-
-
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 const Drawer = createDrawerNavigator()
-
 
 // Screens
 import HomeScreen from "../screens/HomeScreen"
@@ -67,8 +63,6 @@ const tabBarOptions = {
 	inactiveTintColor: "#666666"
 }
 
-
-
 const TrainingStack = () => {
 	return (
 		<Stack.Navigator >
@@ -92,7 +86,6 @@ const TrainingStack = () => {
 	)
 }
 
-
 const BottomTabNavigator = () => {
 	return (
 		<Tab.Navigator screenOptions={tabBarIcon} tabBarOptions={tabBarOptions} >
@@ -102,12 +95,11 @@ const BottomTabNavigator = () => {
 			<Tab.Screen name="Notifications" component={NotificationScreen} />
 			<Tab.Screen name="Schedule" component={ScheduleScreen} />
 			
-			{/* <Tab.Screen name="Match" component={MatchesScreen} /> */}
+			<Tab.Screen name="Match" component={MatchesScreen} />
 			{/* <Stack.Screen name="Friends" component={FriendScreen}/> */}
 		</Tab.Navigator>
 	)
 }
-
 
 const DrawerNavigator = (props) => {
 	// if (!auth.currentUser) {

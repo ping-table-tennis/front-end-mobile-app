@@ -4,7 +4,7 @@ import { Image, BackHandler, StyleSheet, Alert, Text, FlatList, View, KeyboardAv
 import { firebase, auth } from '../firebase'
 import fab from '../assets/images/fab.png'
 import deleteImg from '../assets/icons/delete.png'
-import Divider from 'react-native-divider';
+import Divider from 'react-native-divider'
 import * as Const from '../util/Constants'
 
 const db = firebase.firestore()
@@ -17,8 +17,8 @@ const MatchesScreen = () => {
     const [matches, setMatches] = useState([])
 
     function handleBackButtonClick() {
-        navigation.navigate("Training");
-        return true;
+        navigation.navigate("Training")
+        return true
     }
 
     const updateUserMatches = () => {
@@ -39,7 +39,7 @@ const MatchesScreen = () => {
               { text: Const.ALERT_CANCEL, style: "cancel"},
               { text: Const.ALERT_YES, onPress: () => deleteMatch(index) }
             ]
-        );
+        )
     }
 
     const deleteMatch = async (index) => {

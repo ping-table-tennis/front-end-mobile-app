@@ -1,5 +1,5 @@
-import React, { useState, Component } from 'react'
-import { Pressable, Alert, StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
+import React, { Component } from 'react'
+import { Alert, StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
 import { firebase, auth } from '../firebase'
 import { NativeBaseProvider, HStack, VStack, Popover, Modal, Button, Divider, Image, FormControl, Input } from 'native-base'
 
@@ -261,7 +261,7 @@ class HomeScreen extends Component {
         })
     }
 
-   
+
     render() {
         const { modalVisible, isStudent } = this.state
         return (
