@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, FlatList } from 'react-native'
+import { View, Text, StyleSheet, Button, TextInput } from 'react-native'
 import { Agenda, AgendaList, CalendarListProps, AgendaEntry, AgendaProps, AgendaSchedule } from 'react-native-calendars'
 import { useNavigation} from '@react-navigation/core'
 import { auth, firebase } from '../firebase'
-const db = firebase.firestore()
+const db = firebase.firestore();
+const emptyArr = [];
 
 class AgendaScreen extends Component {
     constructor(props) {
@@ -12,7 +13,9 @@ class AgendaScreen extends Component {
             currentEmail: auth.currentUser?.email,
             events: {},
             todaystr: "",
-            mark: {}
+            mark: {},
+            currentEvents: {"2022-05-18": ""},
+            newEventName: ""
          }
     }
 
@@ -44,105 +47,75 @@ class AgendaScreen extends Component {
         this.setState({ mark: marker })
     }
 
+    async submitEvent(){
+        const t = this.state.newEventTime;
+        const d = this.state.newEventDay;
+        const n = this.state.newEventName;
+
+        const tValid = /^((1[012]|[1-9]):[0-5][0-9])?$/.test(t);
+        const dValid = /^\d{4}-\d{2}-\d{2}$/.test(d)
+
+        if (tValid && dValid) {
+            Alert.alert(
+                "Invalid entry",
+                "Please make sure that you are entering a valid time and date.",
+                [
+                  { text: Const.ALERT_CANCEL, style: "cancel"}
+                ]
+            )
+            return
+        }
+
+        const dstring = d + 'T' + t + ':00';
+        const dobj = new Date(dstring);
+        const timestamp = firebase.firestore.Timestamp.fromDate(dobj);
+        let data = {};
+
+        await db.collection('CalendarEvents').doc(this.state.currentEmail).get().then(doc => {
+            let dates = []
+            let names = []
+            if (doc.exists) {   
+                dates = doc.get("dates");
+                names = doc.get("eventNames");
+            }
+            dates.push(timestamp);
+            names.push(n);
+            data = {
+                dates: dates,
+                eventNames: names
+            };
+        }).catch(err => {
+            console.log(err)
+        })
+
+        await db.collection('CalendarEvents').doc(this.state.currentEmail).set(data);
+
+        this.showEvents();
+    }
+
+    ListItems() {
+        return (
+        <View style={styles.row}>
+            <Text>List Item</Text>
+        </View>);}
+
+    AddItem() {
+        return (
+        <View style={styles.rowCenter}>
+            <Text>Enter task to add to list</Text>
+            <TextInput style={styles.input} onChangeText={(text) => this.setState({ newEventName: text})}></TextInput>
+            <Button title="Submit" onPress={()=>this.submitEvent()}></Button>
+        </View>);}
+
+
 
 
     render() {
         return (
-            <View style={{height: 600}}>
-                <Agenda
-                    // The list of items that have to be displayed in agenda. If you want to render item as empty date
-                    // the value of date key has to be an empty array []. If there exists no value for date key it is
-                    // considered that the date in question is not yet loaded
-                    items={this.state.events}
-                    // Callback that gets called when items for a certain month should be loaded (month became visible)
-                    loadItemsForMonth={month => {
-                        this.showEvents();
-                    }}
-                    showOnlySelectedDayItems={true}
-                    // Callback that fires when the calendar is opened or closed
-                    onCalendarToggled={calendarOpened => {
-                        console.log(calendarOpened);
-                    }}
-                    // Callback that gets called on day press
-                    onDayPress={day => {
-                        console.log('day pressed');
-                    }}
-                    // Callback that gets called when day changes while scrolling agenda list
-                    onDayChange={day => {
-                        console.log('day changed');
-                    }}
-                    // Initially selected day
-                    selected={this.state.todaystr}
-                    // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
-                    minDate={'2022-01-01'}
-                    // Max amount of months allowed to scroll to the future. Default = 50
-                    futureScrollRange={12}
-                    // Specify how each item should be rendered in agenda
-                    renderItem={(item, firstItemInDay) => {
-                        return <View />;
-                    }}
-                    // Specify how each date should be rendered. day can be undefined if the item is not first in that day
-                    renderDay={(day, item) => {
-                        return (
-                            <View style={styles.centeredView}>
-                                <Text style={styles.textStyle} >{day.getDate()} {item.name}</Text>
-                            </View>
-                        );
-                    }}
-                    // Specify how empty date content with no items should be rendered
-                    renderEmptyDate={() => {
-                        return (
-                        <View style={styles.emptyDate}>
-                            <Text>This is empty date!</Text>
-                        </View>
-                        );
-                    }}
-                    // Specify how agenda knob should look like
-                    renderKnob={() => {
-                        return <View />;
-                    }}
-                    // Specify what should be rendered instead of ActivityIndicator
-                    renderEmptyData={() => {
-                        return <View />;
-                    }}
-                    // Specify your item comparison function for increased performance
-                    rowHasChanged={(r1, r2) => {
-                        return r1.text !== r2.text;
-                    }}
-                    // Hide knob button. Default = false
-                    hideKnob={false}
-                    // When `true` and `hideKnob` prop is `false`, the knob will always be visible and the user will be able to drag the knob up and close the calendar. Default = false
-                    showClosingKnob={true}
-                    // By default, agenda dates are marked if they have at least one item, but you can override this if needed
-                    markedDates={this.state.markmark}
-                    // If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make sure to also set the refreshing prop correctly
-                    onRefresh={() => console.log('refreshing...')}
-                    // Set this true while waiting for new data from a refresh
-                    refreshing={false}
-                    // Add a custom RefreshControl component, used to provide pull-to-refresh functionality for the ScrollView
-                    refreshControl={null}
-                    // Agenda theme
-                    theme={{
-                        calendarBackground: "black", //agenda background
-                        agendaKnobColor: "blue", // knob color
-                        backgroundColor: "white", // background color below agenda
-                        agendaDayTextColor: "red", // day name
-                        agendaDayNumColor: "red", // day number
-                        agendaTodayColor: "pink", // today in list
-                        monthTextColor: "red", // name in calendar
-                        textDefaultColor: "black",
-                        todayBackgroundColor: "grey",
-                        textSectionTitleColor: "white",
-                        selectedDayBackgroundColor: "grey", // calendar sel date
-                        dayTextColor: "white", // calendar day
-                        dotColor: "white", // dots
-                        textDisabledColor: "red"
-                    }}
-                    // Agenda container style
-                    style={{}}
-
-                    AgendaList={[]}
-                />
+            <View style={styles.centeredView}>
+                <Text style={styles.titleText}>Today's Events</Text>
+                <this.ListItems></this.ListItems>
+                <this.AddItem></this.AddItem>
             </View>
         );
     }
@@ -151,19 +124,6 @@ class AgendaScreen extends Component {
 export default AgendaScreen
 
 const styles = StyleSheet.create({
-    item: {
-        backgroundColor: 'white',
-        flex: 1,
-        borderRadius: 5,
-        padding: 10,
-        marginRight: 10,
-        marginTop: 17
-      },
-    emptyDate: {
-        height: 15,
-        flex: 1,
-        paddingTop: 30
-      },
     buttonText: {
         color: 'white',
         fontWeight: '700',
@@ -203,6 +163,11 @@ const styles = StyleSheet.create({
     buttonClose: {
         backgroundColor: "#2196F3",
     },
+    titleText: {
+        fontSize: 20,
+        color: "black",
+        textAlign: "center"
+    },
     textStyle: {
         color: "black",
         fontWeight: "bold",
@@ -227,7 +192,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     input: {
-        width: 75,
+        width: 100,
         height: 40,
         marginLeft: 5,
         marginRight: 5,
@@ -253,10 +218,5 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         height: 50,
         width: 150,
-    },
-    emptyDate: {
-        height: 15,
-        flex:1,
-        paddingTop: 30
-      }
+    }
 })
