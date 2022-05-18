@@ -39,6 +39,7 @@ import InputMatchScreen from "../screens/InputMatchScreen"
 
 import MainStackNavigator from "./StackNavigator"
 import AvailabilityScreen from "../screens/AvailabilityScreen"
+import AgendaScreen from "../screens/AgendaScreen"
 // import ProfileScreen from "../screens/ProfileScreen"
 
 // Bar Icons
@@ -54,14 +55,28 @@ const tabBarIcon = ({ route }) => ({
 			case "Schedule":
 				return  focused ? <Schedule fill="#0D0BAA"/> : <Schedule fill="#666666"/> 
 		}
-	}
+	},
+    "tabBarActiveTintColor": "#0D0BAA",
+    "tabBarInactiveTintColor": "#666666",
+    "tabBarStyle": [
+      {
+        "display": "flex"
+      },
+      null
+    ]
 })
 
 // Tab Options
 const tabBarOptions = {
-	activeTintColor: "#0D0BAA",
-	inactiveTintColor:"#666666" 
-}
+    "tabBarActiveTintColor": "#0D0BAA",
+    "tabBarInactiveTintColor": "#666666",
+    "tabBarStyle": [
+      {
+        "display": "flex"
+      },
+      null
+    ]
+  }
 
 
 
@@ -80,6 +95,7 @@ const TrainingStack = () => {
 			<Stack.Screen name="InputMatch" component={InputMatchScreen} />
 			<Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} />
             <Stack.Screen name="Availability" component={AvailabilityScreen} />
+            <Stack.Screen name="Agenda" component={AgendaScreen}/>
 		</Stack.Navigator>
 	)
 }
@@ -87,7 +103,7 @@ const TrainingStack = () => {
 
 const BottomTabNavigator = () => {
 	return (
-		<Tab.Navigator screenOptions={tabBarIcon} tabBarOptions={tabBarOptions} >
+		<Tab.Navigator screenOptions={tabBarIcon} >
 			<Tab.Screen name="Training" options={{ headerShown: false }} component={TrainingStack} />
 			{/* <Tab.Screen name="Start" options={{ headerShown: false, tabBarStyle: {display: "none"} }} component={MainStackNavigator} /> */}
 			<Tab.Screen name="Events" component={EventScreen} />
