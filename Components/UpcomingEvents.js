@@ -1,6 +1,6 @@
 import { HStack, VStack } from 'native-base';
 import React, { Component } from 'react';
-import {Text, StyleSheet, Linking, TextInput, ScrollView } from 'react-native'
+import { Text, StyleSheet, Linking, TextInput, ScrollView } from 'react-native'
 import moment from "moment"
 import { AntDesign } from '@expo/vector-icons';
 import { firebase, auth } from '../firebase'
