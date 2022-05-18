@@ -130,6 +130,8 @@ class ScheduleScreen extends Component {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
             this.state.currentEmail = auth.currentUser?.email
             this.setIsStudent()
+            this.setCoachesAvailability()
+            /*
             this.state.dataForTable = [
                 ['Monday', 'N/A'],
                 ['Tuesday', 'N/A'],
@@ -137,6 +139,7 @@ class ScheduleScreen extends Component {
                 ['Thursday', 'N/A'],
                 ['Friday', 'N/A'],    
             ]
+            */
           });
     } 
 
