@@ -7,6 +7,7 @@ import racket from "../assets/icons/racket.png"
 import moment from "moment"
 import firebase from 'firebase'
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
+import InputMatchScreen from './InputMatchScreen'
 
 import Upcoming from "../Components/UpcomingEvents"
 import Results from "../Components/ResultsEvents"
@@ -57,7 +58,9 @@ class EventScreen extends Component {
             <NativeBaseProvider>
                 <View style={styles.EventScreen}>
                     <HStack justifyContent="space-between" marginBottom="10px">
-                        <Feather name="menu" size={30} color="black" />
+                        <TouchableOpacity onPress={() => this.props.navigation.toggleDrawer()}>
+                            <Feather name="menu" size={30} color="black" />
+                        </TouchableOpacity>
                         <Feather name="more-vertical" size={30} color="black" />
                     </HStack>
                     <HStack justifyContent='center' marginTop="10px">

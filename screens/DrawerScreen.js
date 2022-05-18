@@ -4,6 +4,14 @@ import { AntDesign } from '@expo/vector-icons'
 import { StyleSheet, View, Text } from 'react-native'
 
 function DrawerScreen(props) {
+    const handleSignOut = () => {
+        console.log("Signing out of", auth.currentUser?.email)
+        auth.signOut().then(() => {
+            props.navigation.navigate("Registration", { toRegister: false })
+        }).catch(error => alert(error.message))
+    }
+
+
     return (
         <View style={{ paddingTop: 50 }}>
             <Drawer.Section>
@@ -13,14 +21,15 @@ function DrawerScreen(props) {
                     </View>
                     <View>
                         <Text style={{ fontWeight: "bold", fontSize: 24 }}>PingTT</Text>
-                        {/* <Text>Edit info <AntDesign size={10} name="right" /></Text> */}
                     </View>
                 </View>
             </Drawer.Section>
             <Drawer.Section >
                 <Drawer.Item style={{ padding: 7 }} label="Training" onPress={() => props.navigation.navigate("Training")} />
+                <Drawer.Item style={{ padding: 7 }} label="Friends" onPress={() => props.navigation.navigate("Friends")} />
                 <Drawer.Item style={{ padding: 7 }} label="Profile" onPress={() => props.navigation.navigate("Profile")} />
             </Drawer.Section>
+            <Drawer.Item style={{ padding: 7 }} label="Logout" onPress={handleSignOut}/>
         </View>
     )
 }

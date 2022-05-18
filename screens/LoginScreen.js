@@ -47,13 +47,11 @@ class LoginScreen extends Component {
         this.setState({
             [input]: value
         })
-        // console.log(this.state)
     }
 
     handleLogin = () => {
         const { email, password } = this.state
         if (!this.state.isRegistering) {
-            // console.log(this.state)
             auth.signInWithEmailAndPassword(email.toLowerCase(), password)
                 .then(async credentials => {
                     const user = credentials.user

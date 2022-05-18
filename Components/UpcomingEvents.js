@@ -1,6 +1,6 @@
 import { HStack, VStack } from 'native-base';
 import React, { Component } from 'react';
-import {Text, StyleSheet, Linking, TextInput } from 'react-native'
+import {Text, StyleSheet, Linking, TextInput, ScrollView } from 'react-native'
 import moment from "moment"
 import { AntDesign } from '@expo/vector-icons';
 import { firebase, auth } from '../firebase'
@@ -57,13 +57,17 @@ class UpcomingEvents extends Component {
                         <Text style={[styles.TableTR,{fontWeight: "bold"}]}>Title</Text>
                         <Text style={[styles.TableTR,{fontWeight: "bold"}]}>Location</Text>
                     </HStack>
-                    {filterTableData.map((data) => (
-                        <HStack paddingX={"20px"} alignItems="center" justifyContent="space-between" style={styles.TableRow}>
+                <ScrollView>
+                {filterTableData.map((data, key) => (
+                        <HStack paddingX={"20px"} alignItems="center" justifyContent="space-between" 
+                        style={[styles.TableRow, key + 1 === filterTableData.length ? styles.TableRowLast : {}]}>
                             <Text style={[styles.TableTR]}>{data.date}</Text>
-                            <Text onPress={() => Linking.openURL(data.url)}  style={[styles.TableTR, {color: "blue"}]}>{data.title}</Text>
+                            <Text onPress={() => Linking.openURL(data.url)}  
+                            style={[styles.TableTR, { color: "blue", textDecorationLine: "underline" }]}>{data.title}</Text>
                             <Text  style={[styles.TableTR]}>{data.location}</Text>
                         </HStack>
                     ))}
+                </ScrollView>       
             </VStack>
         );
     }
@@ -87,15 +91,12 @@ const styles = StyleSheet.create({
     UpcomingEvents: {
         flex: 1,
         backgroundColor: '#fff',
-        borderRadius: 25,
-        
-
+        borderTopRightRadius:25,
+        borderTopLeftRadius:25
     },
     head: {
         height: 40,
-        // backgroundColor: '#f1f8ff'
     },
-
     text: { 
         margin: 6,
         fontWeight:"bold",

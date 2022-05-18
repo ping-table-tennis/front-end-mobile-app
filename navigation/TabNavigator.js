@@ -40,7 +40,6 @@ import InputMatchScreen from "../screens/InputMatchScreen"
 import MainStackNavigator from "./StackNavigator"
 import AvailabilityScreen from "../screens/AvailabilityScreen"
 import AgendaScreen from "../screens/AgendaScreen"
-// import ProfileScreen from "../screens/ProfileScreen"
 
 // Bar Icons
 const tabBarIcon = ({ route }) => ({
@@ -103,14 +102,14 @@ const TrainingStack = () => {
 
 const BottomTabNavigator = () => {
 	return (
-		<Tab.Navigator screenOptions={tabBarIcon} >
+		<Tab.Navigator screenOptions={tabBarIcon}>
 			<Tab.Screen name="Training" options={{ headerShown: false }} component={TrainingStack} />
 			{/* <Tab.Screen name="Start" options={{ headerShown: false, tabBarStyle: {display: "none"} }} component={MainStackNavigator} /> */}
 			<Tab.Screen name="Events" component={EventScreen} />
 			<Tab.Screen name="Notifications" component={NotificationScreen} />
 			<Tab.Screen name="Schedule" component={ScheduleScreen} />
-			<Tab.Screen name="Friend" component={FriendScreen} />
 			<Tab.Screen name="Match" component={MatchesScreen} />
+			<Tab.Screen name="Friends" component={FriendScreen} />
 		</Tab.Navigator>
 	)
 }
@@ -125,3 +124,15 @@ const DrawerNavigator = () => {
 }
 
 export default DrawerNavigator
+
+
+// const MainNavigator = () => {
+// 	return (
+// 		<Stack.Navigator>
+// 			<Stack.Screen options={{ headerShown: false }} name="Drawer" component={DrawerNavigator} />
+// 			<Stack.Screen options={{ headerShown: false, gestureEnabled: false }} name="Registration" component={LoginScreen} />
+// 		</Stack.Navigator>
+// 	)
+// }
+
+// export default MainNavigator
