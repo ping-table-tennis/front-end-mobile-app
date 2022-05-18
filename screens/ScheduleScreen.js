@@ -1,20 +1,10 @@
 
 import React, { useState, Component } from 'react'
 import {View, Text, TextInput, StyleSheet, Modal, Pressable, TouchableOpacity, Alert} from 'react-native'
-import { Calendar, CalendarList, Agenda} from 'react-native-calendars'
+import { Calendar } from 'react-native-calendars'
 import { Table, Row, Rows } from 'react-native-table-component';
 import { firebase, auth } from '../firebase'
 const db = firebase.firestore()
-
-/*
-import { LogBox } from 'react-native';
-LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
-LogBox.ignoreAllLogs();//Ignore all log notifications
-*/
-
-//https://www.educba.com/react-native-calendar/
-//https://github.com/wix/react-native-calendars#readme
-// https://github.com/wix/react-native-calendars/issues/610
 
 class ScheduleScreen extends Component {
     constructor(props) {
@@ -34,12 +24,7 @@ class ScheduleScreen extends Component {
             modalVisible: false,
             availableCoaches: [],
             currentCoachText: '',
-            eventModal: false,
-            eventTime:"",
             markedDates: {},
-            newEventDay: "",
-            newEventTime: "",
-            newEventName: ""
         }
     }
 
@@ -154,10 +139,6 @@ class ScheduleScreen extends Component {
     componentWillUnmount() {
         this._unsubscribe()
     }
-
-    showEventModal = (visible) => {
-        this.setState({ eventModal: visible });
-      }
   
       async showEvents(){
           let formattedDates = {};
@@ -165,16 +146,12 @@ class ScheduleScreen extends Component {
           await db.collection('CalendarEvents').doc(this.state.currentEmail).get().then(doc => {
               if (doc.exists) {   
                   let unformattedDates = doc.get("dates");
-                  let eventNames = doc.get("eventNames");
                 console.log(unformattedDates)
                   unformattedDates.forEach((day) => {
-                      //const d = day.toDate().toISOString().substring(0,10);
                       const d = day.date
-                      console.log("new date:", d)
                       formattedDates[d] = {
                           marked: true
                       };
-                      console.log("Formatted date:", d, "Unformatted date:", day)
                   });    
               }
           }).catch(err => {
@@ -183,99 +160,7 @@ class ScheduleScreen extends Component {
   
           this.setState({ markedDates: formattedDates })
       }
-  
-      async submitEvent(){
-          const t = this.state.newEventTime;
-          const d = this.state.newEventDay;
-          const n = this.state.newEventName;
-  
-          const tValid = /^((1[012]|[1-9]):[0-5][0-9])?$/.test(t);
-          const dValid = /^\d{4}-\d{2}-\d{2}$/.test(d)
-  
-          if (tValid && dValid) {
-              Alert.alert(
-                  "Invalid entry",
-                  "Please make sure that you are entering a valid time and date.",
-                  [
-                    { text: Const.ALERT_CANCEL, style: "cancel"}
-                  ]
-              )
-              return
-          }
-  
-          //TODO: turn d into the datetime it's supposed to be
-          const dstring = d + 'T' + t + ':00';
-          const dobj = new Date(dstring);
-          const timestamp = firebase.firestore.Timestamp.fromDate(dobj);
-          let data = {};
-          console.log("Date object:", dobj, "Timestamp:", timestamp)
-          
-          await db.collection('CalendarEvents').doc(this.state.currentEmail).get().then(doc => {
-              let dates = []
-              let names = []
-              if (doc.exists) {   
-                  dates = doc.get("dates");
-                  names = doc.get("eventNames");
-              }
-              let obj = {
-                  date: this.state.newEventDay,
-                  time: this.state.newEventTime,
-                  name: this.state.newEventName
-              }
-              dates.push(obj)
-              //dates.push(timestamp);
-              names.push(n);
-              data = {
-                  dates: dates,
-                  eventNames: names
-              };
-          }).catch(err => {
-              console.log(err)
-          })
-  
-          await db.collection('CalendarEvents').doc(this.state.currentEmail).set(data);
-  
-          this.showEvents();
-      }
-  
-      displayEventModalContent = () => {
-          return (
-            <View style={styles.inputContainer}>
-                  <View style={styles.row}>
-                    <Text> Date </Text>
-                      <TextInput
-                          placeholder = "YYYY-MM-DD"
-                          style = {styles.input}
-                          placeholderTextColor={'grey'}
-                          onChangeText={text => this.setState({newEventDay : text})}
-                      />
-                  </View>
-                  <View style={styles.row}>
-                    <Text> Time </Text>
-                      <TextInput
-                          placeholder = "HH:MM"
-                          style = {styles.input}
-                          placeholderTextColor={'grey'}
-                          onChangeText={text => this.setState({newEventTime : text})}
-                      />
-                  </View>
-                  <View style={styles.row}>
-                      <Text>Event Name</Text>
-                      <TextInput 
-                          placeholder='Event Name' 
-                          style={styles.input}
-                          placeholderTextColor={'grey'}
-                          onChangeText={text => this.setState({newEventName : text})}
-                      />
-                  </View>
-                  <View style={styles.row}>
-                      <TouchableOpacity onPress = { () => {this.submitEvent()} }>
-                          <Text style={{}}>Submit</Text>
-                      </TouchableOpacity>
-                  </View>
-            </View>
-          );
-      }
+
       
     render() {
         const { modalVisible } = this.state;
@@ -327,33 +212,6 @@ class ScheduleScreen extends Component {
                         </Modal>
                     </View>
 
-                    <TouchableOpacity onPress={() => this.showEventModal(true)}>
-                        <Text style = {{textAlign:'center', color:'blue'}}> Add Event </Text>
-                    </TouchableOpacity>
-                    <View>
-                        <Modal
-                        animationType="fade"
-                        transparent={true}
-                        visible={this.state.eventModal}
-                        onRequestClose={() => {
-                            this.setModalVisible(!this.state.eventModal);
-                        }}
-                        >
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                <Text style={styles.modalText}> Add Event</Text>
-                                {this.displayEventModalContent()}
-                                <Pressable
-                                    style={[styles.button, styles.buttonClose]}
-                                    onPress={() => this.showEventModal(!this.state.eventModal)}
-                                >
-                                    <Text style={styles.textStyle}>Close</Text>
-                                </Pressable>
-                            </View>
-                        </View>
-                        </Modal>
-                    </View>
-                    <Text onPress={() => this.props.navigation.navigate('Home')} style={{fontSize:26, fontWeight:'bold'}}> Schedule Screen </Text>
                     <Calendar
                         // Initially visible month. Default = Date()
                         //current={'2022-03-28'}
@@ -361,7 +219,7 @@ class ScheduleScreen extends Component {
                         // Handler which gets executed on day press. Default = undefined
                         onDayPress={day => { 
                             let dayprop = day.dateString
-                            this.props.navigation.navigate('Agenda') 
+                            this.props.navigation.navigate('Agenda', {dayPressed: dayprop}) 
                         }}
                         // Handler which gets executed on day long press. Default = undefined
                         onDayLongPress={day => {

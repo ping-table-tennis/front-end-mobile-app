@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Button, TextInput } from 'react-native'
-import { Agenda, AgendaList, CalendarListProps, AgendaEntry, AgendaProps, AgendaSchedule } from 'react-native-calendars'
+import { View, Text, StyleSheet, Button, TextInput, FlatList, Alert, TouchableOpacity, Image, Modal, Pressable } from 'react-native'
 import { useNavigation} from '@react-navigation/core'
 import { auth, firebase } from '../firebase'
+import deleteImg from '../assets/icons/delete.png'
+import fab from '../assets/images/fab.png'
+import * as Const from '../util/Constants'
 const db = firebase.firestore();
 const emptyArr = [];
 
@@ -11,97 +13,161 @@ class AgendaScreen extends Component {
         super(props)
         this.state = { 
             currentEmail: auth.currentUser?.email,
-            events: {},
-            todaystr: "",
-            mark: {},
-            currentEvents: {"2022-05-18": ""},
-            newEventName: ""
+            events: [],
+            eventModal: false,
+            newEventName: "",
+            newEventDay: "",
+            newEventTime: ""
          }
     }
 
-    async showEvents(){
-        let formattedDates = {};
-        let marker = {};
+    componentDidMount(){
+        this.getEvents();
+    }
 
+    currentDayStr(){
+        const dstring = this.props.route.params.dayPressed + 'T' + '00:00';
+        const dobj = new Date(dstring);
+        return dobj.toString().substring(0,16)
+    }
+
+    async getEvents(){
         await db.collection('CalendarEvents').doc(this.state.currentEmail).get().then(doc => {
             if (doc.exists) {  
-                let unformattedDates = doc.get("dates");
-                let eventNames = doc.get("eventNames");
-                const len = eventNames.length
-
-                for(let i = 0; i < len; i++){
-                    const d = unformattedDates[i].toDate().toISOString().substring(0,10);
-                    formattedDates[d] = [{name: eventNames[i]}];
-                    marker[d] = {
-                        mark: true
-                    };
-                }
+                this.setState({events: doc.data().dates})
             }
         }).catch(err => {
             console.log(err)
         })
+    }
 
-        let day = new Date()
-        this.setState({ todaystr: day.toISOString().substring(0,10) })
-        this.setState({ events: formattedDates })
-        this.setState({ mark: marker })
+    showEventModal = (visible) => {
+        this.setState({ eventModal: visible });
+    }
+
+    displayEventModalContent = () => {
+        return (
+          <View style={styles.inputContainer}>
+                <View style={styles.row}>
+                  <Text> Time </Text>
+                    <TextInput
+                        placeholder = "HH:MM"
+                        style = {styles.input}
+                        placeholderTextColor={'grey'}
+                        onChangeText={text => this.setState({newEventTime : text})}
+                    />
+                </View>
+                <View style={styles.row}>
+                    <Text>Event Name</Text>
+                    <TextInput 
+                        placeholder='Event Name' 
+                        style={styles.input}
+                        placeholderTextColor={'grey'}
+                        onChangeText={text => this.setState({newEventName : text})}
+                    />
+                </View>
+                <View style={styles.row}>
+                    
+                </View>
+          </View>
+        );
+    }
+
+    eventArr(){
+        let arr = [];
+        let keyval = 0;
+        let eventsmap = this.state.events
+        if(eventsmap !== undefined){
+            eventsmap.forEach((item) => {
+                if(item.date == this.props.route.params.dayPressed){
+                    arr.push({
+                        time: item.time,
+                        name: item.name,
+                        key: keyval
+                    })
+                    keyval++;
+                }
+            })
+        }
+        return arr;
     }
 
     async submitEvent(){
         const t = this.state.newEventTime;
-        const d = this.state.newEventDay;
+        const d = this.props.route.params.dayPressed;
         const n = this.state.newEventName;
 
-        const tValid = /^((1[012]|[1-9]):[0-5][0-9])?$/.test(t);
-        const dValid = /^\d{4}-\d{2}-\d{2}$/.test(d)
-
-        if (tValid && dValid) {
+        const tValid =  /^((1[012]|[1-9]):[0-5][0-9])?$/.test(t);
+        if (tValid) {
             Alert.alert(
                 "Invalid entry",
-                "Please make sure that you are entering a valid time and date.",
-                [
-                  { text: Const.ALERT_CANCEL, style: "cancel"}
-                ]
+                "Please make sure that you are entering a valid time.",
+                [{ text: Const.ALERT_CANCEL, style: "cancel"} ]
             )
             return
         }
 
-        const dstring = d + 'T' + t + ':00';
-        const dobj = new Date(dstring);
-        const timestamp = firebase.firestore.Timestamp.fromDate(dobj);
         let data = {};
-
+        let newEvent = {
+            date: d,
+            name: n,
+            time: t
+        }
         await db.collection('CalendarEvents').doc(this.state.currentEmail).get().then(doc => {
             let dates = []
-            let names = []
             if (doc.exists) {   
                 dates = doc.get("dates");
-                names = doc.get("eventNames");
             }
-            dates.push(timestamp);
-            names.push(n);
+            dates.push(newEvent);
             data = {
                 dates: dates,
-                eventNames: names
             };
         }).catch(err => {
             console.log(err)
         })
 
         await db.collection('CalendarEvents').doc(this.state.currentEmail).set(data);
-
-        this.showEvents();
+        this.showEventModal(!this.state.eventModal)
+        this.getEvents();
     }
 
-    ListItems() {
-        return (
+
+    //TODO: this doesnt have anything
+    deleteEvent(){
+        
+    }
+
+    //TODO: this doesnt work
+    showDeleteAlert(index){
+        return(
+            Alert.alert(
+            "Delete Event",
+            "Are you sure that you want to delete this event? This cannot be undone.",
+            [
+              { text: Const.ALERT_CANCEL, style: "cancel"},
+              { text: Const.ALERT_YES, onPress: () => this.deleteEvent(index) }
+            ]
+            )
+        );
+    }
+
+    renderItem({item}){
+        return(
         <View style={styles.row}>
-            <Text>List Item</Text>
-        </View>);}
+            <Text style={styles.text}>{item.time}</Text>
+            <Text Style={styles.text}>{item.name}</Text>
+            <TouchableOpacity
+                style={styles.deleteButtonBackground}
+                onPress={() => this.showDeleteAlert(item.key)}>
+                <Image alt='' source = {deleteImg} style = {styles.deleteButtonImage}></Image>
+            </TouchableOpacity>
+        </View>
+        );
+    }
 
     AddItem() {
         return (
-        <View style={styles.rowCenter}>
+        <View style={styles.row}>
             <Text>Enter task to add to list</Text>
             <TextInput style={styles.input} onChangeText={(text) => this.setState({ newEventName: text})}></TextInput>
             <Button title="Submit" onPress={()=>this.submitEvent()}></Button>
@@ -113,11 +179,43 @@ class AgendaScreen extends Component {
     render() {
         return (
             <View style={styles.centeredView}>
-                <Text style={styles.titleText}>Today's Events</Text>
-                {/*
-                <this.ListItems></this.ListItems>
-                <this.AddItem></this.AddItem> */
-                }
+                <FlatList 
+                    ListHeaderComponent={<Text style={styles.titleText}>{this.currentDayStr()}</Text>}
+                    data={this.eventArr()}
+                    renderItem={this.renderItem}
+                    keyExtractor={item => item.key}
+                />
+                <View>
+                    <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={this.state.eventModal}
+                    onRequestClose={() => {
+                        this.setModalVisible(!this.state.eventModal);
+                    }}>
+                        <View style={styles.centeredView}>
+                                <View style={styles.modalView}>
+                                    <Text style={styles.titleText}> Add Event</Text>
+                                    {this.displayEventModalContent()}
+                                    <Pressable
+                                        style={[styles.button, styles.buttonBack]}
+                                        onPress={() => this.showEventModal(!this.state.eventModal)}>
+                                        <Text style={styles.textStyle}>Close</Text>
+                                    </Pressable>
+                                    <Pressable
+                                        style={[styles.submitButton, styles.buttonBack]}
+                                        onPress={() => this.submitEvent()}>
+                                        <Text style={styles.textStyle}>Submit</Text>
+                                    </Pressable>
+                                </View>
+                            </View>
+                    </Modal>
+                </View>
+                <TouchableOpacity 
+                    style = {styles.touchableOpacityStyle} 
+                    onPress = {() => this.showEventModal(true)} >
+                    <Image source={fab} style = {styles.floatingButtonStyle}/>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -126,6 +224,28 @@ class AgendaScreen extends Component {
 export default AgendaScreen
 
 const styles = StyleSheet.create({
+    touchableOpacityStyle: {
+        position: 'absolute',
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        right: 30,
+        bottom: 30,
+    },
+    floatingButtonStyle: {
+        resizeMode: 'contain',
+        width: 70,
+        height: 70,
+    },
+    deleteButtonBackground: {
+        width: 35,
+        height: 35,
+    },
+    deleteButtonImage: {
+        width: 30,
+        height: 30,
+    },
     buttonText: {
         color: 'white',
         fontWeight: '700',
@@ -137,33 +257,26 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 22
     },
-    modalView: {
-        position: 'relative',
-        margin: 10,
-        width: 300,
-        height: 400,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 20,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
     button: {
         position: 'absolute',
         bottom: 0,
+        right: 0,
+        marginRight: 20,
         marginBottom: 20,
         padding: 10,
         elevation: 2
     },
-    buttonClose: {
+    buttonBack: {
         backgroundColor: "#2196F3",
+    },
+    submitButton: {
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        marginBottom: 20,
+        marginLeft: 20,
+        padding: 10,
+        elevation: 2
     },
     titleText: {
         fontSize: 20,
@@ -175,23 +288,14 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         textAlign: "center"
     },
-    // stuff for input in Vivi modal
     inputContainer: {
         width: 250,
         alignItems: 'center',
         backgroundColor: 'white',
         padding: 2,
         borderRadius: 5,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
         marginTop: 1,
         marginBottom: 1,
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
     },
     input: {
         width: 100,
@@ -205,12 +309,12 @@ const styles = StyleSheet.create({
     },
    row: {
         flexDirection: 'row',
-        justifyContent: 'left',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginTop: 5,
         marginBottom: 5,
         height: 50,
-        width: 150,
+        width: 250,
     },
     rowCenter: {
         flexDirection: 'row',
@@ -219,6 +323,30 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginBottom: 5,
         height: 50,
-        width: 150,
-    }
+        width: 250,
+    },
+    text: { 
+        marginBottom: 2,
+        marginLeft: 10,
+        marginRight: 10,
+        textAlign: "left"
+    },
+    modalView: {
+        position: 'relative',
+        margin: 10,
+        width: 300,
+        height: 250,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 20,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
 })
