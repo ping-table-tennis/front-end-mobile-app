@@ -22,6 +22,7 @@ import HomeScreen from "../screens/HomeScreen"
 import EventScreen from "../screens/EventScreen"
 import NotificationScreen from "../screens/NotificationScreen"
 import ScheduleScreen from "../screens/ScheduleScreen"
+import AgendaScreen from "../screens/AgendaScreen"
 import TrainingPlanScreen from "../screens/TrainingPlanScreen"
 import MoreToDo from "../screens/MoreToDo"
 import FriendScreen from "../screens/FriendScreen"
@@ -80,6 +81,7 @@ const TrainingStack = () => {
 			<Stack.Screen name="InputMatch" component={InputMatchScreen} />
 			<Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} />
             <Stack.Screen name="Availability" component={AvailabilityScreen} />
+			<Stack.Screen name="Agenda" component={AgendaScreen} />
 		</Stack.Navigator>
 	)
 }
