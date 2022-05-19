@@ -261,7 +261,7 @@ class TrainingPlanScreen extends Component {
                                         {dailyPlans[0]?.checklist_tasks && dailyPlans[0].checklist_tasks.map((dailyTask, key) => (
                                             <HStack key={key} alignItems={"center"}>
                                                 <Checkbox onChange={(value) => this.handleOnTaskUpdate(value, key, dailyPlans[0].checklist_iscompleted)} defaultIsChecked={dailyPlans[0].checklist_iscompleted[key] ? true : false} value="" style={{ borderRadius: 100, width: 30, height: 30, marginRight: 10 }} />
-                                                <Text>{dailyTask}</Text>
+                                                <Text style={{ textTransform: "capitalize" }}>{dailyTask}</Text>
                                             </HStack>
                                         ))}
                                     </VStack>
