@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useState, Component } from 'react'
-import { Pressable, Alert, StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
+import { Pressable, Alert, Modal, StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
 import { firebase, auth } from '../firebase'
-import { NativeBaseProvider, HStack, Popover, VStack, Divider, Image, Modal, Button, FormControl, Input } from 'native-base'
+import { NativeBaseProvider, HStack, Popover, VStack, Divider, Image } from 'native-base'
 import { Feather, AntDesign } from "@expo/vector-icons"
 import deleteImg from '../assets/icons/delete.png'
 import Student from "../DAOs/StudentDAOs"
@@ -15,7 +15,6 @@ class HomeScreen extends Component {
         super(props)
         this.state = {
             isStudent: false,
-            user: null,
             students: [],
             friends: [],
             availableUsers: [], // coach/students (full names) that the current user can add based on friends list
@@ -26,10 +25,7 @@ class HomeScreen extends Component {
                 "Edit",
                 "Remove",
             ],
-            modalVisible: false,
-            modalEmailValue: '',
-            modalNameValue: '',
-            userId: ""
+            modalVisible: false
         }
         this.student = new Student()
     }
@@ -131,30 +127,6 @@ class HomeScreen extends Component {
         this.setAvailableUsers()
     }
 
-
-    fetchUserData = async () => {
-        if (!auth.currentUser) this.props.navigation.navigate("Registration", { toRegister: false })
-        const email = auth.currentUser.email
-        if (email) {
-            await db.collection('Users').doc(email).get().then(res => {
-                const data = res.data()
-                console.log(data)
-                this.setState({
-                    name: data.name,
-                    friends: data.friends,
-                    isStudent: data.isStudent,
-                    user: data.isStudent,
-                    userId: res.id
-                })
-                console.log(res.id)
-            })
-            this.setAvailableUsers()
-        } else {
-            this.props.navigation.navigate("Registration", { toRegister: false })
-        }
-    }
-
-
     showModal = (visible) => {
         this.setState({ modalVisible: visible });
     }
@@ -242,12 +214,10 @@ class HomeScreen extends Component {
     componentDidMount() {
         this.state.currentEmail = auth.currentUser?.email
         this.setUserData()
-        this.fetchUserData()
         this.fetchStudents()
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
             this.state.currentEmail = auth.currentUser?.email
             this.setUserData()
-            this.fetchUserData
             this.fetchStudents()
         });
     } 
@@ -260,64 +230,31 @@ class HomeScreen extends Component {
         this.props.navigation.navigate("TrainingPlan", { student: student })
     }
 
-
-    handleGeneralModalCancel = () => {
-        this.setState({
-            modalVisible: false,
-            modalTitle: "",
-            modalEmailValue: "",
-            modalNameValue: "",
-        })
-    }
-
-
-    handleGeneralModalSave = async () => {
-        const { modalNameValue, modalEmailValue } = this.state
-        const email = auth.currentUser.email
-
-        await db.collection("Students").add({
-            addedByEmail: email,
-            email: modalEmailValue.toLowerCase(),
-            name: modalNameValue
-        }).then(async () => {
-            console.log("Doc created successfully.")
-            this.fetchStudents()
-            this.setState({
-                modalVisible: false,
-                modalTitle: "",
-                modalEmailValue: "",
-                modalNameValue: "",
-            })
-        }).catch(err => console.log(err))
-    }
-
-
     render() {
         const { modalVisible } = this.state;
         return (
             <NativeBaseProvider>
                 <View>
-                    <Modal isOpen={modalVisible} onClose={this.handleGeneralModalCancel} >
-                        <Modal.Content maxWidth="400px">
-                            <Modal.CloseButton />
-                            <Modal.Header>{"Add Student"}</Modal.Header>
-                            <Modal.Body>
-                                <FormControl mt="3">
-                                    <FormControl.Label>Name</FormControl.Label>
-                                    <Input value={this.state.modalNameValue} onChangeText={(value) => this.setState({ modalNameValue: value })} />
-                                </FormControl>
-                                <FormControl mt="3">
-                                    <FormControl.Label>Email</FormControl.Label>
-                                    <Input value={this.state.modalEmailValue} onChangeText={(value) => this.setState({ modalEmailValue: value })} />
-                                </FormControl>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button.Group space={2}>
-                                    <Button variant="ghost" colorScheme="blueGray" onPress={this.handleGeneralModalCancel}>Cancel</Button>
-                                    <Button onPress={this.handleGeneralModalSave}>Add</Button>
-                                </Button.Group>
-                            </Modal.Footer>
-                        </Modal.Content>
+                    <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        this.setModalVisible(!modalVisible);
+                    }}
+                    >
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <Text style={styles.modalTitle}> Add a New {this.getParsedRole()}</Text>
+                            {this.displayModalContent()}
+                            <Pressable
+                                style={[styles.button, styles.buttonClose]}
+                                onPress={() => this.showModal(!modalVisible)}
+                            >
+                                <Text style={styles.textStyle}>Close</Text>
+                            </Pressable>
+                        </View>
+                    </View>
                     </Modal>
                 </View>
                 <View style={styles.HomeScreen}>
@@ -331,7 +268,10 @@ class HomeScreen extends Component {
                             </TouchableOpacity>
                         </HStack>
                     </HStack>
-                        <Text style={styles.studentTitle}>{this.state.isStudent ? "Coaches" : "Students"}</Text>
+                    {
+                        this.state.isStudent ? <Text style={styles.studentTitle}>Coaches</Text>
+                        : <Text style={styles.studentTitle}>Students</Text>
+                    }
                     <Text style={styles.studentTitle}></Text>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         {this.state.students.map((student, key) => (
