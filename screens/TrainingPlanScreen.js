@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput } from 'react-native'
 import { NativeBaseProvider, HStack, VStack, Checkbox, Modal, Button, FormControl, Input } from 'native-base'
-import { Feather, Entypo } from "@expo/vector-icons"
+import { Feather, Entypo, AntDesign } from "@expo/vector-icons"
 import racket from "../assets/icons/racket.png"
 import moment from "moment"
 import { auth, firebase } from '../firebase'
@@ -17,6 +17,7 @@ class TrainingPlanScreen extends Component {
             dailyPlans: [],
             generalPlans: [],
             showGeneralModal: false,
+            showDailyModal: false,
             dailyTasks: [],
             modalTitle: "",
             modalvalue: "",
@@ -56,12 +57,44 @@ class TrainingPlanScreen extends Component {
         console.log("generalTask:", tasks)
     }
 
+    handleDailyModalCancel = () => {
+        this.setState({
+            showDailyModal: false,
+            modalTitle: "",
+            modalvalue: ""
+        })
+    }
+
+    handleDailyModalSave = async () => {
+        const { modalTitle, modalvalue, generalPlansIDs, generalTask } = this.state
+        let tasks = generalTask
+        tasks.push(modalvalue)
+
+        await db.collection("General Plans").doc(generalPlansIDs[modalTitle]).update({ tasks }).then(async () => {
+            console.log("Doc created successfully.")
+            this.setState({
+                showGeneralModal: false,
+                modalvalue: ""
+            })
+            this.fetchGeneralPlan()
+        }).catch(err => console.log(err))
+        console.log("generalTask:", tasks)
+    }
+
     handleModalOnPress = (generalTask) => {
         this.setState({
             showGeneralModal: true,
             modalTitle: generalTask.category,
             modalvalue: "",
             generalTask: generalTask.tasks
+        })
+    }
+
+    handleDailyModalOnPress = (generalTask) => {
+        this.setState({
+            showDailyModal: true,
+            modalTitle: "Add to daily plan",
+            modalvalue: "",
         })
     }
 
@@ -166,10 +199,10 @@ class TrainingPlanScreen extends Component {
                         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
                             {generalPlans.map((generalTask, key) => (
                                 <VStack key={key} background={"white"} width="100%" height='180' marginTop={"15px"} paddingBottom="20px" borderRadius={'20px'}>
-                                    <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
+                                    <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="55px" >
                                         <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>{generalTask.category}</Text>
                                         <TouchableOpacity onPress={() => this.handleModalOnPress(generalTask)}>
-                                            <Feather name="more-horizontal" size={24} color="black" style={{ width: 22, height: 28, position: 'relative', right: 10, bottom: 5 }} />
+                                            <AntDesign name="pluscircleo" size={24} color="black" />
                                         </TouchableOpacity>
                                     </HStack>
                                     <View style={{ paddingBottom: 10 }} showsVerticalScrollIndicator={false}>
@@ -207,8 +240,11 @@ class TrainingPlanScreen extends Component {
                         <VStack>
                             <ScrollView contentContainerStyle={{ paddingBottom: 200 }} showsVerticalScrollIndicator={false}>
                                 <VStack background={"white"} width="100%" minHeight={"250px"} marginTop={"15px"} paddingBottom="20px" paddingX={"15px"} borderRadius={'20px'}>
-                                    <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="50px" >
+                                    <HStack justifyContent='space-between' marginTop="10px" padding={'15px'} height="55px" >
                                         <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '400' }]}>{moment().format("LL")}</Text>
+                                        <TouchableOpacity onPress={() => this.handleDailyModalOnPress()}>
+                                            <AntDesign name="pluscircleo" size={24} color="black" />
+                                        </TouchableOpacity>
                                     </HStack>
                                     <HStack justifyContent='center' padding={'15px'} height="50px" >
                                         <Text style={[styles.textContainer, { fontSize: 18, fontWeight: '600' }]}>Goals For Today</Text>
@@ -226,6 +262,24 @@ class TrainingPlanScreen extends Component {
                                     </VStack>
                                 </VStack>
                             </ScrollView>
+                            <Modal isOpen={this.state.showDailyModal} onClose={this.handleDailyModalCancel}>
+                                <Modal.Content maxWidth="400px">
+                                    <Modal.CloseButton />
+                                    <Modal.Header>{this.state.modalTitle}</Modal.Header>
+                                    <Modal.Body>
+                                        <FormControl mt="3">
+                                            <FormControl.Label>Title</FormControl.Label>
+                                            <Input value={this.state.modalvalue} onChangeText={(value) => this.setState({ modalvalue: value })} />
+                                        </FormControl>
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                        <Button.Group space={2}>
+                                            <Button variant="ghost" colorScheme="blueGray" onPress={this.handleDailyModalCancel}>Cancel</Button>
+                                            <Button onPress={this.handleDailyModalSave}>Add</Button>
+                                        </Button.Group>
+                                    </Modal.Footer>
+                                </Modal.Content>
+                            </Modal>
                         </VStack>
                     }
                 </VStack >
