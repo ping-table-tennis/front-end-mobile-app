@@ -66,19 +66,24 @@ class TrainingPlanScreen extends Component {
     }
 
     handleDailyModalSave = async () => {
-        const { modalTitle, modalvalue, generalPlansIDs, generalTask } = this.state
-        let tasks = generalTask
-        tasks.push(modalvalue)
+        const { modalvalue, dailyPlansID, dailyPlans } = this.state
+        let tasks = dailyPlans[0]?.checklist_tasks
+        let tasksChecked = dailyPlans[0]?.checklist_iscompleted
 
-        await db.collection("General Plans").doc(generalPlansIDs[modalTitle]).update({ tasks }).then(async () => {
+        tasks.push(modalvalue)
+        tasksChecked.push(true)
+
+        await db.collection("Daily Plans").doc(dailyPlansID).update({
+            checklist_tasks: tasks,
+            checklist_iscompleted: tasksChecked
+        }).then(async () => {
             console.log("Doc created successfully.")
             this.setState({
-                showGeneralModal: false,
+                showDailyModal: false,
                 modalvalue: ""
             })
-            this.fetchGeneralPlan()
+            this.fetDailyPlan()
         }).catch(err => console.log(err))
-        console.log("generalTask:", tasks)
     }
 
     handleModalOnPress = (generalTask) => {
