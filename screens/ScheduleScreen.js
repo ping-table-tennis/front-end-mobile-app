@@ -123,21 +123,29 @@ class ScheduleScreen extends Component {
             })
         }
     }
+
+    setDefaults() {
+        this.state.currentEmail = auth.currentUser?.email
+        this.setState({currentCoachText: ""})
+        this.state.dataForTable = [
+            ['Monday', 'N/A'],
+            ['Tuesday', 'N/A'],
+            ['Wednesday', 'N/A'],
+            ['Thursday', 'N/A'],
+            ['Friday', 'N/A'],    
+        ]
+        this.setIsStudent()
+        this.setCoachesAvailability()
+    }
     
     componentDidMount() {
         this.state.currentEmail = auth.currentUser?.email
         this.setIsStudent()
         this.setCoachesAvailability()
+        this.showEvents()
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
-            this.state.currentEmail = auth.currentUser?.email
-            this.setIsStudent()
-            this.state.dataForTable = [
-                ['Monday', 'N/A'],
-                ['Tuesday', 'N/A'],
-                ['Wednesday', 'N/A'],
-                ['Thursday', 'N/A'],
-                ['Friday', 'N/A'],    
-            ]
+            this.showEvents()
+            this.setDefaults()
           });
     } 
 
