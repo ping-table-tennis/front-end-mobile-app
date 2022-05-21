@@ -13,6 +13,7 @@ function DrawerScreen(props) {
         }).catch(error => alert(error.message))
     }
 
+
     return (
         <View style={{ paddingTop: 50 }}>
             <Drawer.Section>

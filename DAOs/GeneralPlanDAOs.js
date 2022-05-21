@@ -25,7 +25,7 @@ class GeneralPlan {
 
     get = async (coachEmail, studentEmail) => {
         const userGeneralPlan = await db.collection('General Plans').get();
-        return userGeneralPlan.query.where('emails', '==', [coachEmail, studentEmail]).limit(1).get()
+        return userGeneralPlan.query.where('emails', '==', [coachEmail, studentEmail]).get()
     }
 
     update = async (plan) => {

@@ -68,6 +68,7 @@ class UpcomingEvents extends Component {
                         </HStack>
                     ))}
                 </ScrollView>
+
             </VStack>
         );
     }

@@ -57,6 +57,7 @@ class TrainingPlanScreen extends Component {
         console.log("generalTask:", tasks)
     }
 
+
     handleDailyModalCancel = () => {
         this.setState({
             showDailyModal: false,
@@ -102,7 +103,7 @@ class TrainingPlanScreen extends Component {
             modalvalue: "",
         })
     }
-
+  
     fetchGeneralPlan = async () => {
         if (firebase.auth().currentUser !== null) {
             const { student } = this.props.route.params
