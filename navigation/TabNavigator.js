@@ -44,7 +44,7 @@ import InputMatchScreen from "../screens/InputMatchScreen"
 
 import MainStackNavigator from "./StackNavigator"
 import AvailabilityScreen from "../screens/AvailabilityScreen"
-// import ProfileScreen from "../screens/ProfileScreen"
+import AgendaScreen from "../screens/AgendaScreen"
 
 // Bar Icons
 const tabBarIcon = ({ route }) => ({
@@ -59,14 +59,29 @@ const tabBarIcon = ({ route }) => ({
 			case "Schedule":
 				return focused ? <Schedule fill="#0D0BAA" /> : <Schedule fill="#666666" />
 		}
-	}
+	},
+    "tabBarActiveTintColor": "#0D0BAA",
+    "tabBarInactiveTintColor": "#666666",
+    "tabBarStyle": [
+      {
+        "display": "flex"
+      },
+      null
+    ]
 })
 
 // Tab Options
 const tabBarOptions = {
-	activeTintColor: "#0D0BAA",
-	inactiveTintColor: "#666666"
-}
+    "tabBarActiveTintColor": "#0D0BAA",
+    "tabBarInactiveTintColor": "#666666",
+    "tabBarStyle": [
+      {
+        "display": "flex"
+      },
+      null
+    ]
+  }
+
 
 
 
@@ -97,13 +112,12 @@ const TrainingStack = () => {
 
 const BottomTabNavigator = () => {
 	return (
-		<Tab.Navigator screenOptions={tabBarIcon} tabBarOptions={tabBarOptions} >
+		<Tab.Navigator screenOptions={tabBarIcon}>
 			<Tab.Screen name="Training" options={{ headerShown: false }} component={TrainingStack} />
 			{/* <Tab.Screen name="Start" options={{ headerShown: false, tabBarStyle: {display: "none"} }} component={MainStackNavigator} /> */}
 			<Tab.Screen name="Events" component={EventScreen} />
 			<Tab.Screen name="Notifications" component={NotificationScreen} />
 			<Tab.Screen name="Schedule" component={ScheduleScreen} />
-			
 			{/* <Tab.Screen name="Match" component={MatchesScreen} /> */}
 			{/* <Stack.Screen name="Friends" component={FriendScreen}/> */}
 		</Tab.Navigator>
@@ -132,5 +146,3 @@ const MainNavigator = () => {
 }
 
 export default MainNavigator
-
-

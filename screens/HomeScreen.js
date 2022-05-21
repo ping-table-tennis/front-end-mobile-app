@@ -103,6 +103,7 @@ class HomeScreen extends Component {
         for (let i = 0; i < this.state.friends.length; i++) {
             await db.collection('Users').doc(this.state.friends[i]).get().then((doc) => {
                 let data = doc.data()
+                console.log("DATA:", data)
                 if (data.isStudent === !this.state.isStudent)
                     arr.push(data)
             })
