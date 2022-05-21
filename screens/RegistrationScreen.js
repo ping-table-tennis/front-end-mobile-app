@@ -30,6 +30,7 @@ const RegistrationScreen = () => {
                 navigation.replace("Home")
             }
         })
+        console.log(auth.currentUser);
         return unsub
     }, [])
     

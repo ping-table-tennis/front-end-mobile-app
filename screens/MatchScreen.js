@@ -10,7 +10,9 @@ import * as Const from '../util/Constants'
 const db = firebase.firestore()
 
 
-const MatchesScreen = ({navigation}) => {
+const MatchesScreen = () => {
+    const navigation = useNavigation()
+
     let currentEmail = auth.currentUser?.email
     const [matches, setMatches] = useState([])
 
@@ -93,8 +95,8 @@ const MatchesScreen = ({navigation}) => {
         }
     }
 
-    const goToInputScreen = (index) => {
-        navigation.navigate("InputMatch", {index: index})
+    const goToInputScreen = () => {
+        navigation.navigate("InputMatch")
     }
 
     const renderItem = ({ item }) => (

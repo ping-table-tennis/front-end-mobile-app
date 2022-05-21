@@ -17,16 +17,10 @@ import { useNavigation } from '@react-navigation/core'
 
 import TabNavigator from "./navigation/TabNavigator"
 
-
-
-
-
-export default function App(props) {
+export default function App() {
 	return (
 		<NavigationContainer>
 			<TabNavigator/> 
 		</NavigationContainer>
 	)
 }
-
-

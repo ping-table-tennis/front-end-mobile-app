@@ -12,6 +12,7 @@ import InputMatchScreen from './InputMatchScreen'
 import Upcoming from "../Components/UpcomingEvents"
 import Results from "../Components/ResultsEvents"
 import MatchScreen from "./MatchScreen"
+import InputMatchScreen from './InputMatchScreen'
 
 class EventScreen extends Component {
     constructor(props) {
@@ -81,9 +82,6 @@ class EventScreen extends Component {
                     </HStack>
                     {isUpcoming == "Upcoming" ? <Upcoming/> : isUpcoming == "Matches" ? <MatchScreen/> : <Results/>}
                 </View>
-
-            
-
             </NativeBaseProvider>
         )
     }
