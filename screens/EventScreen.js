@@ -7,7 +7,6 @@ import racket from "../assets/icons/racket.png"
 import moment from "moment"
 import firebase from 'firebase'
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
-import InputMatchScreen from './InputMatchScreen'
 
 import Upcoming from "../Components/UpcomingEvents"
 import Results from "../Components/ResultsEvents"
