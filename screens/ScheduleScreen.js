@@ -1,5 +1,3 @@
-
-import { VStack, NativeBaseProvider, HStack } from 'native-base';
 import React, { useState, Component } from 'react'
 import {View, Text, StyleSheet, Modal, Pressable, TouchableOpacity, Alert} from 'react-native'
 import { Calendar } from 'react-native-calendars'
@@ -172,6 +170,7 @@ class ScheduleScreen extends Component {
         const state = this.state
         return (
                 <View style={{flex: 1, alignItems: 'center', justifyContent:'center'}}>
+                    
                     { state.isStudent ? 
                     <View style = {styles.availability}>
                         <Text style = {{fontSize: 22, textAlign:'center'}}> Coach Availability {state.currentCoachText} </Text>
@@ -240,6 +239,8 @@ class ScheduleScreen extends Component {
                 </View>
         ); 
     }
+
+    
 }
 
 export default ScheduleScreen;
