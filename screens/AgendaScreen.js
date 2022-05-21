@@ -1,110 +1,357 @@
 import React, { Component } from 'react'
-import { View, Text } from 'react-native'
-import { Calendar, CalendarList, Agenda} from 'react-native-calendars'
+import { View, Text, StyleSheet, Button, TextInput, FlatList, Alert, TouchableOpacity, Image, Modal, Pressable } from 'react-native'
 import { useNavigation} from '@react-navigation/core'
-
+import { auth, firebase } from '../firebase'
+import deleteImg from '../assets/icons/delete.png'
+import fab from '../assets/images/fab.png'
+import * as Const from '../util/Constants'
+const db = firebase.firestore();
+const emptyArr = [];
 
 class AgendaScreen extends Component {
     constructor(props) {
         super(props)
-        this.state = {  }
+        this.state = { 
+            currentEmail: auth.currentUser?.email,
+            events: [],
+            eventModal: false,
+            newEventName: "",
+            newEventDay: "",
+            newEventTime: ""
+         }
     }
+
+    componentDidMount(){
+        this.getEvents();
+    }
+
+    currentDayStr(){
+        const dstring = this.props.route.params.dayPressed + 'T' + '00:00';
+        const dobj = new Date(dstring);
+        return dobj.toString().substring(0,16)
+    }
+
+    async getEvents(){
+        await db.collection('CalendarEvents').doc(this.state.currentEmail).get().then(doc => {
+            if (doc.exists) {  
+                this.setState({events: doc.data().dates})
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
+    showEventModal = (visible) => {
+        this.setState({ eventModal: visible });
+    }
+
+    displayEventModalContent = () => {
+        return (
+          <View style={styles.inputContainer}>
+                <View style={styles.row}>
+                  <Text> Time </Text>
+                    <TextInput
+                        placeholder = "HH:MM"
+                        style = {styles.input}
+                        placeholderTextColor={'grey'}
+                        onChangeText={text => this.setState({newEventTime : text})}
+                    />
+                </View>
+                <View style={styles.row}>
+                    <Text>Event Name</Text>
+                    <TextInput 
+                        placeholder='Event Name' 
+                        style={styles.input}
+                        placeholderTextColor={'grey'}
+                        onChangeText={text => this.setState({newEventName : text})}
+                    />
+                </View>
+                <View style={styles.row}>
+                    
+                </View>
+          </View>
+        );
+    }
+
+    eventArr(){
+        let arr = [];
+        let keyval = 0;
+        let eventsmap = this.state.events
+        if(eventsmap !== undefined){
+            eventsmap.forEach((item) => {
+                if(item.date == this.props.route.params.dayPressed){
+                    arr.push({
+                        time: item.time,
+                        name: item.name,
+                        key: keyval
+                    })
+                    keyval++;
+                }
+            })
+        }
+        return arr;
+    }
+
+    async submitEvent(){
+        const t = this.state.newEventTime;
+        const d = this.props.route.params.dayPressed;
+        const n = this.state.newEventName;
+
+        const tValid =  /^((1[012]|[1-9]):[0-5][0-9])?$/.test(t);
+        if (tValid) {
+            Alert.alert(
+                "Invalid entry",
+                "Please make sure that you are entering a valid time.",
+                [{ text: Const.ALERT_CANCEL, style: "cancel"} ]
+            )
+            return
+        }
+
+        let data = {};
+        let newEvent = {
+            date: d,
+            name: n,
+            time: t
+        }
+        await db.collection('CalendarEvents').doc(this.state.currentEmail).get().then(doc => {
+            let dates = []
+            if (doc.exists) {   
+                dates = doc.get("dates");
+            }
+            dates.push(newEvent);
+            data = {
+                dates: dates,
+            };
+        }).catch(err => {
+            console.log(err)
+        })
+
+        await db.collection('CalendarEvents').doc(this.state.currentEmail).set(data);
+        this.showEventModal(!this.state.eventModal)
+        this.getEvents();
+    }
+
+
+    //TODO: this doesnt have anything
+    deleteEvent(){
+        
+    }
+
+    //TODO: this doesnt work
+    showDeleteAlert(index){
+        return(
+            Alert.alert(
+            "Delete Event",
+            "Are you sure that you want to delete this event? This cannot be undone.",
+            [
+              { text: Const.ALERT_CANCEL, style: "cancel"},
+              { text: Const.ALERT_YES, onPress: () => this.deleteEvent(index) }
+            ]
+            )
+        );
+    }
+
+    renderItem({item}){
+        return(
+        <View style={styles.row}>
+            <Text style={styles.text}>{item.time}</Text>
+            <Text Style={styles.text}>{item.name}</Text>
+            <TouchableOpacity
+                style={styles.deleteButtonBackground}
+                onPress={() => this.showDeleteAlert(item.key)}>
+                <Image alt='' source = {deleteImg} style = {styles.deleteButtonImage}></Image>
+            </TouchableOpacity>
+        </View>
+        );
+    }
+
+    flatListItemSeparator(){
+        return (
+          <View
+            style={{
+              height: 1,
+              width: "100%",
+              backgroundColor: "black",
+            }}
+          />
+        );
+    }
+
+
+        
+
     render() {
         return (
-            <View>
-                <Agenda
-                    // The list of items that have to be displayed in agenda. If you want to render item as empty date
-                    // the value of date key has to be an empty array []. If there exists no value for date key it is
-                    // considered that the date in question is not yet loaded
-                    items={{
-                        '2022-04-22': [{name: 'item 1 - any js object'}],
-                        '2022-04-23': [{name: 'item 2 - any js object', height: 80}],
-                        '2022-04-24': [],
-                        '2022-04-25': [{name: 'item 3 - any js object'}, {name: 'any js object'}]
-                    }}
-                    // Callback that gets called when items for a certain month should be loaded (month became visible)
-                    loadItemsForMonth={month => {
-                        console.log('trigger items loading');
-                    }}
-                    // Callback that fires when the calendar is opened or closed
-                    onCalendarToggled={calendarOpened => {
-                        console.log(calendarOpened);
-                    }}
-                    // Callback that gets called on day press
-                    onDayPress={day => {
-                        console.log('day pressed');
-                    }}
-                    // Callback that gets called when day changes while scrolling agenda list
-                    onDayChange={day => {
-                        console.log('day changed');
-                    }}
-                    // Initially selected day
-                    selected={'2012-05-16'}
-                    // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
-                    minDate={'2012-05-10'}
-                    // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
-                    maxDate={'2012-05-30'}
-                    // Max amount of months allowed to scroll to the past. Default = 50
-                    pastScrollRange={50}
-                    // Max amount of months allowed to scroll to the future. Default = 50
-                    futureScrollRange={50}
-                    // Specify how each item should be rendered in agenda
-                    renderItem={(item, firstItemInDay) => {
-                        return <View />;
-                    }}
-                    // Specify how each date should be rendered. day can be undefined if the item is not first in that day
-                    renderDay={(day, item) => {
-                        return <View />;
-                    }}
-                    // Specify how empty date content with no items should be rendered
-                    renderEmptyDate={() => {
-                        return <View />;
-                    }}
-                    // Specify how agenda knob should look like
-                    renderKnob={() => {
-                        return <View />;
-                    }}
-                    // Specify what should be rendered instead of ActivityIndicator
-                    renderEmptyData={() => {
-                        return <View />;
-                    }}
-                    // Specify your item comparison function for increased performance
-                    rowHasChanged={(r1, r2) => {
-                        return r1.text !== r2.text;
-                    }}
-                    // Hide knob button. Default = false
-                    hideKnob={true}
-                    // When `true` and `hideKnob` prop is `false`, the knob will always be visible and the user will be able to drag the knob up and close the calendar. Default = false
-                    showClosingKnob={false}
-                    // By default, agenda dates are marked if they have at least one item, but you can override this if needed
-                    markedDates={{
-                        '2012-05-16': {selected: true, marked: true},
-                        '2012-05-17': {marked: true},
-                        '2012-05-18': {disabled: true}
-                    }}
-                    // If disabledByDefault={true} dates flagged as not disabled will be enabled. Default = false
-                    disabledByDefault={true}
-                    // If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make sure to also set the refreshing prop correctly
-                    onRefresh={() => console.log('refreshing...')}
-                    // Set this true while waiting for new data from a refresh
-                    refreshing={false}
-                    // Add a custom RefreshControl component, used to provide pull-to-refresh functionality for the ScrollView
-                    refreshControl={null}
-                    // Agenda theme
-                    theme={{
-                        calendarBackground: 'red',
-                        //...Calendar.theme,
-                        agendaDayTextColor: 'yellow',
-                        agendaDayNumColor: 'green',
-                        agendaTodayColor: 'red',
-                        agendaKnobColor: 'blue'
-                    }}
-                    // Agenda container style
-                    style={{}}
+            <View style={styles.centeredView}>
+                <FlatList 
+                    ListHeaderComponent={<Text style={styles.titleText}>{this.currentDayStr()}</Text>}
+                    data={this.eventArr()}
+                    renderItem={this.renderItem}
+                    keyExtractor={item => item.key}
+                    ItemSeparatorComponent = {this.flatListItemSeparator}
                 />
+                <View>
+                    <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={this.state.eventModal}
+                    onRequestClose={() => {
+                        this.setModalVisible(!this.state.eventModal);
+                    }}>
+                        <View style={styles.centeredView}>
+                                <View style={styles.modalView}>
+                                    <Text style={styles.titleText}> Add Event</Text>
+                                    {this.displayEventModalContent()}
+                                    <Pressable
+                                        style={[styles.button, styles.buttonBack]}
+                                        onPress={() => this.showEventModal(!this.state.eventModal)}>
+                                        <Text style={styles.textStyle}>Close</Text>
+                                    </Pressable>
+                                    <Pressable
+                                        style={[styles.submitButton, styles.buttonBack]}
+                                        onPress={() => this.submitEvent()}>
+                                        <Text style={styles.textStyle}>Submit</Text>
+                                    </Pressable>
+                                </View>
+                            </View>
+                    </Modal>
+                </View>
+                <TouchableOpacity 
+                    style = {styles.touchableOpacityStyle} 
+                    onPress = {() => this.showEventModal(true)} >
+                    <Image source={fab} style = {styles.floatingButtonStyle}/>
+                </TouchableOpacity>
             </View>
         );
     }
 }
 
 export default AgendaScreen
+
+const styles = StyleSheet.create({
+    touchableOpacityStyle: {
+        position: 'absolute',
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        right: 30,
+        bottom: 30,
+    },
+    floatingButtonStyle: {
+        resizeMode: 'contain',
+        width: 70,
+        height: 70,
+    },
+    deleteButtonBackground: {
+        width: 35,
+        height: 35,
+    },
+    deleteButtonImage: {
+        width: 30,
+        height: 30,
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: '700',
+        fontSize: 16
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    button: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        marginRight: 20,
+        marginBottom: 20,
+        padding: 10,
+        elevation: 2
+    },
+    buttonBack: {
+        backgroundColor: "#2196F3",
+    },
+    submitButton: {
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        marginBottom: 20,
+        marginLeft: 20,
+        padding: 10,
+        elevation: 2
+    },
+    titleText: {
+        fontSize: 20,
+        color: "black",
+        textAlign: "center"
+    },
+    textStyle: {
+        color: "black",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    inputContainer: {
+        width: 250,
+        alignItems: 'center',
+        backgroundColor: 'white',
+        padding: 2,
+        borderRadius: 5,
+        marginTop: 1,
+        marginBottom: 1,
+    },
+    input: {
+        width: 100,
+        height: 40,
+        marginLeft: 5,
+        marginRight: 5,
+        borderWidth: 0.7,
+        borderRadius: 2,
+        borderColor: 'black', 
+        textAlign: 'center',
+    },
+   row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 5,
+        marginBottom: 5,
+        height: 50,
+        width: 250,
+    },
+    rowCenter: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 5,
+        marginBottom: 5,
+        height: 50,
+        width: 250,
+    },
+    text: { 
+        marginBottom: 2,
+        marginLeft: 10,
+        marginRight: 10,
+        textAlign: "left"
+    },
+    modalView: {
+        position: 'relative',
+        margin: 10,
+        width: 300,
+        height: 250,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 20,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+})
