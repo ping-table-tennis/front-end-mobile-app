@@ -47,6 +47,7 @@ const FriendScreen = ({navigation}) => {
     useFocusEffect(
         React.useCallback(() => {
             currentEmail = auth.currentUser?.email
+            setNewRequest('')
             updateUserData()  
             return () => {};
         }, [])

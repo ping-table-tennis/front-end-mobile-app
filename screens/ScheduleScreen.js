@@ -2,20 +2,10 @@
 import { VStack, NativeBaseProvider, HStack } from 'native-base';
 import React, { useState, Component } from 'react'
 import {View, Text, StyleSheet, Modal, Pressable, TouchableOpacity, Alert} from 'react-native'
-import { Calendar, CalendarList, Agenda} from 'react-native-calendars'
+import { Calendar } from 'react-native-calendars'
 import { Table, Row, Rows } from 'react-native-table-component';
 import { firebase, auth } from '../firebase'
 const db = firebase.firestore()
-
-/*
-import { LogBox } from 'react-native';
-LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
-LogBox.ignoreAllLogs();//Ignore all log notifications
-*/
-
-//https://www.educba.com/react-native-calendar/
-//https://github.com/wix/react-native-calendars#readme
-// https://github.com/wix/react-native-calendars/issues/610
 
 class ScheduleScreen extends Component {
     constructor(props) {
@@ -34,7 +24,8 @@ class ScheduleScreen extends Component {
             ],
             modalVisible: false,
             availableCoaches: [],
-            currentCoachText: ''
+            currentCoachText: '',
+            markedDates: {},
         }
     }
 
@@ -123,28 +114,59 @@ class ScheduleScreen extends Component {
             })
         }
     }
+
+    // on focus, update values 
+    setDefaults() {
+        this.state.currentEmail = auth.currentUser?.email
+        this.setState({currentCoachText: ""})
+        this.state.dataForTable = [
+            ['Monday', 'N/A'],
+            ['Tuesday', 'N/A'],
+            ['Wednesday', 'N/A'],
+            ['Thursday', 'N/A'],
+            ['Friday', 'N/A'],    
+        ]
+        this.setIsStudent()
+        this.setCoachesAvailability()
+    }
     
     componentDidMount() {
         this.state.currentEmail = auth.currentUser?.email
         this.setIsStudent()
         this.setCoachesAvailability()
+        this.showEvents()
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
-            this.state.currentEmail = auth.currentUser?.email
-            this.setIsStudent()
-            this.state.dataForTable = [
-                ['Monday', 'N/A'],
-                ['Tuesday', 'N/A'],
-                ['Wednesday', 'N/A'],
-                ['Thursday', 'N/A'],
-                ['Friday', 'N/A'],    
-            ]
+            this.showEvents()
+            this.setDefaults()
           });
     } 
 
     componentWillUnmount() {
         this._unsubscribe()
     }
+  
+      async showEvents(){
+          let formattedDates = {};
+  
+          await db.collection('CalendarEvents').doc(this.state.currentEmail).get().then(doc => {
+              if (doc.exists) {   
+                  let unformattedDates = doc.get("dates");
+                console.log(unformattedDates)
+                  unformattedDates.forEach((day) => {
+                      const d = day.date
+                      formattedDates[d] = {
+                          marked: true
+                      };
+                  });    
+              }
+          }).catch(err => {
+              console.log(err)
+          })
+  
+          this.setState({ markedDates: formattedDates })
+      }
 
+      
     render() {
         const { modalVisible } = this.state;
         const state = this.state
@@ -193,14 +215,15 @@ class ScheduleScreen extends Component {
                         </View>
                         </Modal>
                     </View>
-                    <Text onPress={() => this.props.navigation.navigate('Home')} style={{fontSize:26, fontWeight:'bold'}}> Schedule Screen </Text>
+
                     <Calendar
                         // Initially visible month. Default = Date()
                         //current={'2022-03-28'}
-                        minDate={'2020-01-01'}
+                        minDate={'2022-01-01'}
                         // Handler which gets executed on day press. Default = undefined
-                        onDayPress={day => {
-                            console.log('selected day', day);
+                        onDayPress={day => { 
+                            let dayprop = day.dateString
+                            this.props.navigation.navigate('Agenda', {dayPressed: dayprop}) 
                         }}
                         // Handler which gets executed on day long press. Default = undefined
                         onDayLongPress={day => {
@@ -209,11 +232,10 @@ class ScheduleScreen extends Component {
                         // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
                         monthFormat={'MMMM yyyy'}
                         // Handler which gets executed when visible month changes in calendar. Default = undefined
-                        onMonthChange={month => {
-                            console.log('month changed', month);
-                        }}
+                        onMonthChange={month => { }}
                         // If firstDay=1 week starts from Monday. Note that dayNames and dayNamesShort should still start from Sunday.
                         firstDay={1}
+                        markedDates={this.state.markedDates}
                     />
                 </View>
         ); 
