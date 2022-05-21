@@ -44,7 +44,6 @@ import InputMatchScreen from "../screens/InputMatchScreen"
 
 import MainStackNavigator from "./StackNavigator"
 import AvailabilityScreen from "../screens/AvailabilityScreen"
-import AgendaScreen from "../screens/AgendaScreen"
 
 // Bar Icons
 const tabBarIcon = ({ route }) => ({

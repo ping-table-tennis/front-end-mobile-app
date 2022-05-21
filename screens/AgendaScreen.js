@@ -18,7 +18,8 @@ class AgendaScreen extends Component {
             newEventName: "",
             newEventDay: "",
             newEventTime: ""
-         }
+        }
+        this.showDeleteAlert.bind(this)
     }
 
     componentDidMount(){
@@ -131,24 +132,22 @@ class AgendaScreen extends Component {
         this.getEvents();
     }
 
-
+    
     //TODO: this doesnt have anything
-    deleteEvent(){
+    deleteEvent(index){
         
     }
 
     //TODO: this doesnt work
-    showDeleteAlert(index){
-        return(
+    showDeleteAlert = () => {
             Alert.alert(
             "Delete Event",
             "Are you sure that you want to delete this event? This cannot be undone.",
-            [
-              { text: Const.ALERT_CANCEL, style: "cancel"},
-              { text: Const.ALERT_YES, onPress: () => this.deleteEvent(index) }
-            ]
+                [
+                { text: Const.ALERT_CANCEL, style: "cancel"},
+                { text: Const.ALERT_YES, onPress: () => console.log('a') }
+                ]
             )
-        );
     }
 
     renderItem({item}){
@@ -157,8 +156,7 @@ class AgendaScreen extends Component {
             <Text style={styles.text}>{item.time}</Text>
             <Text Style={styles.text}>{item.name}</Text>
             <TouchableOpacity
-                style={styles.deleteButtonBackground}
-                onPress={() => this.showDeleteAlert(item.key)}>
+                style={styles.deleteButtonBackground} >
                 <Image alt='' source = {deleteImg} style = {styles.deleteButtonImage}></Image>
             </TouchableOpacity>
         </View>
