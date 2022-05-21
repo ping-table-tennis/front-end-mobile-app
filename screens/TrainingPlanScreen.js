@@ -71,7 +71,7 @@ class TrainingPlanScreen extends Component {
         let tasksChecked = dailyPlans[0]?.checklist_iscompleted
 
         tasks.push(modalvalue)
-        tasksChecked.push(true)
+        tasksChecked.push(false)
 
         await db.collection("Daily Plans").doc(dailyPlansID).update({
             checklist_tasks: tasks,
