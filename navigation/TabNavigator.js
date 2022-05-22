@@ -90,7 +90,7 @@ const TrainingStack = () => {
 			<Stack.Screen name="Home" options={{ headerShown: true }} component={HomeScreen} />
 			<Stack.Screen name="TrainingPlan" options={{ headerShown: true }} component={TrainingPlanScreen} />
 			<Stack.Screen name="ToDo" options={{ headerShown: true }} component={MoreToDo} />
-			{/* <Stack.Screen name="Profile" options={{ headerShown: true }} component={ProfileScreen} /> */}
+			<Stack.Screen name="ProfileFriends" options={{ headerShown: true }} component={ProfileScreen} />
 			{/* <Stack.Screen name="Registration" options={{ headerShown: false }} component={RegistrationScreen} /> */}
 			<Stack.Screen name="Start" options={{ headerShown: false }} component={Started} />
 			<Stack.Screen name="UserType" options={{ headerShown: false }} component={UserType} />
@@ -100,10 +100,19 @@ const TrainingStack = () => {
 			{/* <Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} /> */}
 			<Stack.Screen name="Friends" component={FriendScreen}/>
 			<Stack.Screen name="Profile" component={Profile} />
+			{/* <Stack.Screen name="ProfileFriends" component={Profile} /> */}
 			{/* <Stack.Screen name="Profile" initialParams={{ 'email': auth.currentUser?.email }} component={ProfileScreen} /> */}
 			{/* <Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} /> */}
             <Stack.Screen name="Availability" component={AvailabilityScreen} />
+		</Stack.Navigator>
+	)
+}
+const ScheduleStack = () => {
+	return (
+		<Stack.Navigator  >
 			<Stack.Screen name="Agenda" component={AgendaScreen}/>
+            <Stack.Screen name="Schedule" component={ScheduleScreen} />
+            <Stack.Screen name="Availability" component={AvailabilityScreen} />
 		</Stack.Navigator>
 	)
 }
@@ -116,7 +125,7 @@ const BottomTabNavigator = () => {
 			{/* <Tab.Screen name="Start" options={{ headerShown: false, tabBarStyle: {display: "none"} }} component={MainStackNavigator} /> */}
 			<Tab.Screen name="Events" component={EventScreen} />
 			<Tab.Screen name="Notifications" component={NotificationScreen} />
-			<Tab.Screen name="Schedule" component={ScheduleScreen} />
+			<Tab.Screen name="Schedule" options={{ headerShown: false }} component={ScheduleStack} />
 			{/* <Tab.Screen name="Match" component={MatchesScreen} /> */}
 			{/* <Stack.Screen name="Friends" component={FriendScreen}/> */}
 		</Tab.Navigator>

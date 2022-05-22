@@ -1,5 +1,5 @@
 import React, { useState, Component } from 'react'
-import {View, Text, StyleSheet, Modal, Pressable, TouchableOpacity, Alert} from 'react-native'
+import {View, Text, StyleSheet, Modal, Pressable, TouchableOpacity, Alert, Platform} from 'react-native'
 import { Calendar } from 'react-native-calendars'
 import { Table, Row, Rows } from 'react-native-table-component';
 import { firebase, auth } from '../firebase'
@@ -168,73 +168,75 @@ class ScheduleScreen extends Component {
         const { modalVisible } = this.state;
         const state = this.state
         return (
-                <View style={{flex: 1, alignItems: 'center', justifyContent:'center'}}>
-                    
+                <View style={{flex: 1, alignItems: 'center'}}>
+                   <View style={{width: "100%", display: "flex", alignItems: "center"}}>
                     { state.isStudent ? 
-                    <View style = {styles.availability}>
-                        <Text style = {{fontSize: 22, textAlign:'center'}}> Coach Availability {state.currentCoachText} </Text>
-                        <TouchableOpacity onPress={() => this.showModal(true)}>
-                            <Text style = {{textAlign:'center', color:'blue'}}> Select Coach </Text>
-                        </TouchableOpacity>
-                        <View style={{alignItems: 'center', backgroundColor:'white'}}>
-                            <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}} style = {{width: 300, marginLeft:"0%"}}>
-                                <Row style={styles.head} textStyle={styles.text} data={this.state.headerOfTable}/>
-                                <Rows textStyle={styles.text} data={this.state.dataForTable} />
-                            </Table>
-                        </View>
-                    </View> : 
-                    <View>
-                        <TouchableOpacity style = {styles.availabilityButton}
-                        onPress = {() => {this.props.navigation.navigate("Availability")}}>
-                            <Text style = {styles.buttonText}> Set Availability </Text>
-                        </TouchableOpacity>
-                    </View>
-                    }
-                    <View>
-                        <Modal
-                        animationType="fade"
-                        transparent={true}
-                        visible={modalVisible}
-                        onRequestClose={() => {
-                            this.setModalVisible(!modalVisible);
-                        }}
-                        >
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                <Text style={styles.modalTitle}> Select a Coach</Text>
-                                {this.displayModalContent()}
-                                <Pressable
-                                    style={[styles.button, styles.buttonClose]}
-                                    onPress={() => this.showModal(!modalVisible)}
-                                >
-                                    <Text style={styles.textStyle}>Close</Text>
-                                </Pressable>
+                        <View style = {styles.availability}>
+                            <Text style = {{fontSize: 22, textAlign:'center'}}> Coach Availability {state.currentCoachText} </Text>
+                            <TouchableOpacity onPress={() => this.showModal(true)}>
+                                <Text style = {{textAlign:'center', color:'blue'}}> Select Coach </Text>
+                            </TouchableOpacity>
+                            <View style={{alignItems: 'center', backgroundColor:'white'}}>
+                                <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}} style = {{width: 300, marginLeft:"0%"}}>
+                                    <Row style={styles.head} textStyle={styles.text} data={this.state.headerOfTable}/>
+                                    <Rows textStyle={styles.text} data={this.state.dataForTable} />
+                                </Table>
                             </View>
+                        </View> : 
+                        <View>
+                            <TouchableOpacity style = {styles.availabilityButton}
+                            onPress = {() => {this.props.navigation.navigate("Availability")}}>
+                                <Text style = {styles.buttonText}> Set Availability </Text>
+                            </TouchableOpacity>
                         </View>
-                        </Modal>
+                        }
+                        <View>
+                            <Modal
+                            animationType="fade"
+                            transparent={true}
+                            visible={modalVisible}
+                            onRequestClose={() => {
+                                this.setModalVisible(!modalVisible);
+                            }}
+                            >
+                            <View style={styles.centeredView}>
+                                <View style={styles.modalView}>
+                                    <Text style={styles.modalTitle}> Select a Coach</Text>
+                                    {this.displayModalContent()}
+                                    <Pressable
+                                        style={[styles.button, styles.buttonClose]}
+                                        onPress={() => this.showModal(!modalVisible)}
+                                    >
+                                        <Text style={styles.textStyle}>Close</Text>
+                                    </Pressable>
+                                </View>
+                            </View>
+                            </Modal>
+                        </View>
+                   </View>
+                    <View style={{width: "100%"}}>
+                            <Calendar
+                            // Initially visible month. Default = Date()
+                            //current={'2022-03-28'}
+                            minDate={'2022-01-01'}
+                            // Handler which gets executed on day press. Default = undefined
+                            onDayPress={day => { 
+                                let dayprop = day.dateString
+                                this.props.navigation.navigate('Agenda', {dayPressed: dayprop}) 
+                            }}
+                            // Handler which gets executed on day long press. Default = undefined
+                            onDayLongPress={day => {
+                                console.log('selected day', day);
+                            }}
+                            // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
+                            monthFormat={'MMMM yyyy'}
+                            // Handler which gets executed when visible month changes in calendar. Default = undefined
+                            onMonthChange={month => { }}
+                            // If firstDay=1 week starts from Monday. Note that dayNames and dayNamesShort should still start from Sunday.
+                            firstDay={1}
+                            markedDates={this.state.markedDates}
+                        />
                     </View>
-
-                    <Calendar
-                        // Initially visible month. Default = Date()
-                        //current={'2022-03-28'}
-                        minDate={'2022-01-01'}
-                        // Handler which gets executed on day press. Default = undefined
-                        onDayPress={day => { 
-                            let dayprop = day.dateString
-                            this.props.navigation.navigate('Agenda', {dayPressed: dayprop}) 
-                        }}
-                        // Handler which gets executed on day long press. Default = undefined
-                        onDayLongPress={day => {
-                            console.log('selected day', day);
-                        }}
-                        // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
-                        monthFormat={'MMMM yyyy'}
-                        // Handler which gets executed when visible month changes in calendar. Default = undefined
-                        onMonthChange={month => { }}
-                        // If firstDay=1 week starts from Monday. Note that dayNames and dayNamesShort should still start from Sunday.
-                        firstDay={1}
-                        markedDates={this.state.markedDates}
-                    />
                 </View>
         ); 
     }

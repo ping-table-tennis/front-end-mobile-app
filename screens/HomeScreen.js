@@ -268,10 +268,7 @@ class HomeScreen extends Component {
                             </TouchableOpacity>
                         </HStack>
                     </HStack>
-                    {
-                        this.state.isStudent ? <Text style={styles.studentTitle}>Coaches</Text>
-                        : <Text style={styles.studentTitle}>Students</Text>
-                    }
+                    <Text style={styles.studentTitle}>{!this.state.isStudent ? "Students" : "Coaches"}</Text>
                     <Text style={styles.studentTitle}></Text>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         {this.state.students.map((student, key) => (
@@ -294,9 +291,6 @@ class HomeScreen extends Component {
                             </TouchableOpacity>
                         ))}
                     </ScrollView>
-                    <TouchableOpacity onPress={this.handleSignOut}>
-                        <Text style={{ color: "blue" }}>LOGOUT</Text>
-                    </TouchableOpacity>
                 </View>
             </NativeBaseProvider>
         )

@@ -195,7 +195,7 @@ const FriendScreen = ({navigation}) => {
     }
 
     const navigateToProfile = (email) => {
-        navigation.navigate("Profile", {
+        navigation.navigate("ProfileFriends", {
             email: email
         })
     }

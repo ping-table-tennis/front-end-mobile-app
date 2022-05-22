@@ -78,23 +78,38 @@ class LoginScreen extends Component {
     };
 
     createUser = async () => {
-        const { email, name, rating } = this.state;
-        await db
-            .collection("Users")
-            .doc(email)
-            .set({
+        const { email, name, rating, password, type } = this.state;
+        auth.createUserWithEmailAndPassword(email, password).then(async (credentials) => {
+            console.log("User (" + email + ") created successfully.")
+            await db.collection("Users").doc(email).set({
                 email: email,
                 name: name,
                 rating: parseInt(rating),
                 friends: [],
-            })
-            .then(async () => {
-                console.log("User (" + email + ") created successfully.")
-                await AsyncStorage.setItem("user", user.uid).then(() => {
-                    this.props.navigation.navigate("Training")
+                requests: [],
+                notifications: [],
+                homeClub: "",
+                style: "",
+                image: "",
+                isStudent: type === 0 ? false : true
+            }).then(async (res) => {
+                const { email, password } = this.state
+                const { user } = credentials
+                console.log('Logged in as: ', user.uid)
+
+                auth.signInWithEmailAndPassword(email.toLowerCase(), password).then(async () => {
+                    await AsyncStorage.setItem("user", user.uid)
+
+                }).catch(error => {
+                    Alert.alert("Login Failed", "Please check that your email and password are correct.", error)
                 })
+                this.props.navigation.navigate("Training")
             })
-    };
+        }).catch(error => {
+            console.log(error.toString());
+            // Alert.alert("Login Failed", "Please check that your email and password are correct.", error)
+        })
+    }
 
     handleRegister = () => {
         const { email, password, rating, name, type } = this.state;
@@ -103,32 +118,28 @@ class LoginScreen extends Component {
         if (this.state.isRegistering) {
             //     console.log(Number.isInteger(parseInt(rating)));
             if (this.isRegistrationValid()) {
-                auth.createUserWithEmailAndPassword(email, password)
-                    .then(async (credentials) => {
-                        let data = {}
-                        data['email'] = email
-                        data['full_name'] = name
-                        data['rating'] = rating
-                        auth.collection('users').doc(credentials.user.id).set(data).then(() => {
-                            auth.signInWithEmailAndPassword(email.toLowerCase(), password).then(async credentials => {
-                                const user = credentials.user
-                                console.log('Logged in as: ', user.uid)
-                                await AsyncStorage.setItem("user", user.uid).then(async () => {
-                                    this.props.navigation.navigate("Training")
-                                })
-                            }).catch(error => {
-                                Alert.alert("Login Failed", "Please check that your email and password are correct.", error)
+                auth.createUserWithEmailAndPassword(email, password).then(async (credentials) => {
+                    let data = {}
+                    data['email'] = email
+                    data['full_name'] = name
+                    data['rating'] = rating
+                    auth.collection('Users').doc(credentials.user.id).set(data).then(() => {
+                        auth.signInWithEmailAndPassword(email.toLowerCase(), password).then(async credentials => {
+                            const user = credentials.user
+                            console.log('Logged in as: ', user.uid)
+                            await AsyncStorage.setItem("Users", user.uid).then(async () => {
+                                this.props.navigation.navigate("Training")
                             })
+                        }).catch(error => {
+                            Alert.alert("Login Failed", "Please check that your email and password are correct.", error)
                         })
                     })
-
-
-                    .catch((error) =>
-                        Alert.alert(
-                            "Registration Failed",
-                            "Please check that your email is correct."
-                        )
-                    );
+                }).catch((error) =>
+                    Alert.alert(
+                        "Registration Failed",
+                        "Please check that your email is correct."
+                    )
+                );
             } else
                 Alert.alert(
                     "Registration Failed",
@@ -216,7 +227,7 @@ class LoginScreen extends Component {
                                 data={this.state.usertype}
                                 onSelect={(selectedItem, index) => {
                                     this.setState({
-                                        type: selectedItem
+                                        type: index
                                     })
                                     console.log(selectedItem, index)
                                 }}
@@ -247,7 +258,7 @@ class LoginScreen extends Component {
                     </Text> : null}
                 </View>
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity onPress={this.state.isRegistering ? this.handleRegister : this.handleLogin} style={styles.button}>
+                    <TouchableOpacity onPress={this.state.isRegistering ? this.createUser : this.handleLogin} style={styles.button}>
                         <Text style={styles.buttonText}>{this.state.isRegistering ? "Sign Up" : "Login"}</Text>
                     </TouchableOpacity>
                 </View>
