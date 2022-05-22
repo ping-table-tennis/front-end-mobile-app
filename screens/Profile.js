@@ -110,7 +110,7 @@ class Profile extends Component {
             email,
             name,
             rating: parseInt(rating),
-            friends: [],
+          //  friends: [],
             style,
             homeClub,
             lessonRate,

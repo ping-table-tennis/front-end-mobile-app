@@ -113,7 +113,6 @@ class ScheduleScreen extends Component {
         }
     }
 
-    // on focus, update values 
     setDefaults() {
         this.state.currentEmail = auth.currentUser?.email
         this.setState({currentCoachText: ""})
