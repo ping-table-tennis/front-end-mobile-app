@@ -299,7 +299,7 @@ class HomeScreen extends Component {
                             </TouchableOpacity>
                         </HStack>
                     </HStack>
-                    <Text style={styles.studentTitle}>{isStudent ? "Students" : "Coaches"}</Text>
+                    <Text style={styles.studentTitle}>{!isStudent ? "Students" : "Coaches"}</Text>
                     <Text style={styles.studentTitle}></Text>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         {this.state.students.map((student, key) => (
