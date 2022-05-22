@@ -222,6 +222,7 @@ class ScheduleScreen extends Component {
                         // Handler which gets executed on day press. Default = undefined
                         onDayPress={day => { 
                             let dayprop = day.dateString
+                            console.log(dayprop)
                             this.props.navigation.navigate('Agenda', {dayPressed: dayprop}) 
                         }}
                         // Handler which gets executed on day long press. Default = undefined

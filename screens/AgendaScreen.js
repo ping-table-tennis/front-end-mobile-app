@@ -26,9 +26,12 @@ class AgendaScreen extends Component {
     }
 
     currentDayStr(){
-        const dstring = this.props.route.params.dayPressed + 'T' + '00:00';
-        const dobj = new Date(dstring);
-        return dobj.toString().substring(0,16)
+        const date = this.props.route.params.dayPressed
+        const year = parseInt(date.substring(0, 4))
+        const month = parseInt(date.substring(5, 7))
+        const day = parseInt(date.substring(8, 10))
+        const dateObject = new Date(year, month-1, day)
+        return dateObject.toString().substring(0,16)
     }
 
     async getEvents(){

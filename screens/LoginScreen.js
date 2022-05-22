@@ -52,6 +52,7 @@ class LoginScreen extends Component {
     handleLogin = () => {
         const { email, password } = this.state
         if (!this.state.isRegistering) {
+            console.log(password)
             auth.signInWithEmailAndPassword(email.toLowerCase(), password)
                 .then(async credentials => {
                     this.props.navigation.navigate("Training")
@@ -59,7 +60,9 @@ class LoginScreen extends Component {
                     console.log('Logged in as: ', user.uid)
                     // await AsyncStorage.setItem("user", user.uid)
                 }).catch(error =>
-                    Alert.alert("Login Failed", "Please check that your email and password are correct.", error))
+                    Alert.alert(
+                        "Login Failed", "Please check that your email and password are correct.", [{text: "OK"}])
+                    )
         } else {
             this.setState({
                 isRegistering: !this.state.isRegistering
