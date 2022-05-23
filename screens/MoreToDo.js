@@ -21,10 +21,10 @@ class MoreToDo extends Component {
         const list = tasks
         list.splice(key, 1)
         console.log("list:", list)
-        let data = await ab.collection("General Plans").doc(id).get()
-        data['tasks'] = tasks
 
-        await db.collection("General Plans").doc(id).set(data).then(async () => {
+        await db.collection("General Plans").doc(id).update({
+            tasks: list
+        }).then(async () => {
             this.setState({
                 tasks: list
             })
