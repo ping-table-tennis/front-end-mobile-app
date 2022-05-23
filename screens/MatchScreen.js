@@ -9,7 +9,6 @@ import * as Const from '../util/Constants'
 
 const db = firebase.firestore()
 
-
 const MatchesScreen = () => {
     const navigation = useNavigation()
 
@@ -95,8 +94,9 @@ const MatchesScreen = () => {
         }
     }
 
-    const goToInputScreen = () => {
-        navigation.navigate("InputMatch")
+    const goToInputScreen = (index) => {
+        console.log(index)
+        navigation.navigate("InputMatch", {index: index})
     }
 
     const renderItem = ({ item }) => (
