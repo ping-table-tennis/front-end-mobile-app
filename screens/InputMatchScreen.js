@@ -6,7 +6,7 @@ import Divider from 'react-native-divider';
 const db = firebase.firestore()
 
 const InputMatchScreen = ({route, navigation}) => {
-    // const {index} = route.params
+    const {index} = route.params
     const currentEmail = auth.currentUser?.email
     const [matches, setMatches] = useState([])
     const [result, setResult] = useState("")
@@ -54,7 +54,7 @@ const InputMatchScreen = ({route, navigation}) => {
     };
 
     function handleBackButtonClick() {
-        navigation.navigate("Match");
+        navigation.navigate("Events");
         return true;
     }
 
@@ -111,7 +111,7 @@ const InputMatchScreen = ({route, navigation}) => {
                 matches: firebase.firestore.FieldValue.arrayUnion(getDataMap())
             }).then(() => {
                 console.log("Match input success.")
-                navigation.navigate("Match")  
+                navigation.navigate("Events")  
             })
             .catch(err => {
                 console.log(err)
@@ -122,7 +122,7 @@ const InputMatchScreen = ({route, navigation}) => {
                 matches: matches
             }).then(() => {
                 console.log("Match edit success.")
-                navigation.navigate("Match")  
+                navigation.navigate("Events")  
             })
             .catch(err => {
                 console.log(err)
