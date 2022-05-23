@@ -103,14 +103,15 @@ const TrainingStack = () => {
 			{/* <Stack.Screen name="ProfileFriends" component={Profile} /> */}
 			{/* <Stack.Screen name="Profile" initialParams={{ 'email': auth.currentUser?.email }} component={ProfileScreen} /> */}
 			{/* <Stack.Screen name="Profile" initialParams={{'email': auth.currentUser?.email}} component={ProfileScreen} /> */}
-            <Stack.Screen name="Availability" component={AvailabilityScreen} />
+			<Stack.Screen name="Agenda" component={AgendaScreen}/>
+
 		</Stack.Navigator>
 	)
 }
 const ScheduleStack = () => {
+	console.log('Schedule Stack');
 	return (
 		<Stack.Navigator  >
-			<Stack.Screen name="Agenda" component={AgendaScreen}/>
             <Stack.Screen name="Schedule" component={ScheduleScreen} />
             <Stack.Screen name="Availability" component={AvailabilityScreen} />
 		</Stack.Navigator>
